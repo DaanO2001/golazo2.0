@@ -1543,13 +1543,16 @@ function renderResultaat(){
     // Details rijen: toon antwoord tenzij geheim en geen uitslag
     const detailRows = s.details.map(d=>{
       const antwoord = d.antwoord;
-      const vraagHeeftUitslag = d.correct && d.correct !== '';
+      const vraagHeeftUitslag = d.correctValid;
       const verbergAntwoord = isGeheim && !vraagHeeftUitslag;
       const antwoordTekst = verbergAntwoord ? '<span style="color:var(--muted)">🔒 Geheim</span>' : (antwoord||'<span style="color:var(--muted)">—</span>');
       const icon = !uitslagSet ? '' : (!d.correctValid?'⬜':d.isGoed?'✅':'❌');
+      const correctTekst = vraagHeeftUitslag && !d.isGoed
+        ? `<div style="font-size:11px;color:var(--oranje);margin-top:2px;">✓ ${d.correct}</div>`
+        : '';
       return `<div class="result-row">
         <div class="result-vraag">${getVraagTekst(d.v)}</div>
-        <div class="result-antwoord">${antwoordTekst}</div>
+        <div class="result-antwoord">${antwoordTekst}${correctTekst}</div>
         <div class="result-icon">${icon}</div>
       </div>`;
     }).join('');
