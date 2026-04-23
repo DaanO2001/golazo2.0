@@ -1759,10 +1759,6 @@ function checkAdminPassword(){
   }
 }
 
-// ── INIT ──
-loadSupabaseConfig();
-if(!checkAdminUrl()) initSupabase();
-
 // Maak functies globaal beschikbaar voor inline HTML handlers
 Object.assign(window, {
   saveSupabaseConfig, checkAdminPassword, checkPincode,
@@ -1782,3 +1778,7 @@ Object.assign(window, {
   togglePredVraag, toggleResultCard,
   backToOverview, handleSaveBtn, copyLink,
 });
+
+// ── INIT ──
+loadSupabaseConfig();
+if(!checkAdminUrl()) initSupabase();
