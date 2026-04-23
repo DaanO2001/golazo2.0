@@ -880,6 +880,17 @@ function renderAdminVragen(){
             <input type="text" id="vraag_input_${v.id}" value="${v.tekst}"
               style="border-radius:10px;font-size:13px;padding:8px 12px;margin-bottom:6px;"
               onkeydown="if(event.key==='Enter')saveEditVraag('${v.id}');if(event.key==='Escape')cancelEditVraag('${v.id}')">
+            <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin:8px 0 4px;">🔔 Pushmelding bij uitslag</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+              <span style="font-size:12px;color:var(--oranje);font-weight:700;min-width:40px;">✅ Goed:</span>
+              <input type="text" id="vraag_goed_${v.id}" value="${v.goedBericht||'Lekker pik! Bekijk hier wat je goed hebt gedaan.'}"
+                style="border-radius:10px;font-size:12px;padding:7px 10px;flex:1;">
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+              <span style="font-size:12px;color:#ff8080;font-weight:700;min-width:40px;">❌ Fout:</span>
+              <input type="text" id="vraag_fout_${v.id}" value="${v.foutBericht||'Haha sukkel.. bekijk wat je fout hebt gedaan.'}"
+                style="border-radius:10px;font-size:12px;padding:7px 10px;flex:1;">
+            </div>
             <div style="display:flex;gap:6px;">
               <button onclick="saveEditVraag('${v.id}')" class="btn sm" style="font-size:12px;padding:6px 14px;">✓ Opslaan</button>
               <button onclick="cancelEditVraag('${v.id}')" class="btn secondary sm" style="font-size:12px;padding:6px 14px;">Annuleren</button>
@@ -957,7 +968,13 @@ function saveEditVraag(id){
   const nieuweTekst = inp.value.trim();
   if(!nieuweTekst) return;
   const v = state.vragen.find(v=>v.id===id);
-  if(v) v.tekst = nieuweTekst;
+  if(v){
+    v.tekst = nieuweTekst;
+    const goedEl = document.getElementById('vraag_goed_'+id);
+    const foutEl = document.getElementById('vraag_fout_'+id);
+    if(goedEl) v.goedBericht = goedEl.value.trim() || 'Lekker pik! Bekijk hier wat je goed hebt gedaan.';
+    if(foutEl) v.foutBericht = foutEl.value.trim() || 'Haha sukkel.. bekijk wat je fout hebt gedaan.';
+  }
   saveState();
   renderAdminVragen();
   showToast('✏️ Vraag aangepast');
@@ -1876,36 +1893,29 @@ async function subscribeToPush(playerId) {
 }
 
 async function sendPersonalizedPushNotifications() {
-  const messages = state.players.map(p => {
-    const pred = state.voorspellingen[p.id] || {};
-    let goed = 0, totaal = 0;
-    state.vragen.forEach(v => {
-      const correct = state.uitslag[v.id] || '';
-      const antwoord = pred[v.id] || '';
-      const correctValid = (v.type === 'score' || v.type === 'tussenstand')
-        ? (()=>{ const parts = correct.split('-'); return parts[0].trim() !== '' && parts[1] && parts[1].trim() !== ''; })()
-        : correct !== '';
-      if (correctValid) {
-        totaal++;
-        if (antwoord.trim().toLowerCase() === correct.trim().toLowerCase()) goed++;
-      }
+  const messages = [];
+  state.vragen.forEach(v => {
+    const correct = state.uitslag[v.id] || '';
+    const correctValid = (v.type === 'score' || v.type === 'tussenstand')
+      ? (()=>{ const parts = correct.split('-'); return parts[0].trim() !== '' && parts[1] && parts[1].trim() !== ''; })()
+      : correct !== '';
+    if (!correctValid) return;
+
+    const goedBericht = v.goedBericht || 'Lekker pik! Bekijk hier wat je goed hebt gedaan.';
+    const foutBericht = v.foutBericht || 'Haha sukkel.. bekijk wat je fout hebt gedaan.';
+
+    state.players.forEach(p => {
+      const antwoord = (state.voorspellingen[p.id] || {})[v.id] || '';
+      const isGoed = antwoord.trim().toLowerCase() === correct.trim().toLowerCase();
+      messages.push({
+        player_id: p.id,
+        title: 'Golazo 🏆',
+        body: isGoed ? goedBericht : foutBericht
+      });
     });
-    let title, body;
-    if (totaal === 0) {
-      title = 'Golazo 🏆';
-      body = 'De admin heeft de uitslag ingevuld! Bekijk je score.';
-    } else if (goed === totaal) {
-      title = 'Golazo 🥇 Alles goed!';
-      body = `Waanzinnig ${p.name}! Je had alle ${totaal} vragen goed!`;
-    } else if (goed === 0) {
-      title = 'Golazo 😬';
-      body = `Helaas ${p.name}, geen enkel antwoord goed van de ${totaal}. Beter volgende keer!`;
-    } else {
-      title = 'Golazo 🏆 Uitslag bekend!';
-      body = `${p.name}, je had ${goed} van de ${totaal} vragen goed. Bekijk je score!`;
-    }
-    return { player_id: p.id, title, body };
   });
+
+  if (!messages.length) return;
 
   try {
     await fetch('/api/send-push', {
