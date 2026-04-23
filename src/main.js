@@ -104,7 +104,6 @@ let state = {
   strafMode:false,
   straffen:{},
   pincode:'',
-  pushTitel:'Golazo 🏆',
   pushGoedBericht:'Lekker pik! Bekijk hier wat je goed hebt gedaan.',
   pushFoutBericht:'Haha sukkel.. bekijk wat je fout hebt gedaan.',
   pushedVragen:[],
@@ -992,10 +991,8 @@ function removeVraag(id){
 function renderAdminUitslag(){
   const content=document.getElementById('adminUitslagContent');
   if(!content) return;
-  const titelEl2 = document.getElementById('pushTitelInput');
   const goedEl = document.getElementById('pushGoedInput');
   const foutEl = document.getElementById('pushFoutInput');
-  if(titelEl2 && !titelEl2.value) titelEl2.value = state.pushTitel || '';
   if(goedEl && !goedEl.value) goedEl.value = state.pushGoedBericht || '';
   if(foutEl && !foutEl.value) foutEl.value = state.pushFoutBericht || '';
   if(!state.vragen.length){content.innerHTML='<div class="empty" style="padding:16px 0;"><span>❓</span>Geen vragen.</div>';return;}
@@ -1887,10 +1884,8 @@ async function subscribeToPush(playerId) {
 }
 
 function savePushBerichten() {
-  const titelEl = document.getElementById('pushTitelInput');
   const goedEl = document.getElementById('pushGoedInput');
   const foutEl = document.getElementById('pushFoutInput');
-  if(titelEl) state.pushTitel = titelEl.value.trim() || 'Golazo 🏆';
   if(goedEl) state.pushGoedBericht = goedEl.value.trim() || 'Lekker pik! Bekijk hier wat je goed hebt gedaan.';
   if(foutEl) state.pushFoutBericht = foutEl.value.trim() || 'Haha sukkel.. bekijk wat je fout hebt gedaan.';
   saveState();
@@ -1898,7 +1893,6 @@ function savePushBerichten() {
 }
 
 async function sendPersonalizedPushNotifications() {
-  const titel = state.pushTitel || 'Golazo 🏆';
   const goedBericht = state.pushGoedBericht || 'Lekker pik! Bekijk hier wat je goed hebt gedaan.';
   const foutBericht = state.pushFoutBericht || 'Haha sukkel.. bekijk wat je fout hebt gedaan.';
   if (!state.pushedVragen) state.pushedVragen = [];
@@ -1918,7 +1912,7 @@ async function sendPersonalizedPushNotifications() {
       const isGoed = antwoord.trim().toLowerCase() === correct.trim().toLowerCase();
       messages.push({
         player_id: p.id,
-        title: titel,
+        title: '',
         body: isGoed ? goedBericht : foutBericht
       });
     });

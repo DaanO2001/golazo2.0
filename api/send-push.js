@@ -33,7 +33,10 @@ export default async function handler(req, res) {
     const results = await Promise.allSettled(
       messages
         .filter(m => subByPlayer[m.player_id])
-        .map(m => webpush.sendNotification(subByPlayer[m.player_id], JSON.stringify({ title: m.title, body: m.body })))
+        .map(m => webpush.sendNotification(
+          subByPlayer[m.player_id],
+          Buffer.from(JSON.stringify({ title: m.title, body: m.body }), 'utf8')
+        ))
     );
 
     const sent = results.filter(r => r.status === 'fulfilled').length;
@@ -48,7 +51,7 @@ export default async function handler(req, res) {
 
   if (error) return res.status(500).json({ error: error.message });
 
-  const payload = JSON.stringify({ title, body });
+  const payload = Buffer.from(JSON.stringify({ title, body }), 'utf8');
   const results = await Promise.allSettled(
     rows.map(row => webpush.sendNotification(row.subscription, payload))
   );

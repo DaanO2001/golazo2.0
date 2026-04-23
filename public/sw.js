@@ -1,7 +1,7 @@
 self.addEventListener('push', event => {
   const data = event.data?.json() ?? {};
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Golazo', {
+    self.registration.showNotification(data.title || '', {
       body: data.body || 'Er is een update!',
       icon: '/icon.png',
       badge: '/icon.png',
