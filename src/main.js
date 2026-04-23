@@ -195,6 +195,14 @@ function setupRealtime(){
 //  PLAYER PICK SCREEN
 // ------------------------------------------------
 function showPickScreen(){
+  // Als dit apparaat al een speler heeft geclaimd, direct doorgaan als die speler
+  if(!isAdmin){
+    const savedId = localStorage.getItem(USER_KEY);
+    if(savedId && state.players.find(p => p.id === savedId)){
+      pickPlayer(savedId);
+      return;
+    }
+  }
   // Check pincode first (skip if no pincode set, or if already verified, or if admin)
   if(state.pincode && !isAdmin){
     const stored = localStorage.getItem(PINCODE_KEY);
@@ -283,6 +291,7 @@ function pickPlayer(id){
     saveState();
   }
   currentUserId = id;
+  localStorage.setItem(USER_KEY, id);
   // Toon user indicator in header
   const userInd = document.getElementById('userIndicator');
   const userAvatar = document.getElementById('userIndicatorAvatar');
@@ -335,12 +344,10 @@ function uploadFoto(playerId, input){
 }
 
 function switchPlayer(){
-  // Sla huidige op en ga terug naar pick screen
+  // Sla op en ga terug naar eigen overzicht (niet wisselen van speler)
   if(editingPlayer) saveCurrentVoorspelling(false);
   editingPlayer = null;
-  currentUserId = null;
-  document.getElementById('userIndicator').style.display = 'none';
-  showPickScreen();
+  renderAll();
 }
 
 function renderAll(){
@@ -1669,6 +1676,7 @@ document.addEventListener('keydown', function(e){
 // ── ADMIN WACHTWOORD & CONFIG VIA URL ──
 const ADMIN_PASSWORD = '0801';
 const DEVICE_KEY = 'golazo_device_id';
+const USER_KEY = 'golazo_user_id';
 function getDeviceId(){
   let id = localStorage.getItem(DEVICE_KEY);
   if(!id){ id = 'dev_' + Math.random().toString(36).slice(2) + Date.now(); localStorage.setItem(DEVICE_KEY, id); }
