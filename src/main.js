@@ -198,10 +198,14 @@ function showPickScreen(){
   // Als dit apparaat al een speler heeft geclaimd, direct doorgaan als die speler
   if(!isAdmin){
     const savedId = localStorage.getItem(USER_KEY);
-    if(savedId && state.players.find(p => p.id === savedId)){
+    const deviceId = getDeviceId();
+    const stillClaimed = savedId && state.devices?.[savedId] === deviceId;
+    if(stillClaimed && state.players.find(p => p.id === savedId)){
       pickPlayer(savedId);
       return;
     }
+    // Admin heeft de koppeling gereset — wis localStorage zodat speler opnieuw kan kiezen
+    if(savedId && !stillClaimed) localStorage.removeItem(USER_KEY);
   }
   // Check pincode first (skip if no pincode set, or if already verified, or if admin)
   if(state.pincode && !isAdmin){
