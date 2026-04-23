@@ -1,13 +1,13 @@
-﻿import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import './style.css';
-// ════════════════════════════════════════════════
+// ------------------------------------------------
 //  SUPABASE CONFIG
-// ════════════════════════════════════════════════
+// ------------------------------------------------
 const CONFIG_KEY = 'golazo_supabase_config';
-// â”€â”€ VASTE SUPABASE CONFIG (ingevuld door admin) â”€â”€
+// ── VASTE SUPABASE CONFIG (ingevuld door admin) ──
 const SUPABASE_URL_FIXED = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY_FIXED = import.meta.env.VITE_SUPABASE_KEY;
-const GAME_ID = 'golazo_main'; // Ã©Ã©n vaste game ID voor iedereen
+const GAME_ID = 'golazo_main'; // één vaste game ID voor iedereen
 
 let supabaseUrl = '';
 let supabaseKey = '';
@@ -15,7 +15,7 @@ let db = null;
 let realtimeChannel = null;
 let currentUserId = null; // welke speler is deze gebruiker
 
-// â”€â”€ SUPABASE SETUP â”€â”€
+// ── SUPABASE SETUP ──
 function loadSupabaseConfig(){
   // Gebruik vaste config als die is ingevuld
   if(SUPABASE_URL_FIXED && SUPABASE_KEY_FIXED){
@@ -77,9 +77,9 @@ async function initSupabase(){
   }
 }
 
-// ════════════════════════════════════════════════
+// ------------------------------------------------
 //  STATE
-// ════════════════════════════════════════════════
+// ------------------------------------------------
 const VAST_VRAGEN = [
   {id:'v1',tekst:'__TEAM1_LABEL__ scoort als eerste',type:'team',vast:true},
   {id:'v2',tekst:'Welke speler scoort het eerste doelpunt?',type:'speler',vast:true},
@@ -101,7 +101,7 @@ let state = {
   devices:{},
 };
 
-// â”€â”€ LOAD / SAVE via Supabase â”€â”€
+// ── LOAD / SAVE via Supabase ──
 async function loadStateFromSupabase(){
   setSyncStatus('syncing');
   try{
@@ -112,7 +112,7 @@ async function loadStateFromSupabase(){
       .single();
 
     if(error && error.code === 'PGRST116'){
-      // Geen rij gevonden â€” eerste keer, maak aan
+      // Geen rij gevonden — eerste keer, maak aan
       await saveStateToSupabase();
     } else if(!error && data){
       const saved = data.state_json;
@@ -148,7 +148,7 @@ function saveState(){
   saveStateToSupabase();
 }
 
-// â”€â”€ REALTIME â”€â”€
+// ── REALTIME ──
 function setupRealtime(){
   if(!db) return;
   realtimeChannel = db
@@ -184,9 +184,9 @@ function setupRealtime(){
     .subscribe();
 }
 
-// ════════════════════════════════════════════════
+// ------------------------------------------------
 //  PLAYER PICK SCREEN
-// ════════════════════════════════════════════════
+// ------------------------------------------------
 function showPickScreen(){
   // Check pincode first (skip if no pincode set, or if already verified, or if admin)
   if(state.pincode && !isAdmin){
@@ -199,7 +199,7 @@ function showPickScreen(){
   }
   const screen = document.getElementById('pickScreen');
   if(!state.players.length){
-    // Geen spelers â†’ ga direct naar app
+    // Geen spelers → ga direct naar app
     screen.classList.remove('active');
     renderAll();
     return;
@@ -212,7 +212,7 @@ function renderPickGrid(){
   const grid = document.getElementById('pickGrid');
   if(!grid) return;
   if(!state.players.length){
-    grid.innerHTML = '<div class="empty"><span>ðŸ‘¤</span>Nog geen spelers. Vraag de admin om spelers toe te voegen.</div>';
+    grid.innerHTML = '<div class="empty"><span>👤</span>Nog geen spelers. Vraag de admin om spelers toe te voegen.</div>';
     return;
   }
   grid.innerHTML = state.players.map(p => {
@@ -229,7 +229,7 @@ function renderPickGrid(){
     }).length;
     const heeftAlles = ingevuld === vis.length && vis.length > 0;
     const nietAlles = ingevuld > 0 && !heeftAlles;
-    const statusText = ingevuld === 0 ? 'Nog niets ingevuld' : heeftAlles ? 'âœ… Klaar!' : `${ingevuld} van ${vis.length} ingevuld`;
+    const statusText = ingevuld === 0 ? 'Nog niets ingevuld' : heeftAlles ? '✅ Klaar!' : `${ingevuld} van ${vis.length} ingevuld`;
     const deviceId = getDeviceId();
     const devices = state.devices || {};
     const isMine = devices[p.id] === deviceId;
@@ -242,10 +242,10 @@ function renderPickGrid(){
     return `<div class="pick-card ${heeftAlles?'done':''} ${isClaimed?'claimed':''}" onclick="pickPlayer('${p.id}')" style="${isClaimed?'opacity:.5;':''}">
       <div style="position:relative;flex-shrink:0;">
         <div class="pick-card-avatar" id="pick_avatar_${p.id}" style="${avatarStyle}">${avatarContent}</div>
-        ${isMine?`<label for="foto_${p.id}" onclick="event.stopPropagation()" style="position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;border-radius:50%;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;" title="Foto uploaden">ðŸ“·</label><input type="file" id="foto_${p.id}" accept="image/*" style="display:none;" onchange="uploadFoto('${p.id}',this)">`:``}
+        ${isMine?`<label for="foto_${p.id}" onclick="event.stopPropagation()" style="position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;border-radius:50%;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;" title="Foto uploaden">📷</label><input type="file" id="foto_${p.id}" accept="image/*" style="display:none;" onchange="uploadFoto('${p.id}',this)">`:``}
       </div>
       <div style="flex:1;min-width:0;">
-        <div class="pick-card-name">${p.name}${nietAlles?'<span style="color:var(--accent);margin-left:4px;">!</span>':''}${isClaimed?'<span style="color:var(--muted);font-size:11px;margin-left:6px;">ðŸ”’</span>':''}${isMine?'<span style="color:var(--oranje);font-size:11px;margin-left:6px;">â— jij</span>':''}</div>
+        <div class="pick-card-name">${p.name}${nietAlles?'<span style="color:var(--accent);margin-left:4px;">!</span>':''}${isClaimed?'<span style="color:var(--muted);font-size:11px;margin-left:6px;">🔒</span>':''}${isMine?'<span style="color:var(--oranje);font-size:11px;margin-left:6px;">● jij</span>':''}</div>
         <div class="pick-card-status">${isClaimed?'Gekoppeld aan ander apparaat':statusText}</div>
       </div>
     </div>`;
@@ -259,7 +259,7 @@ function pickPlayer(id){
   const devices = state.devices || {};
   // Check if this name is already claimed by another device
   if(devices[id] && devices[id] !== deviceId){
-    showToast('âš ï¸ Deze naam is al gekoppeld aan een ander apparaat!');
+    showToast('⚠️ Deze naam is al gekoppeld aan een ander apparaat!');
     return;
   }
   // Claim this name for this device
@@ -315,7 +315,7 @@ function uploadFoto(playerId, input){
       userAvatar.style.padding = '0';
       userAvatar.style.overflow = 'hidden';
     }
-    showToast('ðŸ“¸ Foto opgeslagen!');
+    showToast('📸 Foto opgeslagen!');
   };
   reader.readAsDataURL(file);
 }
@@ -335,7 +335,7 @@ function renderAll(){
   renderCountdown();
 }
 
-// â”€â”€ SYNC INDICATOR â”€â”€
+// ── SYNC INDICATOR ──
 function setSyncStatus(status){
   ['mainSyncDot','adminSyncDot'].forEach(id => {
     const el = document.getElementById(id);
@@ -344,9 +344,9 @@ function setSyncStatus(status){
   });
 }
 
-// ════════════════════════════════════════════════
+// ------------------------------------------------
 //  ADMIN
-// ════════════════════════════════════════════════
+// ------------------------------------------------
 let adminOpen = false;
 function toggleAdmin(){
   adminOpen = !adminOpen;
@@ -358,7 +358,7 @@ function refreshAdminUI(){
   document.getElementById('modeToggle').checked = state.mode==='clubs';
   document.getElementById('strafToggle').checked = state.strafMode||false;
   document.getElementById('pincodeInput').value = state.pincode||'';
-  document.getElementById('modeLabel').textContent = state.mode==='landen'?'ðŸŒ Landen':'ðŸŸï¸ Clubs';
+  document.getElementById('modeLabel').textContent = state.mode==='landen'?'🌍 Landen':'🏟️ Clubs';
   document.getElementById('team1Input').value = state.team1;
   document.getElementById('team2Input').value = state.team2;
   syncModeLabels();
@@ -370,7 +370,7 @@ function refreshAdminUI(){
   syncLockdownBtn();
 }
 
-// â”€â”€ TABS â”€â”€
+// ── TABS ──
 function showTab(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -382,38 +382,38 @@ function showTab(name){
   if(name==='resultaat') renderResultaat();
 }
 
-// â”€â”€ FLAG LOOKUP â”€â”€
+// ── FLAG LOOKUP ──
 const FLAG_MAP = {
-  'nederland':'ðŸ‡³ðŸ‡±','netherlands':'ðŸ‡³ðŸ‡±','holland':'ðŸ‡³ðŸ‡±',
-  'duitsland':'ðŸ‡©ðŸ‡ª','germany':'ðŸ‡©ðŸ‡ª','deutschland':'ðŸ‡©ðŸ‡ª',
-  'frankrijk':'ðŸ‡«ðŸ‡·','france':'ðŸ‡«ðŸ‡·',
-  'spanje':'ðŸ‡ªðŸ‡¸','spain':'ðŸ‡ªðŸ‡¸','espaÃ±a':'ðŸ‡ªðŸ‡¸',
-  'engeland':'ðŸ´ó §ó ¢ó ¥ó ®ó §ó ¿','england':'ðŸ´ó §ó ¢ó ¥ó ®ó §ó ¿',
-  'groot-brittanniÃ«':'ðŸ‡¬ðŸ‡§','great britain':'ðŸ‡¬ðŸ‡§','uk':'ðŸ‡¬ðŸ‡§',
-  'italiÃ«':'ðŸ‡®ðŸ‡¹','italy':'ðŸ‡®ðŸ‡¹','italia':'ðŸ‡®ðŸ‡¹',
-  'portugal':'ðŸ‡µðŸ‡¹',
-  'belgie':'ðŸ‡§ðŸ‡ª','belgiÃ«':'ðŸ‡§ðŸ‡ª','belgium':'ðŸ‡§ðŸ‡ª',
-  'braziliÃ«':'ðŸ‡§ðŸ‡·','brazil':'ðŸ‡§ðŸ‡·','brasil':'ðŸ‡§ðŸ‡·',
-  'argentiniÃ«':'ðŸ‡¦ðŸ‡·','argentina':'ðŸ‡¦ðŸ‡·',
-  'usa':'ðŸ‡ºðŸ‡¸','verenigde staten':'ðŸ‡ºðŸ‡¸','united states':'ðŸ‡ºðŸ‡¸','america':'ðŸ‡ºðŸ‡¸',
-  'mexico':'ðŸ‡²ðŸ‡½','marokko':'ðŸ‡²ðŸ‡¦','morocco':'ðŸ‡²ðŸ‡¦',
-  'tunesiÃ«':'ðŸ‡¹ðŸ‡³','tunisia':'ðŸ‡¹ðŸ‡³','senegal':'ðŸ‡¸ðŸ‡³','nigeria':'ðŸ‡³ðŸ‡¬',
-  'ghana':'ðŸ‡¬ðŸ‡­','egypte':'ðŸ‡ªðŸ‡¬','egypt':'ðŸ‡ªðŸ‡¬',
-  'kroatiÃ«':'ðŸ‡­ðŸ‡·','croatia':'ðŸ‡­ðŸ‡·','serviÃ«':'ðŸ‡·ðŸ‡¸','serbia':'ðŸ‡·ðŸ‡¸',
-  'zwitserland':'ðŸ‡¨ðŸ‡­','switzerland':'ðŸ‡¨ðŸ‡­','oostenrijk':'ðŸ‡¦ðŸ‡¹','austria':'ðŸ‡¦ðŸ‡¹',
-  'denemarken':'ðŸ‡©ðŸ‡°','denmark':'ðŸ‡©ðŸ‡°','zweden':'ðŸ‡¸ðŸ‡ª','sweden':'ðŸ‡¸ðŸ‡ª',
-  'noorwegen':'ðŸ‡³ðŸ‡´','norway':'ðŸ‡³ðŸ‡´','finland':'ðŸ‡«ðŸ‡®',
-  'schotland':'ðŸ´ó §ó ¢ó ³ó £ó ´ó ¿','scotland':'ðŸ´ó §ó ¢ó ³ó £ó ´ó ¿','wales':'ðŸ´ó §ó ¢ó ·ó ¬ó ³ó ¿',
-  'ierland':'ðŸ‡®ðŸ‡ª','ireland':'ðŸ‡®ðŸ‡ª','turkije':'ðŸ‡¹ðŸ‡·','turkey':'ðŸ‡¹ðŸ‡·','tÃ¼rkiye':'ðŸ‡¹ðŸ‡·',
-  'griekenland':'ðŸ‡¬ðŸ‡·','greece':'ðŸ‡¬ðŸ‡·','oekraine':'ðŸ‡ºðŸ‡¦','oekraÃ¯ne':'ðŸ‡ºðŸ‡¦','ukraine':'ðŸ‡ºðŸ‡¦',
-  'polen':'ðŸ‡µðŸ‡±','poland':'ðŸ‡µðŸ‡±','tsjechie':'ðŸ‡¨ðŸ‡¿','tsjechiÃ«':'ðŸ‡¨ðŸ‡¿','czech republic':'ðŸ‡¨ðŸ‡¿','czechia':'ðŸ‡¨ðŸ‡¿',
-  'slowakije':'ðŸ‡¸ðŸ‡°','slovakia':'ðŸ‡¸ðŸ‡°','hongarije':'ðŸ‡­ðŸ‡º','hungary':'ðŸ‡­ðŸ‡º',
-  'roemenie':'ðŸ‡·ðŸ‡´','roemeniÃ«':'ðŸ‡·ðŸ‡´','romania':'ðŸ‡·ðŸ‡´','rusland':'ðŸ‡·ðŸ‡º','russia':'ðŸ‡·ðŸ‡º',
-  'japan':'ðŸ‡¯ðŸ‡µ','china':'ðŸ‡¨ðŸ‡³','zuid-korea':'ðŸ‡°ðŸ‡·','south korea':'ðŸ‡°ðŸ‡·','korea':'ðŸ‡°ðŸ‡·',
-  'australie':'ðŸ‡¦ðŸ‡º','australiÃ«':'ðŸ‡¦ðŸ‡º','australia':'ðŸ‡¦ðŸ‡º','iran':'ðŸ‡®ðŸ‡·',
-  'saoedi-arabie':'ðŸ‡¸ðŸ‡¦','saudi arabia':'ðŸ‡¸ðŸ‡¦','qatar':'ðŸ‡¶ðŸ‡¦','canada':'ðŸ‡¨ðŸ‡¦',
-  'colombia':'ðŸ‡¨ðŸ‡´','chili':'ðŸ‡¨ðŸ‡±','chile':'ðŸ‡¨ðŸ‡±','uruguay':'ðŸ‡ºðŸ‡¾',
-  'ecuador':'ðŸ‡ªðŸ‡¨','peru':'ðŸ‡µðŸ‡ª','venezuela':'ðŸ‡»ðŸ‡ª','costa rica':'ðŸ‡¨ðŸ‡·','panama':'ðŸ‡µðŸ‡¦',
+  'nederland':'🇳🇱','netherlands':'🇳🇱','holland':'🇳🇱',
+  'duitsland':'🇩🇪','germany':'🇩🇪','deutschland':'🇩🇪',
+  'frankrijk':'🇫🇷','france':'🇫🇷',
+  'spanje':'🇪🇸','spain':'🇪🇸','españa':'🇪🇸',
+  'engeland':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','england':'🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  'groot-brittannië':'🇬🇧','great britain':'🇬🇧','uk':'🇬🇧',
+  'italië':'🇮🇹','italy':'🇮🇹','italia':'🇮🇹',
+  'portugal':'🇵🇹',
+  'belgie':'🇧🇪','belgië':'🇧🇪','belgium':'🇧🇪',
+  'brazilië':'🇧🇷','brazil':'🇧🇷','brasil':'🇧🇷',
+  'argentinië':'🇦🇷','argentina':'🇦🇷',
+  'usa':'🇺🇸','verenigde staten':'🇺🇸','united states':'🇺🇸','america':'🇺🇸',
+  'mexico':'🇲🇽','marokko':'🇲🇦','morocco':'🇲🇦',
+  'tunesië':'🇹🇳','tunisia':'🇹🇳','senegal':'🇸🇳','nigeria':'🇳🇬',
+  'ghana':'🇬🇭','egypte':'🇪🇬','egypt':'🇪🇬',
+  'kroatië':'🇭🇷','croatia':'🇭🇷','servië':'🇷🇸','serbia':'🇷🇸',
+  'zwitserland':'🇨🇭','switzerland':'🇨🇭','oostenrijk':'🇦🇹','austria':'🇦🇹',
+  'denemarken':'🇩🇰','denmark':'🇩🇰','zweden':'🇸🇪','sweden':'🇸🇪',
+  'noorwegen':'🇳🇴','norway':'🇳🇴','finland':'🇫🇮',
+  'schotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','wales':'🏴󠁧󠁢󠁷󠁬󠁳󠁿',
+  'ierland':'🇮🇪','ireland':'🇮🇪','turkije':'🇹🇷','turkey':'🇹🇷','türkiye':'🇹🇷',
+  'griekenland':'🇬🇷','greece':'🇬🇷','oekraine':'🇺🇦','oekraïne':'🇺🇦','ukraine':'🇺🇦',
+  'polen':'🇵🇱','poland':'🇵🇱','tsjechie':'🇨🇿','tsjechië':'🇨🇿','czech republic':'🇨🇿','czechia':'🇨🇿',
+  'slowakije':'🇸🇰','slovakia':'🇸🇰','hongarije':'🇭🇺','hungary':'🇭🇺',
+  'roemenie':'🇷🇴','roemenië':'🇷🇴','romania':'🇷🇴','rusland':'🇷🇺','russia':'🇷🇺',
+  'japan':'🇯🇵','china':'🇨🇳','zuid-korea':'🇰🇷','south korea':'🇰🇷','korea':'🇰🇷',
+  'australie':'🇦🇺','australië':'🇦🇺','australia':'🇦🇺','iran':'🇮🇷',
+  'saoedi-arabie':'🇸🇦','saudi arabia':'🇸🇦','qatar':'🇶🇦','canada':'🇨🇦',
+  'colombia':'🇨🇴','chili':'🇨🇱','chile':'🇨🇱','uruguay':'🇺🇾',
+  'ecuador':'🇪🇨','peru':'🇵🇪','venezuela':'🇻🇪','costa rica':'🇨🇷','panama':'🇵🇦',
 };
 
 const CLUB_LOGO_MAP = {
@@ -443,23 +443,23 @@ function flagBadge(name){
   return `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--surface3);font-size:16px;border:1px solid var(--border);margin-right:6px;flex-shrink:0;">${f}</span>`;
 }
 
-// â”€â”€ LOCKDOWN â”€â”€
+// ── LOCKDOWN ──
 function toggleLockdown(){
   state.locked = !state.locked;
   saveState();
   syncLockdownBtn();
-  showToast(state.locked ? 'ðŸ”’ Voorspellingen vergrendeld!' : 'ðŸ”“ Voorspellingen ontgrendeld');
+  showToast(state.locked ? '🔒 Voorspellingen vergrendeld!' : '🔓 Voorspellingen ontgrendeld');
   renderInvullen();
 }
 function syncLockdownBtn(){
   const btn = document.getElementById('lockdownBtn');
   if(!btn) return;
   if(state.locked){
-    btn.textContent = 'ðŸ”“ Ontgrendel voorspellingen';
+    btn.textContent = '🔓 Ontgrendel voorspellingen';
     btn.style.background = 'linear-gradient(135deg,#ff1744,#ff4569)';
     btn.style.color = '#fff';
   } else {
-    btn.textContent = 'ðŸ”’ Vergrendel voorspellingen';
+    btn.textContent = '🔒 Vergrendel voorspellingen';
     btn.style.background = '';
     btn.style.color = '';
   }
@@ -470,7 +470,7 @@ function capitalizeInput(el){
   if(v.length > 0) el.value = v.charAt(0).toUpperCase() + v.slice(1);
 }
 
-// â”€â”€ COLLAPSIBLES â”€â”€
+// ── COLLAPSIBLES ──
 function toggleVragenAdmin(){
   const body = document.getElementById('vragenBody');
   const arrow = document.getElementById('vragenArrow');
@@ -493,7 +493,7 @@ function toggleUitslag(){
   arrow.style.transform = open ? 'rotate(180deg)' : '';
 }
 
-// â”€â”€ RESET SHEET â”€â”€
+// ── RESET SHEET ──
 function showResetSheet(){ document.getElementById('resetSheet').style.display = 'block'; }
 function hideResetSheet(){ document.getElementById('resetSheet').style.display = 'none'; }
 
@@ -506,10 +506,10 @@ function resetSpelers(){
   saveState();
   renderPlayers();
   renderInvullen();
-  showToast('ðŸ‘¤ Spelers gewist');
+  showToast('👤 Spelers gewist');
 }
 
-// â”€â”€ MODE â”€â”€
+// ── MODE ──
 function savePincode(){
   state.pincode = document.getElementById('pincodeInput').value.trim();
   saveState();
@@ -518,7 +518,7 @@ function clearPincode(){
   state.pincode = '';
   document.getElementById('pincodeInput').value = '';
   saveState();
-  showToast('ðŸ”‘ Pincode verwijderd');
+  showToast('🔑 Pincode verwijderd');
 }
 
 const PINCODE_KEY = 'golazo_pincode_ok';
@@ -541,7 +541,7 @@ function toggleStraffen(){
   state.strafMode = document.getElementById('strafToggle').checked;
   saveState();
   renderAdminVragen();
-  showToast(state.strafMode ? 'ðŸº Straffen aan!' : 'Straffen uit');
+  showToast(state.strafMode ? '🍺 Straffen aan!' : 'Straffen uit');
 }
 
 function toggleMode(){
@@ -555,7 +555,7 @@ function syncModeLabels(){
   const cardTitle = document.getElementById('teamsCardTitle');
   const t1 = document.getElementById('team1Input');
   const t2 = document.getElementById('team2Input');
-  if(modeLbl) modeLbl.textContent = landen ? 'ðŸŒ Landen' : 'ðŸŸï¸ Clubs';
+  if(modeLbl) modeLbl.textContent = landen ? '🌍 Landen' : '🏟️ Clubs';
   if(cardTitle) cardTitle.textContent = landen ? 'Landen' : 'Teams';
   if(t1) t1.placeholder = landen ? 'Land 1' : 'Team 1';
   if(t2) t2.placeholder = landen ? 'Land 2' : 'Team 2';
@@ -576,7 +576,7 @@ function saveTeams(){
       el.innerHTML = '';
       el.style.padding = '';
       el.style.overflow = '';
-      el.textContent = getFlag(name) || 'ðŸ´';
+      el.textContent = getFlag(name) || '🏴';
     }
   }
   setPreview(f1, state.team1);
@@ -631,7 +631,7 @@ function renderCountdown(){
   function update(){
     const diff = target - new Date();
     if(diff<=0){
-      w.innerHTML=`<div class="countdown-card"><div class="countdown-label">âš½ Wedstrijd is bezig!</div><div class="countdown-done">Aftrap!</div></div>`;
+      w.innerHTML=`<div class="countdown-card"><div class="countdown-label">⚽ Wedstrijd is bezig!</div><div class="countdown-done">Aftrap!</div></div>`;
       if(cdInterval){clearInterval(cdInterval);cdInterval=null;}
       return;
     }
@@ -642,7 +642,7 @@ function renderCountdown(){
     const tick = s!==prevS; prevS=s;
     w.innerHTML=`
       <div class="countdown-card">
-        <div class="countdown-label">â±ï¸ Aftrap over</div>
+        <div class="countdown-label">⏱️ Aftrap over</div>
         <div class="countdown-digits">
           ${d>0?`<div class="cd-block"><span class="cd-num">${String(d).padStart(2,'0')}</span><div class="cd-label">dagen</div></div><div class="cd-sep">:</div>`:''}
           <div class="cd-block"><span class="cd-num">${String(h).padStart(2,'0')}</span><div class="cd-label">uur</div></div>
@@ -651,7 +651,7 @@ function renderCountdown(){
           <div class="cd-sep">:</div>
           <div class="cd-block"><span class="cd-num ${tick?'tick':''}">${String(s).padStart(2,'0')}</span><div class="cd-label">sec</div></div>
         </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:10px;">${state.team1||'Team 1'} vs ${state.team2||'Team 2'} â€” ${cd.date} ${cd.time}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:10px;">${state.team1||'Team 1'} vs ${state.team2||'Team 2'} — ${cd.date} ${cd.time}</div>
       </div>`;
   }
   update();
@@ -698,14 +698,14 @@ function addPlayer(){
   saveState();
   renderPlayers();
   renderAdminUitslag();
-  showToast('ðŸ‘¤ '+name+' toegevoegd!');
+  showToast('👤 '+name+' toegevoegd!');
 }
 function resetDevice(id){
   if(!state.devices) return;
   delete state.devices[id];
   saveState();
   renderPlayers();
-  showToast('ðŸ“± Apparaatkoppeling gereset');
+  showToast('📱 Apparaatkoppeling gereset');
 }
 
 function removePlayer(id){
@@ -732,14 +732,14 @@ function renderPlayers(){
       <div style="display:flex;align-items:center;gap:0;flex:1;min-width:0;">
         <div class="player-avatar" style="${avatarStyle}">${avatarContent}</div>
         <div class="player-name" style="flex:1;">${p.name}</div>
-        ${isClaimed?`<button onclick="resetDevice('${p.id}')" style="background:none;border:1px solid rgba(255,107,0,.3);color:var(--accent);font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;cursor:pointer;margin-right:6px;white-space:nowrap;" title="Apparaatkoppeling resetten">ðŸ“± Reset</button>`:''}
+        ${isClaimed?`<button onclick="resetDevice('${p.id}')" style="background:none;border:1px solid rgba(255,107,0,.3);color:var(--accent);font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;cursor:pointer;margin-right:6px;white-space:nowrap;" title="Apparaatkoppeling resetten">📱 Reset</button>`:''}
       </div>
-      <button class="del-btn" onclick="removePlayer('${p.id}')">âœ•</button>
+      <button class="del-btn" onclick="removePlayer('${p.id}')">✕</button>
     </div>`;
   }).join('');
 }
 
-// â”€â”€ DRAG TO REORDER VRAGEN â”€â”€
+// ── DRAG TO REORDER VRAGEN ──
 let dragSrcId = null;
 function dragStart(e, id){
   dragSrcId = id;
@@ -819,7 +819,7 @@ function touchDragEnd(e){
   touchDragId = null;
 }
 
-// â”€â”€ VRAGEN ADMIN â”€â”€
+// ── VRAGEN ADMIN ──
 function renderAdminVragen(){
   const list=document.getElementById('adminVragenList');
   if(!list) return;
@@ -836,19 +836,19 @@ function renderAdminVragen(){
         <div class="drag-handle"
           ontouchstart="touchDragStart(event,'${v.id}')"
           ontouchmove="touchDragMove(event)"
-          ontouchend="touchDragEnd(event)">â ¿</div>
+          ontouchend="touchDragEnd(event)">⠿</div>
         <div class="vraag-num">${i+1}</div>
         <div style="flex:1;min-width:0;">
           <div id="vraag_display_${v.id}" style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
             <div class="vraag-text" style="flex:1;overflow:hidden;text-overflow:ellipsis;">${getVraagTekst(v)}</div>
-            <button onclick="startEditVraag('${v.id}')" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;opacity:0.6;transition:opacity .15s;" title="Bewerken">âœï¸</button>
+            <button onclick="startEditVraag('${v.id}')" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;opacity:0.6;transition:opacity .15s;" title="Bewerken">✏️</button>
           </div>
           <div id="vraag_edit_${v.id}" style="display:none;margin-top:6px;">
             <input type="text" id="vraag_input_${v.id}" value="${v.tekst}"
               style="border-radius:10px;font-size:13px;padding:8px 12px;margin-bottom:6px;"
               onkeydown="if(event.key==='Enter')saveEditVraag('${v.id}');if(event.key==='Escape')cancelEditVraag('${v.id}')">
             <div style="display:flex;gap:6px;">
-              <button onclick="saveEditVraag('${v.id}')" class="btn sm" style="font-size:12px;padding:6px 14px;">âœ“ Opslaan</button>
+              <button onclick="saveEditVraag('${v.id}')" class="btn sm" style="font-size:12px;padding:6px 14px;">✓ Opslaan</button>
               <button onclick="cancelEditVraag('${v.id}')" class="btn secondary sm" style="font-size:12px;padding:6px 14px;">Annuleren</button>
             </div>
           </div>
@@ -857,7 +857,7 @@ function renderAdminVragen(){
             <span>${v.vast?'Vast':'Eigen'}</span>
           </div>
         </div>
-        ${!v.vast?`<button class="del-btn" onclick="removeVraag('${v.id}')" style="flex-shrink:0;">âœ•</button>`:''}
+        ${!v.vast?`<button class="del-btn" onclick="removeVraag('${v.id}')" style="flex-shrink:0;">✕</button>`:''}
       </div>
       ${state.strafMode ? renderStrafInput(v) : ''}
     </div>`).join('');
@@ -870,9 +870,9 @@ function strafTypeOpties(selectedVal, prefix){
 function renderStrafInput(v){
   const straf = state.straffen[v.id] || {fouGetal:'', fouType:'slokken', goedGetal:'', goedType:'slokken'};
   return `<div style="padding:10px 12px 12px;border-top:1px solid var(--border);">
-    <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">ðŸº Straffen instellen</div>
+    <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🍺 Straffen instellen</div>
     <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
-      <span style="font-size:12px;color:#ff8080;font-weight:700;min-width:38px;">âŒ Fout:</span>
+      <span style="font-size:12px;color:#ff8080;font-weight:700;min-width:38px;">❌ Fout:</span>
       <input type="text" inputmode="numeric" value="${straf.fouGetal||''}" placeholder="0"
         id="straf_fout_getal_${v.id}"
         oninput="saveStraf('${v.id}')"
@@ -883,7 +883,7 @@ function renderStrafInput(v){
       </select>
     </div>
     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-      <span style="font-size:12px;color:var(--oranje);font-weight:700;min-width:38px;">âœ… Goed:</span>
+      <span style="font-size:12px;color:var(--oranje);font-weight:700;min-width:38px;">✅ Goed:</span>
       <input type="text" inputmode="numeric" value="${straf.goedGetal||''}" placeholder="0"
         id="straf_goed_getal_${v.id}"
         oninput="saveStraf('${v.id}')"
@@ -927,7 +927,7 @@ function saveEditVraag(id){
   if(v) v.tekst = nieuweTekst;
   saveState();
   renderAdminVragen();
-  showToast('âœï¸ Vraag aangepast');
+  showToast('✏️ Vraag aangepast');
 }
 
 function typeLabel(t){
@@ -942,7 +942,7 @@ function addEigenVraag(){
   saveState();
   renderAdminVragen();
   renderAdminUitslag();
-  showToast('âœ… Vraag toegevoegd');
+  showToast('✅ Vraag toegevoegd');
 }
 function removeVraag(id){
   state.vragen=state.vragen.filter(v=>v.id!==id);
@@ -951,11 +951,11 @@ function removeVraag(id){
   renderAdminUitslag();
 }
 
-// â”€â”€ UITSLAG ADMIN â”€â”€
+// ── UITSLAG ADMIN ──
 function renderAdminUitslag(){
   const content=document.getElementById('adminUitslagContent');
   if(!content) return;
-  if(!state.vragen.length){content.innerHTML='<div class="empty" style="padding:16px 0;"><span>â“</span>Geen vragen.</div>';return;}
+  if(!state.vragen.length){content.innerHTML='<div class="empty" style="padding:16px 0;"><span>❓</span>Geen vragen.</div>';return;}
   content.innerHTML=getVisibleVragen(state.uitslag).map((v,i)=>{
     const filled = state.uitslag[v.id] && state.uitslag[v.id]!=='';
     return `<div style="background:var(--surface2);border:1px solid ${filled?'rgba(103,242,143,.25)':'var(--border)'};border-radius:14px;margin-bottom:8px;overflow:hidden;">
@@ -966,7 +966,7 @@ function renderAdminUitslag(){
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
           ${filled ? `<span style="font-size:11px;font-weight:700;color:var(--oranje);background:var(--oranje-dim);border-radius:999px;padding:2px 8px;">${state.uitslag[v.id]}</span>` : ''}
-          <span style="color:var(--muted);font-size:13px;transition:transform .2s;" id="arrow_uv_${v.id}">â–¼</span>
+          <span style="color:var(--muted);font-size:13px;transition:transform .2s;" id="arrow_uv_${v.id}">▼</span>
         </div>
       </div>
       <div id="uv_${v.id}" style="display:none;padding:0 14px 14px;">
@@ -1001,10 +1001,10 @@ function saveUitslag(){
     }
   });
   saveState();
-  showToast('ðŸ Uitslag opgeslagen!');
+  showToast('🏁 Uitslag opgeslagen!');
 }
 
-// â”€â”€ POPUP FLOW â”€â”€
+// ── POPUP FLOW ──
 let tourMode = false;
 let tourIndex = 0;
 
@@ -1036,7 +1036,7 @@ function showPlayerPopup(idx){
   document.getElementById('popupSub').textContent =
     idx === 0 && state.players.length === 1 ? 'Jij bent de enige speler!' :
     idx === 0 ? `Nog ${remaining} speler${remaining===1?'':'s'} na jou` :
-    idx === state.players.length - 1 ? 'Jij bent de laatste! ðŸŽ‰' :
+    idx === state.players.length - 1 ? 'Jij bent de laatste! 🎉' :
     `Nog ${remaining} speler${remaining===1?'':'s'} na jou`;
   const dots = document.getElementById('popupDots');
   dots.innerHTML = state.players.map((_,i) =>
@@ -1061,7 +1061,7 @@ function handleSaveBtn(){
   if(editingPlayer){
     saveCurrentVoorspelling(false);
     const name = state.players.find(x=>x.id===state.activePlayer)?.name;
-    showToast('ðŸ’¾ Voorspelling van '+name+' opgeslagen!');
+    showToast('💾 Voorspelling van '+name+' opgeslagen!');
     editingPlayer = null;
     renderInvullen();
   } else {
@@ -1072,7 +1072,7 @@ function handleSaveBtn(){
 function updateFabLabel(){
   const btn = document.getElementById('invullenFabBtn');
   if(!btn) return;
-  btn.textContent = editingPlayer ? 'ðŸ’¾ Opslaan' : 'ðŸ’¾ Opslaan & volgende';
+  btn.textContent = editingPlayer ? '💾 Opslaan' : '💾 Opslaan & volgende';
 }
 
 function backToOverview(){
@@ -1091,7 +1091,7 @@ function backToOverview(){
 function saveAndNextPlayer(){
   saveCurrentVoorspelling(false);
   const name = state.players.find(x=>x.id===state.activePlayer)?.name;
-  showToast('ðŸ’¾ Voorspelling van '+name+' opgeslagen!');
+  showToast('💾 Voorspelling van '+name+' opgeslagen!');
   if(tourMode){
     tourIndex++;
     if(tourIndex < state.players.length){
@@ -1101,7 +1101,7 @@ function saveAndNextPlayer(){
       tourMode = false;
       editingPlayer = null;
       renderInvullen();
-      showToast('âœ… Iedereen heeft voorspeld!');
+      showToast('✅ Iedereen heeft voorspeld!');
     }
   } else {
     editingPlayer = null;
@@ -1109,7 +1109,7 @@ function saveAndNextPlayer(){
   }
 }
 
-// â”€â”€ INVULLEN â”€â”€
+// ── INVULLEN ──
 let editingPlayer = null;
 
 function renderInvullen(){
@@ -1121,7 +1121,7 @@ function renderInvullen(){
   sel.innerHTML='';
 
   if(!state.players.length){
-    content.innerHTML='<div class="empty"><span>ðŸ‘¤</span>Voeg spelers toe via Admin.</div>';
+    content.innerHTML='<div class="empty"><span>👤</span>Voeg spelers toe via Admin.</div>';
     fab.style.display='none';
     return;
   }
@@ -1138,8 +1138,8 @@ function renderInvullen(){
 function renderLockedOverview(){
   const content=document.getElementById('invullenContent');
   const bannerHtml = state.locked
-    ? `<div class="lockdown-banner"><span class="lockdown-icon">ðŸ”’</span>Voorspellingen zijn vergrendeld â€” wedstrijd is begonnen!</div>`
-    : `<div class="info-bar" style="margin-bottom:14px;">Klik op je naam bovenin om voorspellingen in te vullen âœï¸</div>`;
+    ? `<div class="lockdown-banner"><span class="lockdown-icon">🔒</span>Voorspellingen zijn vergrendeld — wedstrijd is begonnen!</div>`
+    : `<div class="info-bar" style="margin-bottom:14px;">Klik op je naam bovenin om voorspellingen in te vullen ✏️</div>`;
   content.innerHTML=`
     ${bannerHtml}
     <div class="player-locked-grid">
@@ -1158,9 +1158,9 @@ function renderLockedOverview(){
         }).length;
         const heeftAlles = ingevuld===visV.length && visV.length>0;
         const nietAlles = ingevuld>0 && !heeftAlles;
-        const statusText = ingevuld===0 ? 'Nog niets ingevuld' : heeftAlles ? 'âœ… Klaar!' : `${ingevuld} van ${visV.length} ingevuld`;
+        const statusText = ingevuld===0 ? 'Nog niets ingevuld' : heeftAlles ? '✅ Klaar!' : `${ingevuld} van ${visV.length} ingevuld`;
         const cls = ingevuld===0?'empty':heeftAlles?'done':'';
-        const editBtnHtml = state.locked ? '' : `<div class="edit-btn" onclick="editPlayer('${p.id}')">âœï¸</div>`;
+        const editBtnHtml = state.locked ? '' : `<div class="edit-btn" onclick="editPlayer('${p.id}')">✏️</div>`;
         return `<div class="player-locked-card ${cls}">
           <div class="player-locked-left">
             ${avatarHtml(p)}
@@ -1176,7 +1176,7 @@ function renderLockedOverview(){
 }
 
 function editPlayer(id){
-  if(state.locked){ showToast('ðŸ”’ Voorspellingen zijn vergrendeld!'); return; }
+  if(state.locked){ showToast('🔒 Voorspellingen zijn vergrendeld!'); return; }
   editingPlayer = id;
   state.activePlayer = id;
   document.getElementById('invullenFab').style.display='flex';
@@ -1206,8 +1206,8 @@ function renderInvullenForm(){
     const strafData = (state.strafMode && state.straffen) ? state.straffen[v.id] : null;
     const strafBadge = strafData ? (() => {
       const parts = [];
-      if(strafData.fouGetal) parts.push(`<span style="display:inline-flex;align-items:center;gap:2px;background:rgba(255,80,80,.25);border:1px solid rgba(255,80,80,.4);color:#ff8080;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;">âŒ ${strafData.fouGetal} ${strafData.fouType}</span>`);
-      if(strafData.goedGetal) parts.push(`<span style="display:inline-flex;align-items:center;gap:2px;background:var(--oranje-dim);border:1px solid var(--border-orange);color:var(--oranje);font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;">âœ… ${strafData.goedGetal} ${strafData.goedType}</span>`);
+      if(strafData.fouGetal) parts.push(`<span style="display:inline-flex;align-items:center;gap:2px;background:rgba(255,80,80,.25);border:1px solid rgba(255,80,80,.4);color:#ff8080;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;">❌ ${strafData.fouGetal} ${strafData.fouType}</span>`);
+      if(strafData.goedGetal) parts.push(`<span style="display:inline-flex;align-items:center;gap:2px;background:var(--oranje-dim);border:1px solid var(--border-orange);color:var(--oranje);font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;">✅ ${strafData.goedGetal} ${strafData.goedType}</span>`);
       return parts.length ? `<span style="display:inline-flex;gap:4px;margin-left:6px;flex-shrink:0;flex-wrap:wrap;">${parts.join('')}</span>` : '';
     })() : '';
     return `<div style="background:var(--surface);border:1px solid ${filled?'rgba(103,242,143,.25)':'var(--border)'};border-radius:14px;margin-bottom:8px;overflow:hidden;">
@@ -1220,8 +1220,8 @@ function renderInvullenForm(){
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-          ${filled ? `<span style="font-size:11px;font-weight:700;color:var(--oranje);background:var(--oranje-dim);border-radius:999px;padding:2px 8px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${isGeheim?'ðŸ”’':waarde}</span>` : ''}
-          <span style="color:var(--muted);font-size:13px;transition:transform .2s;" id="arrow_pv_${v.id}">â–¼</span>
+          ${filled ? `<span style="font-size:11px;font-weight:700;color:var(--oranje);background:var(--oranje-dim);border-radius:999px;padding:2px 8px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${isGeheim?'🔒':waarde}</span>` : ''}
+          <span style="color:var(--muted);font-size:13px;transition:transform .2s;" id="arrow_pv_${v.id}">▼</span>
         </div>
       </div>
       <div id="pv_${v.id}" style="display:none;padding:0 14px 14px;">
@@ -1231,7 +1231,7 @@ function renderInvullenForm(){
   }).join('');
 
   content.innerHTML=`
-    <button class="btn secondary sm" style="margin-bottom:14px;width:auto;" onclick="backToOverview()">â† Terug</button>
+    <button class="btn secondary sm" style="margin-bottom:14px;width:auto;" onclick="backToOverview()">← Terug</button>
     <div class="info-bar">Voorspellingen van <strong>${p.name}</strong></div>
     <div style="margin-bottom:16px;">
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;">
@@ -1242,7 +1242,7 @@ function renderInvullenForm(){
     ${vragenHtml}
     <div class="secret-row">
       <div>
-        <div class="secret-label">ðŸ”’ Antwoorden geheimhouden</div>
+        <div class="secret-label">🔒 Antwoorden geheimhouden</div>
         <div class="secret-desc">In het overzicht verborgen voor anderen</div>
       </div>
       <label class="switch">
@@ -1250,7 +1250,7 @@ function renderInvullenForm(){
         <span class="slider"></span>
       </label>
     </div>
-    <button class="btn" id="invullenFabBtn" onclick="handleSaveBtn()" style="margin-top:16px;margin-bottom:32px;">ðŸ’¾ Opslaan</button>`;
+    <button class="btn" id="invullenFabBtn" onclick="handleSaveBtn()" style="margin-top:16px;margin-bottom:32px;">💾 Opslaan</button>`;
 }
 
 function togglePredVraag(id, vraagId){
@@ -1270,7 +1270,7 @@ function toggleSecret(pid){
   if(!el) return;
   state.geheim[pid]=el.checked;
   saveState();
-  showToast(el.checked?'ðŸ”’ Antwoorden verborgen':'ðŸ‘ï¸ Antwoorden zichtbaar');
+  showToast(el.checked?'🔒 Antwoorden verborgen':'👁️ Antwoorden zichtbaar');
 }
 
 function getVisibleVragen(antwoorden){
@@ -1304,7 +1304,7 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
     const onchangeSub = `document.getElementById('${subDivId}').style.display=this.value==='Ja'?'block':'none';`;
     return `<select id="${id}" onchange="${onchangeSub}"><option value="">Kies...</option><option value="Ja" ${waarde==='Ja'?'selected':''}>Ja</option><option value="Nee" ${waarde==='Nee'?'selected':''}>Nee</option></select>
     <div id="${subDivId}" style="display:${showSub?'block':'none'};margin-top:10px;padding:10px 12px;background:var(--surface3);border-radius:10px;border:1px solid var(--border);">
-      <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">â†³ ${sub.tekst}</div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">↳ ${sub.tekst}</div>
       <input type="text" id="${prefix}_${sub.id}" value="${subWaarde}" placeholder="Naam speler..." autocapitalize="words" oninput="capitalizeInput(this)" style="border-radius:10px;">
     </div>`;
   }
@@ -1319,7 +1319,7 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
           style="text-align:center;font-size:22px;font-weight:800;padding:14px 8px;border-radius:12px;"
           oninput="syncScore('${id}')">
       </div>
-      <div style="font-size:28px;font-weight:800;color:var(--muted);font-family:'Oswald',sans-serif;">â€”</div>
+      <div style="font-size:28px;font-weight:800;color:var(--muted);font-family:'Oswald',sans-serif;">—</div>
       <div style="flex:1;text-align:center;">
         <div style="font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600;">${t2||'Team 2'}</div>
         <input type="text" inputmode="numeric" id="${id}_2" value="${s2}" placeholder="0"
@@ -1370,15 +1370,15 @@ function saveCurrentVoorspelling(alert){
   saveState();
   if(alert){
     const name=state.players.find(x=>x.id===state.activePlayer)?.name;
-    showToast('ðŸ’¾ Voorspelling van '+name+' opgeslagen!');
+    showToast('💾 Voorspelling van '+name+' opgeslagen!');
     renderInvullenForm();
   }
 }
 
-// â”€â”€ RESULTAAT â”€â”€
+// ── RESULTAAT ──
 function renderResultaat(){
   const content=document.getElementById('resultaatContent');
-  if(!state.players.length){content.innerHTML='<div class="empty"><span>ðŸ˜¬</span>Geen spelers gevonden.</div>';return;}
+  if(!state.players.length){content.innerHTML='<div class="empty"><span>😬</span>Geen spelers gevonden.</div>';return;}
   const uitslagSet=Object.values(state.uitslag).some(v=>v&&v!=='');
 
   const uitslagKeys = Object.keys(state.uitslag).filter(k=>state.uitslag[k]&&state.uitslag[k]!=='');
@@ -1458,10 +1458,10 @@ function renderResultaat(){
 
     // Straf labels per kolom
     const fouStrafLabel = strafInfo && strafInfo.fouGetal
-      ? `<div style="font-size:10px;font-weight:800;color:#ff8080;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">ðŸº ${strafInfo.fouGetal} ${strafInfo.fouType} ${strafActie(strafInfo.fouType,'fout')}</div>`
+      ? `<div style="font-size:10px;font-weight:800;color:#ff8080;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">🍺 ${strafInfo.fouGetal} ${strafInfo.fouType} ${strafActie(strafInfo.fouType,'fout')}</div>`
       : '';
     const goedStrafLabel = strafInfo && strafInfo.goedGetal
-      ? `<div style="font-size:10px;font-weight:800;color:var(--oranje);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">ðŸº ${strafInfo.goedGetal} ${strafInfo.goedType} ${strafActie(strafInfo.goedType,'goed')}</div>`
+      ? `<div style="font-size:10px;font-weight:800;color:var(--oranje);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">🍺 ${strafInfo.goedGetal} ${strafInfo.goedType} ${strafActie(strafInfo.goedType,'goed')}</div>`
       : '';
 
     // Two-column layout when straffen active, else original single row
@@ -1470,43 +1470,43 @@ function renderResultaat(){
           <div style="padding:10px 12px;border-right:1px solid var(--border);">
             ${fouStrafLabel}
             <div style="display:flex;flex-direction:column;gap:5px;">
-              ${fouChips || '<div style="font-size:11px;color:var(--muted);">Niemand fout ðŸŽ‰</div>'}
+              ${fouChips || '<div style="font-size:11px;color:var(--muted);">Niemand fout 🎉</div>'}
             </div>
           </div>
           <div style="padding:10px 12px;">
             ${goedStrafLabel}
             <div style="display:flex;flex-direction:column;gap:5px;">
-              ${goedChips || '<div style="font-size:11px;color:var(--muted);">Niemand goed ðŸ˜¬</div>'}
+              ${goedChips || '<div style="font-size:11px;color:var(--muted);">Niemand goed 😬</div>'}
             </div>
           </div>
         </div>`
       : `<div class="vraag-summary-winners">
           ${goedChips || ''}${fouChips || ''}
-          ${!goedChips && !fouChips ? '<div class="vraag-summary-none">Niemand had dit goed ðŸ˜¬</div>' : ''}
+          ${!goedChips && !fouChips ? '<div class="vraag-summary-none">Niemand had dit goed 😬</div>' : ''}
         </div>`;
 
     return `
       <div class="vraag-summary">
         <div class="vraag-summary-header">
           <div class="vraag-summary-tekst">${getVraagTekst(v)}</div>
-          <div class="vraag-summary-antwoord">âœ“ ${(v.type==='score'||v.type==='tussenstand') ? correct.replace('-',' â€” ') : correct}</div>
+          <div class="vraag-summary-antwoord">✓ ${(v.type==='score'||v.type==='tussenstand') ? correct.replace('-',' — ') : correct}</div>
         </div>
         ${winnersSection}
       </div>`;
   }).filter(Boolean).join('');
 
-  const medals=['ðŸ¥‡','ðŸ¥ˆ','ðŸ¥‰'];
+  const medals=['🥇','🥈','🥉'];
   const standenHtml = scores.map((s,i)=>{
     const isGeheim = state.geheim[s.p.id]||false;
     const heeftIngevuld = Object.values(state.voorspellingen[s.p.id]||{}).some(v=>v&&v!=='');
     // Score badge: toon alleen als uitslag is ingevuld
     const scoreBadge = uitslagSet
       ? `<div class="result-score">${s.goed}/${s.totaal}</div>`
-      : `<div class="result-score" style="font-size:13px;color:var(--muted);">${heeftIngevuld?'âœ…':'â³'}</div>`;
+      : `<div class="result-score" style="font-size:13px;color:var(--muted);">${heeftIngevuld?'✅':'⏳'}</div>`;
     // Subtitel onder naam
     const subTekst = uitslagSet
       ? `${s.goed} van ${s.totaal} goed`
-      : heeftIngevuld ? (isGeheim ? 'ðŸ”’ Ingevuld (geheim)' : 'Ingevuld') : 'Nog niet ingevuld';
+      : heeftIngevuld ? (isGeheim ? '🔒 Ingevuld (geheim)' : 'Ingevuld') : 'Nog niet ingevuld';
     // Progress bar: alleen als uitslag bekend
     const progressBar = uitslagSet
       ? `<div class="progress-bar" style="max-width:140px;margin-top:5px;"><div class="progress-fill" style="width:${s.totaal?Math.round(s.goed/s.totaal*100):0}%"></div></div>`
@@ -1516,8 +1516,8 @@ function renderResultaat(){
       const antwoord = d.antwoord;
       const vraagHeeftUitslag = d.correct && d.correct !== '';
       const verbergAntwoord = isGeheim && !vraagHeeftUitslag;
-      const antwoordTekst = verbergAntwoord ? '<span style="color:var(--muted)">ðŸ”’ Geheim</span>' : (antwoord||'<span style="color:var(--muted)">â€”</span>');
-      const icon = !uitslagSet ? '' : (!d.correctValid?'â¬œ':d.isGoed?'âœ…':'âŒ');
+      const antwoordTekst = verbergAntwoord ? '<span style="color:var(--muted)">🔒 Geheim</span>' : (antwoord||'<span style="color:var(--muted)">—</span>');
+      const icon = !uitslagSet ? '' : (!d.correctValid?'⬜':d.isGoed?'✅':'❌');
       return `<div class="result-row">
         <div class="result-vraag">${getVraagTekst(d.v)}</div>
         <div class="result-antwoord">${antwoordTekst}</div>
@@ -1529,7 +1529,7 @@ function renderResultaat(){
       <div class="result-player-header" onclick="toggleResultCard('${s.p.id}')">
         ${avatarHtml(s.p,'36px','15px')}
         <div style="margin-left:10px;flex:1;">
-          <div style="font-weight:800;font-size:16px;">${uitslagSet?(medals[i]||'  '):''}<span style="${!uitslagSet?'':''}"> ${s.p.name}</span> <span class="expand-arrow">â–¼</span></div>
+          <div style="font-weight:800;font-size:16px;">${uitslagSet?(medals[i]||'  '):''}<span style="${!uitslagSet?'':''}"> ${s.p.name}</span> <span class="expand-arrow">▼</span></div>
           <div style="font-size:12px;color:var(--muted);font-weight:500;">${subTekst}</div>
           ${progressBar}
         </div>
@@ -1546,7 +1546,7 @@ function renderResultaat(){
     const verliezers = scores.filter(s=>s.totaal>0);
     if(verliezers.length){
       const laatste = verliezers[verliezers.length-1];
-      const shames = ['ðŸ¤¡','ðŸ˜­','ðŸ™ˆ','ðŸ’©','ðŸ« ','ðŸ˜¬'];
+      const shames = ['🤡','😭','🙈','💩','🫠','😬'];
       const emoji = shames[Math.floor(Math.random()*shames.length)];
       const pct = laatste.totaal ? Math.round(laatste.goed/laatste.totaal*100) : 0;
       schaamtepaalHtml = `
@@ -1554,13 +1554,13 @@ function renderResultaat(){
           <span class="schaamtepaal-emoji">${emoji}</span>
           <div class="schaamtepaal-title">Wall of Shame</div>
           <div class="schaamtepaal-name">${laatste.p.name}</div>
-          <div class="schaamtepaal-sub">${laatste.goed} van ${laatste.totaal} goed Â· ${pct}% raak</div>
+          <div class="schaamtepaal-sub">${laatste.goed} van ${laatste.totaal} goed · ${pct}% raak</div>
         </div>`;
     }
   }
 
   content.innerHTML = `
-    ${uitslagSet ? `<div class="result-section-label">Per vraag</div>${perVraagHtml || '<div class="empty" style="padding:20px 0;"><span>â³</span>Nog geen uitslag ingevuld</div>'}` : '<div class="info-bar" style="margin-bottom:4px;">â³ Wacht op de uitslag van de Admin â€” bekijk alvast wie wat heeft ingevuld!</div>'}
+    ${uitslagSet ? `<div class="result-section-label">Per vraag</div>${perVraagHtml || '<div class="empty" style="padding:20px 0;"><span>⏳</span>Nog geen uitslag ingevuld</div>'}` : '<div class="info-bar" style="margin-bottom:4px;">⏳ Wacht op de uitslag van de Admin — bekijk alvast wie wat heeft ingevuld!</div>'}
     <div class="result-section-label" style="margin-top:${uitslagSet?'24':'8'}px;">${uitslagSet ? 'Eindstand' : 'Voorspellingen'}</div>
     ${standenHtml}
     ${schaamtepaalHtml}
@@ -1576,7 +1576,7 @@ function clearVoorspellingen(){
   state.players.forEach(p => { state.voorspellingen[p.id] = {}; state.geheim[p.id] = false; });
   tourMode = false; tourIndex = 0; editingPlayer = null;
   saveState();
-  showToast('ðŸ—‘ï¸ Voorspellingen gewist');
+  showToast('🗑️ Voorspellingen gewist');
 }
 
 function startNieuwRondje(){
@@ -1587,7 +1587,7 @@ function startNieuwRondje(){
   if(adminOpen) toggleAdmin();
   renderInvullen();
   setTimeout(()=> checkStartTour(), 300);
-  showToast('ðŸ”„ Nieuw rondje gestart!');
+  showToast('🔄 Nieuw rondje gestart!');
 }
 
 function resetAll(){
@@ -1614,7 +1614,7 @@ function resetAll(){
   saveState();
   renderInvullen();
   renderMatchup();
-  showToast('ðŸ—‘ï¸ Alles gereset');
+  showToast('🗑️ Alles gereset');
 }
 
 function showToast(msg){
@@ -1623,7 +1623,7 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// â”€â”€ ENTER KEY NAVIGATION â”€â”€
+// ── ENTER KEY NAVIGATION ──
 document.addEventListener('keydown', function(e){
   if(e.key !== 'Enter') return;
   const active = document.activeElement;
@@ -1650,7 +1650,7 @@ document.addEventListener('keydown', function(e){
   }
 });
 
-// â”€â”€ ADMIN WACHTWOORD & CONFIG VIA URL â”€â”€
+// ── ADMIN WACHTWOORD & CONFIG VIA URL ──
 const ADMIN_PASSWORD = '0801';
 const DEVICE_KEY = 'golazo_device_id';
 function getDeviceId(){
@@ -1687,16 +1687,16 @@ function renderShareLinks(){
   if(!el || !window._friendLink) return;
   el.innerHTML = `
     <div style="margin-top:16px;background:var(--surface2);border:1px solid var(--border-orange);border-radius:16px;padding:14px;">
-      <div style="font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">ðŸ”— Deelbare links</div>
-      <div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:600;">ðŸ‘¥ Link voor vrienden:</div>
+      <div style="font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">🔗 Deelbare links</div>
+      <div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:600;">👥 Link voor vrienden:</div>
       <div style="display:flex;gap:6px;margin-bottom:10px;">
         <input type="text" value="${window._friendLink}" readonly style="font-size:11px;padding:8px 12px;border-radius:10px;flex:1;">
-        <button class="btn sm" onclick="copyLink('friend')" style="flex-shrink:0;width:auto;">ðŸ“‹</button>
+        <button class="btn sm" onclick="copyLink('friend')" style="flex-shrink:0;width:auto;">📋</button>
       </div>
-      <div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:600;">ðŸ” Jouw admin-link:</div>
+      <div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:600;">🔐 Jouw admin-link:</div>
       <div style="display:flex;gap:6px;">
         <input type="text" value="${window._adminLink}" readonly style="font-size:11px;padding:8px 12px;border-radius:10px;flex:1;">
-        <button class="btn sm" onclick="copyLink('admin')" style="flex-shrink:0;width:auto;">ðŸ“‹</button>
+        <button class="btn sm" onclick="copyLink('admin')" style="flex-shrink:0;width:auto;">📋</button>
       </div>
     </div>
   `;
@@ -1704,10 +1704,10 @@ function renderShareLinks(){
 
 function copyLink(type){
   const link = type === 'admin' ? window._adminLink : window._friendLink;
-  navigator.clipboard.writeText(link).then(()=> showToast('ðŸ”— Link gekopieerd!'));
+  navigator.clipboard.writeText(link).then(()=> showToast('🔗 Link gekopieerd!'));
 }
 
-// BETA knop klik â€” alleen reageren als admin
+// BETA knop klik — alleen reageren als admin
 let betaClickCount = 0;
 function betaClick(){
   if(!isAdmin) return;
@@ -1759,6 +1759,6 @@ function checkAdminPassword(){
   }
 }
 
-// â”€â”€ INIT â”€â”€
+// ── INIT ──
 loadSupabaseConfig();
 if(!checkAdminUrl()) initSupabase();

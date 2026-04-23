@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
@@ -24,13 +24,13 @@
 <!-- SETUP SCREEN (alleen eerste keer) -->
 <div class="setup-screen" id="setupScreen" style="display:none;">
   <div class="setup-card">
-    <div class="setup-title">âš™ï¸ Koppel Supabase</div>
+    <div class="setup-title">⚙️ Koppel Supabase</div>
     <div class="setup-sub">Voer eenmalig je Supabase gegevens in. Daarna werkt de app voor iedereen online.</div>
     <span class="setup-label">Supabase URL</span>
     <input type="text" id="setupUrl" placeholder="https://xxxxx.supabase.co" style="border-radius:12px;margin-bottom:4px;">
     <span class="setup-label">Supabase Anon Key</span>
     <input type="text" id="setupKey" placeholder="eyJhbGci..." style="border-radius:12px;margin-bottom:20px;">
-    <button class="btn" onclick="saveSupabaseConfig()">âœ… Verbinden</button>
+    <button class="btn" onclick="saveSupabaseConfig()">✅ Verbinden</button>
     <div id="setupError" style="display:none;color:#ff6b8a;font-size:12px;margin-top:10px;text-align:center;"></div>
   </div>
 </div>
@@ -39,17 +39,17 @@
 <div class="setup-screen" id="adminPwScreen" style="display:none;">
   <div style="max-width:360px;width:100%;">
     <div style="text-align:center;margin-bottom:32px;">
-      <div style="width:80px;height:80px;border-radius:50%;background:var(--oranje-dim);border:2px solid var(--border-orange);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px;box-shadow:0 0 32px var(--oranje-glow);">ðŸ”</div>
+      <div style="width:80px;height:80px;border-radius:50%;background:var(--oranje-dim);border:2px solid var(--border-orange);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px;box-shadow:0 0 32px var(--oranje-glow);">🔐</div>
       <div style="font-family:'Oswald',sans-serif;font-size:32px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--oranje);margin-bottom:8px;">Admin</div>
       <div style="font-size:13px;color:var(--muted2);line-height:1.6;">Voer het wachtwoord in om<br>het beheerpaneel te openen</div>
     </div>
     <div style="background:var(--surface);border:1px solid var(--border-orange);border-radius:var(--radius);padding:28px 24px;box-shadow:0 0 40px rgba(103,242,143,0.06);">
-      <input type="password" id="adminPwInput" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢"
+      <input type="password" id="adminPwInput" placeholder="••••••"
         inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" maxlength="4"
         oninput="if(this.value.length===4)checkAdminPassword()"
         onkeydown="if(event.key==='Enter')checkAdminPassword()">
-      <button class="btn" onclick="checkAdminPassword()" style="font-size:15px;padding:16px;letter-spacing:1px;">ðŸ”“ Inloggen</button>
-      <div id="adminPwError" style="display:none;color:#ff6b8a;font-size:13px;font-weight:600;margin-top:14px;text-align:center;padding:10px 14px;background:rgba(255,71,106,.08);border-radius:12px;border:1px solid rgba(255,71,106,.2);">âŒ Verkeerd wachtwoord. Probeer opnieuw.</div>
+      <button class="btn" onclick="checkAdminPassword()" style="font-size:15px;padding:16px;letter-spacing:1px;">🔓 Inloggen</button>
+      <div id="adminPwError" style="display:none;color:#ff6b8a;font-size:13px;font-weight:600;margin-top:14px;text-align:center;padding:10px 14px;background:rgba(255,71,106,.08);border-radius:12px;border:1px solid rgba(255,71,106,.2);">❌ Verkeerd wachtwoord. Probeer opnieuw.</div>
     </div>
   </div>
 </div>
@@ -58,16 +58,16 @@
 <div class="setup-screen" id="pincodeScreen" style="display:none;">
   <div style="max-width:360px;width:100%;">
     <div style="text-align:center;margin-bottom:32px;">
-      <div style="width:80px;height:80px;border-radius:50%;background:var(--accent-dim);border:2px solid rgba(242,201,76,.4);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px;box-shadow:0 0 32px var(--accent-glow);">ðŸ”‘</div>
+      <div style="width:80px;height:80px;border-radius:50%;background:var(--accent-dim);border:2px solid rgba(242,201,76,.4);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px;box-shadow:0 0 32px var(--accent-glow);">🔑</div>
       <div style="font-family:'Oswald',sans-serif;font-size:32px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">Pincode</div>
       <div style="font-size:13px;color:var(--muted2);line-height:1.6;">Voer de game-pincode in<br>die je van de admin hebt gekregen</div>
     </div>
     <div style="background:var(--surface);border:1px solid rgba(242,201,76,.35);border-radius:var(--radius);padding:28px 24px;box-shadow:0 0 40px rgba(242,201,76,0.04);">
-      <input type="tel" id="pincodeUserInput" placeholder="â€¢â€¢â€¢â€¢" inputmode="numeric" pattern="[0-9]*" maxlength="8"
+      <input type="tel" id="pincodeUserInput" placeholder="••••" inputmode="numeric" pattern="[0-9]*" maxlength="8"
         autocomplete="one-time-code"
         onkeydown="if(event.key==='Enter')checkPincode()">
-      <button class="btn" onclick="checkPincode()" style="font-size:15px;padding:16px;background:linear-gradient(135deg,var(--accent),#e6b800);color:#000;">ðŸ”‘ Verder</button>
-      <div id="pincodeError" style="display:none;color:#ff6b8a;font-size:13px;font-weight:600;margin-top:14px;text-align:center;padding:10px 14px;background:rgba(255,71,106,.08);border-radius:12px;border:1px solid rgba(255,71,106,.2);">âŒ Verkeerde code. Probeer opnieuw.</div>
+      <button class="btn" onclick="checkPincode()" style="font-size:15px;padding:16px;background:linear-gradient(135deg,var(--accent),#e6b800);color:#000;">🔑 Verder</button>
+      <div id="pincodeError" style="display:none;color:#ff6b8a;font-size:13px;font-weight:600;margin-top:14px;text-align:center;padding:10px 14px;background:rgba(255,71,106,.08);border-radius:12px;border:1px solid rgba(255,71,106,.2);">❌ Verkeerde code. Probeer opnieuw.</div>
     </div>
   </div>
 </div>
@@ -75,26 +75,26 @@
 <!-- PLAYER PICK SCREEN -->
 <div class="pick-screen" id="pickScreen">
   <div style="text-align:center;margin-bottom:32px;">
-    <div class="pick-title">ðŸ‘‹ Wie ben jij?</div>
+    <div class="pick-title">👋 Wie ben jij?</div>
     <div class="pick-sub">Kies jouw naam om voorspellingen in te vullen</div>
   </div>
   <div class="pick-grid" id="pickGrid"></div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• ADMIN SCREEN â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ═══════════════ ADMIN SCREEN ═══════════════ -->
 <div class="admin-screen" id="adminScreen">
   <div class="admin-header">
-    <span class="admin-title">âš™ï¸ Admin</span>
+    <span class="admin-title">⚙️ Admin</span>
     <span class="admin-badge">Beheer</span>
     <span class="sync-dot" id="adminSyncDot" title="Sync status"></span>
-    <button onclick="toggleAdmin()" style="margin-left:auto;background:var(--surface2);border:1px solid var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:7px 16px;border-radius:999px;cursor:pointer;">âœ• Sluiten</button>
+    <button onclick="toggleAdmin()" style="margin-left:auto;background:var(--surface2);border:1px solid var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:7px 16px;border-radius:999px;cursor:pointer;">✕ Sluiten</button>
   </div>
   <div id="shareLinksBox"></div>
 
   <!-- MODE -->
   <div class="toggle-row">
     <div>
-      <div class="toggle-label" id="modeLabel">ðŸŒ Landen</div>
+      <div class="toggle-label" id="modeLabel">🌍 Landen</div>
       <div class="toggle-sub">Landen of clubs</div>
     </div>
     <label class="switch">
@@ -106,7 +106,7 @@
   <!-- STRAFFEN TOGGLE -->
   <div class="toggle-row">
     <div>
-      <div class="toggle-label" id="strafLabel">ðŸº Straffen</div>
+      <div class="toggle-label" id="strafLabel">🍺 Straffen</div>
       <div class="toggle-sub">Inclusief straffen per vraag</div>
     </div>
     <label class="switch">
@@ -117,13 +117,13 @@
 
   <!-- PINCODE -->
   <div class="card" style="margin-bottom:12px;">
-    <div class="card-title">ðŸ”‘ Game-pincode</div>
+    <div class="card-title">🔑 Game-pincode</div>
     <div style="font-size:12px;color:var(--muted2);margin-bottom:10px;line-height:1.5;">Vrienden moeten deze code invullen voordat ze mee kunnen doen. Laat leeg om geen pincode te gebruiken.</div>
     <div style="display:flex;gap:8px;align-items:center;">
       <input type="text" id="pincodeInput" placeholder="1234" inputmode="numeric"
         oninput="savePincode()" maxlength="8">
       <span style="font-size:12px;color:var(--muted);flex:1;">Laat leeg = geen pincode</span>
-      <button class="btn sm secondary" onclick="clearPincode()" style="width:auto;padding:8px 12px;">âœ•</button>
+      <button class="btn sm secondary" onclick="clearPincode()" style="width:auto;padding:8px 12px;">✕</button>
     </div>
   </div>
 
@@ -131,18 +131,18 @@
   <div class="card">
     <div class="card-title" id="teamsCardTitle">Landen</div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-      <div id="flag1Preview" style="width:38px;height:38px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid var(--border);">ðŸ´</div>
+      <div id="flag1Preview" style="width:38px;height:38px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid var(--border);">🏴</div>
       <input type="text" id="team1Input" placeholder="Land 1" autocapitalize="words" oninput="capitalizeInput(this);saveTeams()">
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <div id="flag2Preview" style="width:38px;height:38px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid var(--border);">ðŸ´</div>
+      <div id="flag2Preview" style="width:38px;height:38px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid var(--border);">🏴</div>
       <input type="text" id="team2Input" placeholder="Land 2" autocapitalize="words" oninput="capitalizeInput(this);saveTeams()">
     </div>
   </div>
 
   <!-- COUNTDOWN -->
   <div class="card">
-    <div class="card-title">â±ï¸ Aftrap countdown</div>
+    <div class="card-title">⏱️ Aftrap countdown</div>
     <div style="display:flex;gap:8px;">
       <input type="text" id="cdDate" placeholder="DD/MM/JJJJ" inputmode="numeric" style="flex:1;" oninput="formatDateInput(this);saveCountdown()">
       <input type="text" id="cdTime" placeholder="20:45" inputmode="numeric" style="flex:1;" oninput="formatTimeInput(this);saveCountdown()" maxlength="5">
@@ -164,14 +164,14 @@
   <div class="card">
     <div onclick="toggleVragenAdmin()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
       <div class="card-title" style="margin-bottom:0;">Vragen <span class="badge" id="vraagCount">0</span></div>
-      <span id="vragenArrow" style="color:var(--muted);font-size:14px;transition:transform .25s;">â–¼</span>
+      <span id="vragenArrow" style="color:var(--muted);font-size:14px;transition:transform .25s;">▼</span>
     </div>
     <div id="vragenBody" style="display:none;margin-top:12px;">
       <div id="adminVragenList"></div>
       <div class="divider"></div>
       <div onclick="toggleEigenVraag()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:4px 0 8px;">
         <div class="card-title" style="margin-bottom:0;">+ Eigen vraag toevoegen</div>
-        <span id="eigenVraagArrow" style="color:var(--muted);font-size:14px;transition:transform .25s;">â–¼</span>
+        <span id="eigenVraagArrow" style="color:var(--muted);font-size:14px;transition:transform .25s;">▼</span>
       </div>
       <div id="eigenVraagBody" style="display:none;">
         <input type="text" id="eigenVraagInput" placeholder="bijv. Wie pakt de 2e gele kaart?" style="margin-bottom:8px;">
@@ -191,19 +191,19 @@
   <!-- UITSLAG -->
   <div class="card">
     <div onclick="toggleUitslag()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-      <div class="card-title" style="margin-bottom:0;">ðŸ Echte uitslag invullen</div>
-      <span id="uitslagArrow" style="color:var(--muted);font-size:14px;transition:transform .25s;">â–¼</span>
+      <div class="card-title" style="margin-bottom:0;">🏁 Echte uitslag invullen</div>
+      <span id="uitslagArrow" style="color:var(--muted);font-size:14px;transition:transform .25s;">▼</span>
     </div>
     <div id="uitslagBody" style="display:none;margin-top:12px;">
-      <div id="adminUitslagContent"><div class="empty" style="padding:20px 0;"><span>â“</span>Voeg eerst vragen toe.</div></div>
-      <button class="btn" style="margin-top:12px;" onclick="saveUitslag()">ðŸ’¾ Uitslag opslaan</button>
+      <div id="adminUitslagContent"><div class="empty" style="padding:20px 0;"><span>❓</span>Voeg eerst vragen toe.</div></div>
+      <button class="btn" style="margin-top:12px;" onclick="saveUitslag()">💾 Uitslag opslaan</button>
     </div>
   </div>
 
   <div class="divider"></div>
-  <button class="btn" id="lockdownBtn" style="margin-bottom:10px;" onclick="toggleLockdown()">ðŸ”’ Vergrendel voorspellingen</button>
-  <button class="btn secondary" style="margin-bottom:10px;" onclick="startNieuwRondje()">ðŸ”„ Nieuw rondje</button>
-  <button class="btn secondary" style="margin-bottom:10px;border-color:rgba(255,23,68,.3);color:#ff6b8a;" onclick="showResetSheet()">ðŸ—‘ï¸ Reset</button>
+  <button class="btn" id="lockdownBtn" style="margin-bottom:10px;" onclick="toggleLockdown()">🔒 Vergrendel voorspellingen</button>
+  <button class="btn secondary" style="margin-bottom:10px;" onclick="startNieuwRondje()">🔄 Nieuw rondje</button>
+  <button class="btn secondary" style="margin-bottom:10px;border-color:rgba(255,23,68,.3);color:#ff6b8a;" onclick="showResetSheet()">🗑️ Reset</button>
   <div style="height:50px;"></div>
 
   <!-- RESET SHEET -->
@@ -212,15 +212,15 @@
       <div style="font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;color:var(--oranje);margin-bottom:6px;text-transform:uppercase;">Reset</div>
       <div style="font-size:13px;color:var(--muted2);margin-bottom:20px;">Kies wat je wil wissen</div>
       <button class="btn secondary" style="margin-bottom:10px;text-align:left;justify-content:flex-start;gap:12px;" onclick="hideResetSheet();clearVoorspellingen()">
-        <span style="font-size:18px;">ðŸ—³ï¸</span>
+        <span style="font-size:18px;">🗳️</span>
         <div><div style="font-weight:700;">Voorspellingen wissen</div><div style="font-size:11px;color:var(--muted);font-weight:400;margin-top:1px;">Spelers en vragen blijven staan</div></div>
       </button>
       <button class="btn secondary" style="margin-bottom:10px;text-align:left;justify-content:flex-start;gap:12px;" onclick="hideResetSheet();resetSpelers()">
-        <span style="font-size:18px;">ðŸ‘¤</span>
+        <span style="font-size:18px;">👤</span>
         <div><div style="font-weight:700;">Spelers wissen</div><div style="font-size:11px;color:var(--muted);font-weight:400;margin-top:1px;">Voorspellingen gaan ook mee</div></div>
       </button>
       <button class="btn danger" style="text-align:left;justify-content:flex-start;gap:12px;" onclick="hideResetSheet();resetAll()">
-        <span style="font-size:18px;">ðŸ’£</span>
+        <span style="font-size:18px;">💣</span>
         <div><div style="font-weight:700;">Alles resetten</div><div style="font-size:11px;color:rgba(255,255,255,0.6);font-weight:400;margin-top:1px;">Terug naar fabrieksinstelling</div></div>
       </button>
       <button class="btn secondary" style="margin-top:14px;" onclick="hideResetSheet()">Annuleren</button>
@@ -233,14 +233,14 @@
   <div class="player-popup">
     <div class="popup-label">Nu aan de beurt</div>
     <div class="popup-avatar" id="popupAvatar">?</div>
-    <div class="popup-name" id="popupName">â€“</div>
+    <div class="popup-name" id="popupName">–</div>
     <div class="popup-sub" id="popupSub">Vul jouw voorspellingen in</div>
     <div class="popup-dots" id="popupDots"></div>
-    <button class="btn" onclick="startPlayerTurn()">Invullen ðŸƒ</button>
+    <button class="btn" onclick="startPlayerTurn()">Invullen 🏃</button>
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MAIN APP â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ═══════════════ MAIN APP ═══════════════ -->
 <header>
   <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
     <div>
@@ -254,7 +254,7 @@
     <div style="display:flex;gap:8px;align-items:center;">
       <div class="user-indicator" id="userIndicator" onclick="switchPlayer()" style="display:none;">
         <div class="user-indicator-avatar" id="userIndicatorAvatar">?</div>
-        <span id="userIndicatorName">â€“</span>
+        <span id="userIndicatorName">–</span>
       </div>
 
     </div>
@@ -272,13 +272,13 @@
   <div id="matchupWidget"></div>
   <p class="section-header">Voorspellingen</p>
   <div class="player-selector" id="playerSelector"></div>
-  <div id="invullenContent"><div class="empty"><span>ðŸ‘¤</span>Voeg spelers toe via Admin.</div></div>
+  <div id="invullenContent"><div class="empty"><span>👤</span>Voeg spelers toe via Admin.</div></div>
   <div id="invullenFab" style="display:none;"></div>
 </div>
 
 <!-- RESULTAAT -->
 <div class="screen" id="screen-resultaat">
-  <p class="section-header">Resultaat ðŸ†</p>
+  <p class="section-header">Resultaat 🏆</p>
   <div id="resultaatContent"></div>
 </div>
 
