@@ -1035,7 +1035,7 @@ function saveUitslag(){
   });
   saveState();
   showToast('🏁 Uitslag opgeslagen!');
-  sendPushNotification('Golazo 🏆', 'De admin heeft de uitslag ingevuld! Bekijk je score.');
+  sendPersonalizedPushNotifications();
 }
 
 // ── POPUP FLOW ──
@@ -1872,6 +1872,49 @@ async function subscribeToPush(playerId) {
     }
   } catch(e) {
     console.error('Push subscribe mislukt:', e);
+  }
+}
+
+async function sendPersonalizedPushNotifications() {
+  const messages = state.players.map(p => {
+    const pred = state.voorspellingen[p.id] || {};
+    let goed = 0, totaal = 0;
+    state.vragen.forEach(v => {
+      const correct = state.uitslag[v.id] || '';
+      const antwoord = pred[v.id] || '';
+      const correctValid = (v.type === 'score' || v.type === 'tussenstand')
+        ? (()=>{ const parts = correct.split('-'); return parts[0].trim() !== '' && parts[1] && parts[1].trim() !== ''; })()
+        : correct !== '';
+      if (correctValid) {
+        totaal++;
+        if (antwoord.trim().toLowerCase() === correct.trim().toLowerCase()) goed++;
+      }
+    });
+    let title, body;
+    if (totaal === 0) {
+      title = 'Golazo 🏆';
+      body = 'De admin heeft de uitslag ingevuld! Bekijk je score.';
+    } else if (goed === totaal) {
+      title = 'Golazo 🥇 Alles goed!';
+      body = `Waanzinnig ${p.name}! Je had alle ${totaal} vragen goed!`;
+    } else if (goed === 0) {
+      title = 'Golazo 😬';
+      body = `Helaas ${p.name}, geen enkel antwoord goed van de ${totaal}. Beter volgende keer!`;
+    } else {
+      title = 'Golazo 🏆 Uitslag bekend!';
+      body = `${p.name}, je had ${goed} van de ${totaal} vragen goed. Bekijk je score!`;
+    }
+    return { player_id: p.id, title, body };
+  });
+
+  try {
+    await fetch('/api/send-push', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages })
+    });
+  } catch(e) {
+    console.error('Push versturen mislukt:', e);
   }
 }
 
