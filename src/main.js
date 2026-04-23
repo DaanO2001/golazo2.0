@@ -1693,6 +1693,8 @@ document.addEventListener('keydown', function(e){
 const ADMIN_PASSWORD = '0801';
 const DEVICE_KEY = 'golazo_device_id';
 const USER_KEY = 'golazo_user_id';
+const ADMIN_SESSION_KEY = 'golazo_admin_session';
+const ADMIN_SESSION_DURATION = 60 * 60 * 1000; // 60 minuten in ms
 function getDeviceId(){
   let id = localStorage.getItem(DEVICE_KEY);
   if(!id){ id = 'dev_' + Math.random().toString(36).slice(2) + Date.now(); localStorage.setItem(DEVICE_KEY, id); }
@@ -1771,6 +1773,12 @@ function checkAdminUrl(){
 
   // Admin check (?admin=ja)
   if(params.get('admin') === 'ja'){
+    // Controleer of er een geldige admin-sessie is (binnen 60 min)
+    const savedSession = localStorage.getItem(ADMIN_SESSION_KEY);
+    if(savedSession && (Date.now() - parseInt(savedSession, 10)) < ADMIN_SESSION_DURATION){
+      isAdmin = true;
+      return false; // Direct doorgaan zonder wachtwoordscherm
+    }
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('adminPwScreen').style.display = 'flex';
     // Focus op wachtwoordveld
@@ -1785,6 +1793,7 @@ function checkAdminPassword(){
   const errEl = document.getElementById('adminPwError');
   if(pw === ADMIN_PASSWORD){
     isAdmin = true;
+    localStorage.setItem(ADMIN_SESSION_KEY, Date.now().toString());
     document.getElementById('adminPwScreen').style.display = 'none';
     // BETA knop krijgt subtiele admin-stijl
     const betaBtn = document.getElementById('betaAdminBtn');
