@@ -1167,7 +1167,8 @@ function renderLockedOverview(){
         const nietAlles = ingevuld>0 && !heeftAlles;
         const statusText = ingevuld===0 ? 'Nog niets ingevuld' : heeftAlles ? '✅ Klaar!' : `${ingevuld} van ${visV.length} ingevuld`;
         const cls = ingevuld===0?'empty':heeftAlles?'done':'';
-        const editBtnHtml = state.locked ? '' : `<div class="edit-btn" onclick="editPlayer('${p.id}')">✏️</div>`;
+        const kanBewerken = !state.locked && (isAdmin || p.id === currentUserId);
+        const editBtnHtml = kanBewerken ? `<div class="edit-btn" onclick="editPlayer('${p.id}')">✏️</div>` : '';
         return `<div class="player-locked-card ${cls}">
           <div class="player-locked-left">
             ${avatarHtml(p)}
@@ -1184,6 +1185,7 @@ function renderLockedOverview(){
 
 function editPlayer(id){
   if(state.locked){ showToast('🔒 Voorspellingen zijn vergrendeld!'); return; }
+  if(!isAdmin && id !== currentUserId){ showToast('❌ Je kan alleen je eigen voorspellingen bewerken.'); return; }
   editingPlayer = id;
   state.activePlayer = id;
   document.getElementById('invullenFab').style.display='flex';
