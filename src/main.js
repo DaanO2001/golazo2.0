@@ -359,12 +359,6 @@ function renderAll(){
   renderInvullen();
   renderMatchup();
   renderCountdown();
-  checkTabParam();
-}
-
-function checkTabParam(){
-  const tab = new URLSearchParams(window.location.search).get('tab');
-  if(tab === 'resultaat') showTab('resultaat');
 }
 
 // ── SYNC INDICATOR ──
@@ -1875,6 +1869,16 @@ async function sendPushNotification(title, body) {
 }
 
 // ── INIT ──
-registerServiceWorker();
+registerServiceWorker().then(() => {
+  // Luister naar berichten van de service worker (bijv. notificatie klik)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data?.type === 'SHOW_TAB') showTab(event.data.tab);
+    });
+  }
+  // Eenmalige URL-check bij opstarten (app geopend via notificatie link)
+  const tabParam = new URLSearchParams(window.location.search).get('tab');
+  if (tabParam) setTimeout(() => showTab(tabParam), 500);
+});
 loadSupabaseConfig();
 if(!checkAdminUrl()) initSupabase();

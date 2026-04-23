@@ -12,5 +12,16 @@ self.addEventListener('push', event => {
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  event.waitUntil(clients.openWindow(event.notification.data?.url || '/'));
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if (client.url.startsWith(self.location.origin)) {
+          client.focus();
+          client.postMessage({ type: 'SHOW_TAB', tab: 'resultaat' });
+          return;
+        }
+      }
+      return clients.openWindow(self.location.origin + '/?tab=resultaat');
+    })
+  );
 });
