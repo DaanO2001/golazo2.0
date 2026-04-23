@@ -1762,3 +1762,23 @@ function checkAdminPassword(){
 // ── INIT ──
 loadSupabaseConfig();
 if(!checkAdminUrl()) initSupabase();
+
+// Maak functies globaal beschikbaar voor inline HTML handlers
+Object.assign(window, {
+  saveSupabaseConfig, checkAdminPassword, checkPincode,
+  toggleAdmin, toggleMode, toggleStraffen,
+  savePincode, clearPincode, capitalizeInput, saveTeams,
+  formatDateInput, saveCountdown, formatTimeInput,
+  addPlayer, removePlayer, resetDevice,
+  toggleVragenAdmin, toggleEigenVraag, addEigenVraag,
+  startEditVraag, saveEditVraag, cancelEditVraag, removeVraag,
+  toggleUitslag, toggleUitslagVraag, saveUitslag,
+  toggleLockdown, startNieuwRondje,
+  showResetSheet, hideResetSheet,
+  clearVoorspellingen, resetSpelers, resetAll,
+  popupOverlayClick, startPlayerTurn,
+  betaClick, switchPlayer, showTab,
+  pickPlayer, uploadFoto, editPlayer,
+  togglePredVraag, toggleResultCard,
+  backToOverview, handleSaveBtn, copyLink,
+});
