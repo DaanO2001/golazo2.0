@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Golazo">
+<meta name="theme-color" content="#04252A">
+<title>Golazo</title>
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="icon" type="image/png" href="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAgACADASIAAhEBAxEB/8QAGQABAAMBAQAAAAAAAAAAAAAABwECAwgA/8QAMRAAAgEDAgQDBAsAAAAAAAAAAQMCBAURACEGBxIxE0FRFCIj0TJCYnGBkaGjssHh/8QAFwEBAQEBAAAAAAAAAAAAAAAAAQIDBv/EACARAAAGAgMBAQAAAAAAAAAAAAABAgMEERITMVGRIUH/2gAMAwEAAhEDEQA/AOabbQsrmsEWLSpUPEc5hxFccgZONzuQAACSTrR6LTGUgq4VjMHY+xxAP7mvUzTGw1qwcddQjI9QIt/zTPyIVTWblLxVxrT0lO270cnQp2tWJeGIJhIY9Bme4GM4Gt33tKMqsc5JkaEZVfBegMZFYl8OcpD7Ucf2dU7aVObnFtj4u4MslXOiYnihUoxrW+yFUJxMD1Dq8/eESB5WONF7UyjTLefoznKA++IiT/IaWnDWmzKjFsOKcTak0fQiMyFTX5SkJfln56c+Qrae98puLOCqeqSu71RcxCmT6esMTGESPUCUN8dsjQSdtSsp68uUycfSDBE/qDqZDO1GN0Jkx96Mbrg/B0Bz2bWx5JWKivNypa68U90XCtklsZYYFOyDjG4BA7aFK5WODbY7b3rhWR777LpvnqlI/huBzUWi6s2+pc1w3/FB1jermy6VC5GnRSoSvwkU6IkQVDJOBkkkkkkmRJJPfRHZ0pxv9DFjFHRjd/TPrkf/2Q==">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --oranje: #67F28F;
+  --oranje-light: #4de87a;
+  --oranje-glow: rgba(103,242,143,0.22);
+  --oranje-dim: rgba(103,242,143,0.10);
+  --accent: #F2C94C;
+  --accent-glow: rgba(242,201,76,0.2);
+  --accent-dim: rgba(242,201,76,0.1);
+  --bg: #04252A;
+  --bg2: #052e34;
+  --surface: #073035;
+  --surface2: #0a3b42;
+  --surface3: #0d4750;
+  --border: rgba(255,255,255,0.08);
+  --border-orange: rgba(103,242,143,0.28);
+  --text: #f0faf2;
+  --muted: #4a7a60;
+  --muted2: #7ab898;
+  --radius: 24px;
+  --radius-sm: 18px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+
+body{
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background:#04252A;
+  pointer-events:none;z-index:0;
+}
+
+body::after{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 55% 45% at 75% 15%, rgba(103,242,143,0.13) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 55% at 25% 85%, rgba(242,201,76,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 50% 50%, rgba(6,50,58,0.9) 0%, transparent 80%);
+  pointer-events:none;z-index:0;
+  animation:glowDrift 10s ease-in-out infinite;
+}
+@keyframes glowDrift{
+  0%  { transform:translate(0px, 0px) scale(1); opacity:1; }
+  25% { transform:translate(-18px, 12px) scale(1.03); opacity:0.85; }
+  50% { transform:translate(12px, -16px) scale(0.97); opacity:1; }
+  75% { transform:translate(-8px, 20px) scale(1.04); opacity:0.9; }
+  100%{ transform:translate(0px, 0px) scale(1); opacity:1; }
+}
+
+/* LOADING SCREEN */
+.loading-screen{
+  position:fixed;inset:0;z-index:999;
+  background:var(--bg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;
+}
+.loading-spinner{
+  width:44px;height:44px;border-radius:50%;
+  border:3px solid var(--surface2);
+  border-top-color:var(--oranje);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:13px;color:var(--muted);font-weight:600;}
+
+/* SETUP SCREEN (Supabase config) */
+.setup-screen{
+  position:fixed;inset:0;z-index:998;
+  background:var(--bg);overflow-y:auto;
+  padding:40px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.setup-card{
+  background:var(--surface);border:1px solid var(--border-orange);
+  border-radius:var(--radius);padding:28px 24px;
+  max-width:400px;width:100%;
+}
+.setup-title{
+  font-family:'Oswald','Arial Black',system-ui,sans-serif;
+  font-size:26px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--oranje);margin-bottom:6px;
+}
+.setup-sub{font-size:13px;color:var(--muted2);margin-bottom:20px;line-height:1.5;}
+.setup-label{font-size:11px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;margin-top:14px;display:block;}
+
+/* PLAYER PICK SCREEN */
+.pick-screen{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:var(--bg);overflow-y:auto;padding:40px 20px;
+}
+.pick-screen.active{display:block;animation:fadeUp .25s ease;}
+.pick-title{
+  font-family:'Oswald','Arial Black',system-ui,sans-serif;
+  font-size:28px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--oranje);
+  text-align:center;margin-bottom:6px;
+}
+.pick-sub{font-size:14px;color:var(--muted2);text-align:center;margin-bottom:28px;}
+.pick-grid{display:flex;flex-direction:column;gap:10px;max-width:400px;margin:0 auto;}
+.pick-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);padding:16px 18px;
+  cursor:pointer;transition:all .15s;
+}
+.pick-card:active{transform:scale(.98);border-color:var(--border-orange);}
+.pick-card-avatar{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--oranje),var(--oranje-light));
+  color:#000;font-weight:800;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 12px var(--oranje-glow);
+}
+.pick-card-name{font-size:17px;font-weight:700;}
+.pick-card-status{font-size:11px;color:var(--muted);margin-top:2px;}
+.pick-card.done{border-color:rgba(103,242,143,.3);}
+.pick-card.done .pick-card-status{color:var(--oranje);}
+
+/* ADMIN TOGGLE */
+.admin-toggle{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:999px;padding:7px 14px;
+  font-size:11px;font-weight:800;color:var(--muted2);
+  cursor:pointer;transition:all .2s;letter-spacing:.8px;
+  display:flex;align-items:center;gap:6px;
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  flex-shrink:0;
+}
+.admin-toggle:active{transform:scale(.95);}
+.admin-toggle.active{color:var(--oranje);border-color:var(--border-orange);background:var(--oranje-dim);}
+.admin-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:.2s;flex-shrink:0;}
+.admin-toggle.active .admin-dot{background:var(--oranje);box-shadow:0 0 8px var(--oranje);}
+
+/* ADMIN SCREEN */
+.admin-screen{
+  display:none;position:fixed;inset:0;z-index:150;
+  background:var(--bg);overflow-y:auto;
+  padding:76px 20px 100px;
+}
+.admin-screen.active{display:block;animation:fadeUp .2s ease;}
+.admin-header{
+  position:fixed;top:0;left:0;right:0;z-index:151;
+  background:var(--surface);border-bottom:2px solid var(--border-orange);
+  padding:15px 20px;display:flex;align-items:center;gap:10px;
+}
+.admin-title{font-family:'Oswald','Arial Black',system-ui,sans-serif;font-size:22px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--oranje);}
+.admin-badge{
+  background:var(--oranje-dim);border:1px solid var(--border-orange);
+  color:var(--oranje);font-size:10px;font-weight:800;
+  padding:3px 9px;border-radius:999px;letter-spacing:1px;text-transform:uppercase;
+}
+
+/* SYNC INDICATOR */
+.sync-dot{
+  display:inline-block;width:8px;height:8px;border-radius:50%;
+  background:var(--muted);margin-left:6px;transition:.3s;
+  vertical-align:middle;
+}
+.sync-dot.syncing{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse .8s infinite;}
+.sync-dot.ok{background:var(--oranje);box-shadow:0 0 8px var(--oranje);}
+.sync-dot.error{background:#ff4569;box-shadow:0 0 8px #ff4569;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* HEADER */
+header{
+  background:rgba(4,37,42,0.97);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  padding:14px 16px 12px;position:sticky;top:0;z-index:100;
+  animation:slideDown .35s ease;
+}
+@keyframes slideDown{from{transform:translateY(-16px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+header h1{
+  font-family:'Oswald','Arial Black',system-ui,sans-serif;font-size:28px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1;
+  color:var(--oranje);
+  -webkit-text-fill-color:var(--oranje);
+}
+.header-sub{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.2px;font-weight:500;}
+
+/* TABS */
+.tabs{
+  display:flex;background:var(--surface);border-bottom:1px solid var(--border);
+  position:sticky;top:62px;z-index:99;
+}
+.tab{
+  flex:1;padding:13px 8px;text-align:center;
+  font-size:12px;font-weight:800;color:var(--muted);
+  cursor:pointer;border-bottom:3px solid transparent;
+  transition:all .2s;letter-spacing:.6px;text-transform:uppercase;
+}
+.tab.active{color:var(--oranje);border-bottom-color:var(--oranje);}
+
+/* SCREENS */
+.screen{display:none;padding:20px;position:relative;z-index:1;}
+.screen.active{display:block;animation:fadeUp .25s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* CARD */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;margin-bottom:12px;
+  transition:border-color .2s;
+}
+.card-title{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:12px;font-weight:700;}
+
+/* TOGGLE */
+.toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:999px;padding:14px 20px;margin-bottom:12px;
+}
+.toggle-label{font-size:15px;font-weight:700;}
+.toggle-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.switch{position:relative;width:52px;height:28px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;inset:0;background:var(--surface2);border:1px solid var(--border);border-radius:999px;cursor:pointer;transition:.3s;}
+.slider:before{content:'';position:absolute;width:20px;height:20px;left:3px;top:3px;background:var(--muted);border-radius:50%;transition:.3s;}
+input:checked+.slider{background:var(--oranje);border-color:var(--oranje);box-shadow:0 0 14px var(--oranje-glow);}
+input:checked+.slider:before{transform:translateX(24px);background:#fff;}
+
+/* INPUTS */
+input[type=text],select{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:999px;color:var(--text);
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:14px;padding:12px 18px;
+  outline:none;transition:border .2s,box-shadow .2s;
+  -webkit-appearance:none;appearance:none;
+}
+input:focus,select:focus{border-color:var(--oranje);box-shadow:0 0 0 3px var(--oranje-glow);}
+select option{background:#1a1a2e;}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  background:linear-gradient(135deg,var(--oranje) 0%,var(--oranje-light) 100%);
+  color:#000;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:14px;
+  padding:13px 24px;border:none;border-radius:999px;
+  cursor:pointer;transition:all .15s;width:100%;letter-spacing:.2px;
+  position:relative;overflow:hidden;
+}
+.btn:active{transform:scale(.97);opacity:.9;}
+.btn.secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.btn.danger{background:linear-gradient(135deg,#ff1744,#ff4569);color:#fff;}
+.btn.sm{padding:9px 18px;font-size:13px;width:auto;}
+
+/* PLAYERS */
+.player-chip{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:999px;padding:10px 10px 10px 14px;margin-bottom:8px;
+  animation:chipIn .2s ease;
+}
+@keyframes chipIn{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:translateX(0);}}
+.player-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--oranje),var(--oranje-light));
+  color:#000;font-weight:800;font-size:15px;
+  display:flex;align-items:center;justify-content:center;
+  margin-right:10px;flex-shrink:0;box-shadow:0 0 12px var(--oranje-glow);
+}
+.player-name{font-weight:700;font-size:15px;}
+.del-btn{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px;transition:color .15s;}
+.del-btn:active{color:#ff1744;}
+
+/* VRAAG ITEMS */
+.vraag-item{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:20px;padding:14px 16px;margin-bottom:8px;
+  animation:chipIn .2s ease;transition:border-color .2s;
+}
+.vraag-item:hover{border-color:var(--border-orange);}
+.vraag-text{font-size:14px;font-weight:600;}
+.vraag-meta{font-size:11px;color:var(--muted);margin-top:5px;display:flex;gap:8px;align-items:center;}
+.tag{
+  display:inline-block;background:var(--oranje-dim);color:var(--oranje);
+  border:1px solid var(--border-orange);border-radius:6px;
+  font-size:10px;font-weight:700;padding:2px 7px;letter-spacing:.5px;text-transform:uppercase;
+}
+
+/* PLAYER SELECTOR */
+.player-selector{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.player-pill{
+  padding:8px 16px;border-radius:999px;border:2px solid var(--border);
+  font-size:13px;font-weight:700;cursor:pointer;
+  transition:all .2s;background:var(--surface2);
+}
+.player-pill.active{border-color:var(--oranje);background:var(--oranje-dim);color:var(--oranje);box-shadow:0 0 10px var(--oranje-glow);}
+
+/* SECRET ROW */
+.secret-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:999px;padding:13px 16px;margin-top:12px;
+}
+.secret-label{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;}
+.secret-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* PROGRESS */
+.progress-bar{height:4px;background:var(--surface2);border-radius:999px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--oranje),var(--oranje-light));border-radius:999px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+
+/* MATCHUP WIDGET */
+.matchup{
+  display:flex;align-items:center;justify-content:center;
+  gap:16px;margin-bottom:16px;
+}
+.matchup-team{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.matchup-flag{
+  width:64px;height:64px;border-radius:50%;
+  background:var(--surface2);
+  border:2px solid var(--border-orange);
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;
+  box-shadow:0 0 18px var(--oranje-glow);
+  transition:transform .2s;
+}
+.matchup-flag:active{transform:scale(.95);}
+.matchup-team-name{
+  font-size:12px;font-weight:700;color:var(--muted2);
+  text-align:center;max-width:80px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.matchup-vs{
+  font-family:'Oswald','Arial Black',system-ui,sans-serif;font-size:18px;font-weight:800;
+  color:var(--muted);letter-spacing:1px;
+}
+
+/* COUNTDOWN */
+.countdown-card{
+  background:linear-gradient(135deg,rgba(255,107,0,0.1) 0%,rgba(255,140,0,0.04) 100%);
+  border:1px solid var(--border-orange);border-radius:var(--radius);
+  padding:18px 16px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;
+}
+.countdown-card::before{
+  content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,107,0,0.1) 0%,transparent 70%);pointer-events:none;
+}
+.countdown-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--oranje);font-weight:800;margin-bottom:12px;}
+.countdown-digits{display:flex;justify-content:center;gap:6px;align-items:flex-start;}
+.cd-block{text-align:center;min-width:52px;}
+.cd-num{
+  font-family:'Oswald','Arial Black',system-ui,sans-serif;font-weight:700;font-size:42px;color:var(--accent);
+  letter-spacing:2px;line-height:1;display:block;
+  text-shadow:0 0 20px rgba(255,107,0,0.3);
+  transition:transform .1s;
+}
+.cd-num.tick{transform:scaleY(1.06);}
+.cd-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.cd-sep{font-family:'Oswald','Arial Black',system-ui,sans-serif;font-weight:700;font-size:32px;color:var(--accent);opacity:.6;margin-top:6px;}
+.countdown-done{font-family:'Oswald','Arial Black',system-ui,sans-serif;font-weight:800;font-size:28px;color:var(--oranje);letter-spacing:1px;animation:glow 1s infinite alternate;}
+@keyframes glow{from{text-shadow:0 0 8px var(--oranje);}to{text-shadow:0 0 24px var(--oranje),0 0 4px #fff;}}
+
+/* RESULT */
+.result-player-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);margin-bottom:14px;overflow:hidden;
+  animation:cardIn .3s ease both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.result-player-card.rank-1{border-color:rgba(242,201,76,.4);box-shadow:0 0 24px rgba(242,201,76,0.12);}
+.result-player-header{
+  display:flex;align-items:center;padding:14px 16px;
+}
+.result-score{
+  font-family:'Oswald','Arial Black',system-ui,sans-serif;font-size:22px;font-weight:700;
+  color:var(--oranje);letter-spacing:1px;margin-left:auto;
+}
+.result-row{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 16px;border-top:1px solid var(--border);
+  font-size:13px;
+}
+.result-vraag{flex:1;color:var(--muted2);font-weight:500;}
+.result-antwoord{font-weight:700;text-align:right;}
+.result-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center;}
+
+.info-bar{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:10px 14px;
+  font-size:12px;color:var(--muted2);font-weight:600;
+  margin-bottom:12px;
+}
+
+.section-header{
+  font-size:10px;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--muted);font-weight:700;margin:0 0 12px;
+}
+
+.empty{
+  text-align:center;padding:40px 20px;
+  color:var(--muted);font-size:14px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.empty span{font-size:36px;}
+
+.fab-row{
+  position:fixed;bottom:24px;left:20px;right:20px;z-index:80;
+  display:flex;gap:10px;
+}
+
+.badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--surface3);border:1px solid var(--border);
+  border-radius:999px;min-width:20px;height:20px;
+  font-size:10px;font-weight:700;color:var(--muted2);
+  padding:0 5px;margin-left:6px;
+}
+
+.divider{height:1px;background:var(--border);margin:16px 0;}
+
+#toast{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--surface3);border:1px solid var(--border-orange);
+  color:var(--text);font-size:13px;font-weight:700;
+  padding:10px 20px;border-radius:999px;z-index:500;
+  opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* POPUP */
+.player-popup-overlay{
+  position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);
+  display:none;align-items:flex-end;justify-content:center;
+  padding:20px;
+}
+.player-popup{
+  background:var(--surface);border:1.5px solid var(--border-orange);
+  border-radius:28px;padding:28px 24px;
+  width:100%;max-width:380px;text-align:center;
+  animation:slideUp .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.popup-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:800;margin-bottom:14px;}
+.popup-avatar{
+  width:72px;height:72px;border-radius:50%;margin:0 auto 14px;
+  background:linear-gradient(135deg,var(--oranje),var(--oranje-light));
+  color:#000;font-weight:800;font-size:30px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 24px var(--oranje-glow);
+}
+.popup-name{font-family:'Oswald','Arial Black',system-ui,sans-serif;font-size:32px;font-weight:700;letter-spacing:1px;color:var(--oranje);margin-bottom:6px;}
+.popup-sub{font-size:13px;color:var(--muted2);margin-bottom:18px;}
+.popup-dots{display:flex;justify-content:center;gap:6px;margin-bottom:20px;}
+.popup-dot{width:8px;height:8px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);transition:.2s;}
+.popup-dot.done{background:var(--oranje);opacity:.5;}
+.popup-dot.active{background:var(--oranje);box-shadow:0 0 8px var(--oranje);}
+
+/* VRAAG SUMMARY */
+.vraag-summary{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);margin-bottom:10px;overflow:hidden;
+}
+.vraag-summary-header{
+  padding:12px 14px 8px;border-bottom:1px solid var(--border);
+}
+.vraag-summary-tekst{font-size:13px;font-weight:700;margin-bottom:4px;}
+.vraag-summary-antwoord{font-size:12px;color:var(--oranje);font-weight:700;}
+.vraag-summary-winners{
+  padding:10px 14px;display:flex;flex-wrap:wrap;gap:6px;
+}
+.winner-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:999px;padding:5px 12px;font-size:12px;font-weight:600;
+}
+.winner-chip.goed{border-color:rgba(103,242,143,.35);background:rgba(103,242,143,.1);color:var(--oranje);}
+.winner-chip.fout{border-color:rgba(255,60,60,.2);background:rgba(255,60,60,.06);color:#ff8080;}
+.winner-chip-avatar{
+  width:20px;height:20px;border-radius:50%;
+  background:linear-gradient(135deg,var(--oranje),var(--oranje-light));
+  color:#000;font-size:9px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.winner-chip.goed .winner-chip-avatar{background:linear-gradient(135deg,var(--oranje),var(--oranje-light));color:#04252A;}
+.winner-chip.fout .winner-chip-avatar{background:var(--surface3);color:var(--muted2);}
+.vraag-summary-none{
+  padding:8px 16px 12px;font-size:12px;color:var(--muted);
+}
+.result-section-label{
+  font-size:10px;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--muted);font-weight:700;margin:20px 0 10px;
+}
+
+/* LOCKED PLAYER CARDS */
+.player-locked-grid{
+  display:flex;flex-direction:column;gap:8px;margin-bottom:16px;
+}
+.player-locked-card{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:13px 16px;
+  transition:border-color .2s;
+}
+.player-locked-card.done{border-color:rgba(0,200,83,.25);}
+.player-locked-card.empty{border-color:var(--border-orange);opacity:.7;}
+.player-locked-left{display:flex;align-items:center;gap:10px;}
+.player-locked-status{
+  font-size:11px;color:var(--muted);margin-top:2px;font-weight:500;
+}
+.player-locked-status.done{color:var(--oranje);}
+.edit-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:50%;
+  background:var(--oranje-dim);border:1px solid var(--border-orange);
+  color:var(--oranje);font-size:16px;cursor:pointer;
+  transition:all .15s;flex-shrink:0;
+}
+.edit-btn:active{transform:scale(.92);background:var(--oranje);color:#000;}
+
+/* LOCKDOWN BANNER */
+.lockdown-banner{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,23,68,.12);border:1px solid rgba(255,23,68,.35);
+  border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:14px;
+  font-size:13px;font-weight:700;color:#ff6b8a;
+}
+.lockdown-icon{font-size:20px;}
+
+/* DRAG HANDLE */
+.drag-handle{
+  display:flex;align-items:center;justify-content:center;
+  width:28px;height:28px;flex-shrink:0;
+  color:var(--muted);font-size:16px;cursor:grab;
+  touch-action:none;border-radius:6px;transition:color .15s;
+}
+.drag-handle:active{cursor:grabbing;color:var(--oranje);}
+.vraag-num{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  background:var(--surface3);color:var(--muted2);
+  font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.vraag-item.dragging{opacity:0.35;}
+.vraag-item.drop-above{
+  border-top:2px solid var(--oranje) !important;
+  box-shadow:0 -2px 0 0 var(--oranje-glow);
+}
+.vraag-item.drop-below{
+  border-bottom:2px solid var(--oranje) !important;
+  box-shadow:0 2px 0 0 var(--oranje-glow);
+}
+
+/* COLLAPSIBLE RESULT CARDS */
+.result-player-card .result-rows{
+  overflow:hidden;
+  max-height:0;
+  transition:max-height .3s ease;
+}
+.result-player-card.expanded .result-rows{
+  max-height:2000px;
+}
+.result-player-header{cursor:pointer;user-select:none;}
+.expand-arrow{
+  font-size:14px;color:var(--muted);transition:transform .25s;
+  margin-left:6px;display:inline-block;
+}
+.result-player-card.expanded .expand-arrow{transform:rotate(180deg);}
+
+/* SCHAAMTEPAAL */
+.schaamtepaal-card{
+  background:linear-gradient(135deg,rgba(255,23,68,.1) 0%,rgba(180,0,30,.06) 100%);
+  border:1px solid rgba(255,23,68,.3);
+  border-radius:var(--radius);margin-bottom:14px;overflow:hidden;
+  animation:cardIn .4s ease both;
+  text-align:center;padding:20px 16px;
+}
+.schaamtepaal-emoji{font-size:44px;display:block;margin-bottom:8px;animation:shake 1.2s infinite;}
+@keyframes shake{0%,100%{transform:rotate(-4deg);}50%{transform:rotate(4deg);}}
+.schaamtepaal-title{
+  font-family:'Oswald','Arial Black',system-ui,sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:4px;
+}
+.schaamtepaal-name{
+  font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px;
+}
+.schaamtepaal-sub{font-size:13px;color:var(--muted2);}
+
+/* RANK */
+.rank-badge{font-size:20px;margin-right:5px;display:inline-block;animation:rankPop .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes rankPop{from{transform:scale(0) rotate(-20deg);}to{transform:scale(1) rotate(0);}}
+
+/* USER INDICATOR */
+.user-indicator{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:999px;padding:6px 12px 6px 8px;
+  font-size:12px;font-weight:700;color:var(--muted2);
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+}
+.user-indicator:active{transform:scale(.95);}
+.user-indicator-avatar{
+  width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg,var(--oranje),var(--oranje-light));
+  color:#000;font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Golazo laden...</div>
+</div>
+
+<!-- SETUP SCREEN (alleen eerste keer) -->
+<div class="setup-screen" id="setupScreen" style="display:none;">
+  <div class="setup-card">
+    <div class="setup-title">⚙️ Koppel Supabase</div>
+    <div class="setup-sub">Voer eenmalig je Supabase gegevens in. Daarna werkt de app voor iedereen online.</div>
+    <span class="setup-label">Supabase URL</span>
+    <input type="text" id="setupUrl" placeholder="https://xxxxx.supabase.co" style="border-radius:12px;margin-bottom:4px;">
+    <span class="setup-label">Supabase Anon Key</span>
+    <input type="text" id="setupKey" placeholder="eyJhbGci..." style="border-radius:12px;margin-bottom:20px;">
+    <button class="btn" onclick="saveSupabaseConfig()">✅ Verbinden</button>
+    <div id="setupError" style="display:none;color:#ff6b8a;font-size:12px;margin-top:10px;text-align:center;"></div>
+  </div>
+</div>
+
+<!-- PLAYER PICK SCREEN -->
+<div class="pick-screen" id="pickScreen">
+  <div style="text-align:center;margin-bottom:32px;">
+    <div class="pick-title">👋 Wie ben jij?</div>
+    <div class="pick-sub">Kies jouw naam om voorspellingen in te vullen</div>
+  </div>
+  <div class="pick-grid" id="pickGrid"></div>
+</div>
+
+<!-- ═══════════════ ADMIN SCREEN ═══════════════ -->
+<div class="admin-screen" id="adminScreen">
+  <div class="admin-header">
+    <span class="admin-title">⚙️ Admin</span>
+    <span class="admin-badge">Beheer</span>
+    <span class="sync-dot" id="adminSyncDot" title="Sync status"></span>
+    <button onclick="toggleAdmin()" style="margin-left:auto;background:var(--surface2);border:1px solid var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:7px 16px;border-radius:999px;cursor:pointer;">✕ Sluiten</button>
+  </div>
+
+  <!-- MODE -->
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label" id="modeLabel">🌍 Landen</div>
+      <div class="toggle-sub">Landen of clubs</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="modeToggle" onchange="toggleMode()">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <!-- TEAMS -->
+  <div class="card">
+    <div class="card-title" id="teamsCardTitle">Landen</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <div id="flag1Preview" style="width:38px;height:38px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid var(--border);">🏴</div>
+      <input type="text" id="team1Input" placeholder="Land 1" autocapitalize="words" oninput="capitalizeInput(this);saveTeams()">
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div id="flag2Preview" style="width:38px;height:38px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid var(--border);">🏴</div>
+      <input type="text" id="team2Input" placeholder="Land 2" autocapitalize="words" oninput="capitalizeInput(this);saveTeams()">
+    </div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div class="card">
+    <div class="card-title">⏱️ Aftrap countdown</div>
+    <div style="display:flex;gap:8px;">
+      <input type="text" id="cdDate" placeholder="DD/MM/JJJJ" inputmode="numeric" style="flex:1;" oninput="formatDateInput(this);saveCountdown()">
+      <input type="text" id="cdTime" placeholder="20:45" style="flex:1;" oninput="saveCountdown()">
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:6px;">Verschijnt automatisch op het invulscherm.</div>
+  </div>
+
+  <!-- SPELERS -->
+  <div class="card">
+    <div class="card-title">Spelers <span class="badge" id="playerCount">0</span></div>
+    <div id="playerList"></div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <input type="text" id="playerInput" placeholder="Naam speler..." autocapitalize="words" oninput="capitalizeInput(this)" onkeydown="if(event.key==='Enter')addPlayer()">
+      <button class="btn sm" onclick="addPlayer()">+ Add</button>
+    </div>
+  </div>
+
+  <!-- VRAGEN -->
+  <div class="card">
+    <div onclick="toggleVragenAdmin()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+      <div class="card-title" style="margin-bottom:0;">Vragen <span class="badge" id="vraagCount">0</span></div>
+      <span id="vragenArrow" style="color:var(--muted);font-size:14px;transition:transform .25s;">▼</span>
+    </div>
+    <div id="vragenBody" style="display:none;margin-top:12px;">
+      <div id="adminVragenList"></div>
+      <div class="divider"></div>
+      <div onclick="toggleEigenVraag()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:4px 0 8px;">
+        <div class="card-title" style="margin-bottom:0;">+ Eigen vraag toevoegen</div>
+        <span id="eigenVraagArrow" style="color:var(--muted);font-size:14px;transition:transform .25s;">▼</span>
+      </div>
+      <div id="eigenVraagBody" style="display:none;">
+        <input type="text" id="eigenVraagInput" placeholder="bijv. Wie pakt de 2e gele kaart?" style="margin-bottom:8px;">
+        <select id="eigenVraagType" style="margin-bottom:8px;">
+          <option value="team">Antwoord: team/land</option>
+          <option value="speler">Antwoord: spelernaam (vrij tekst)</option>
+          <option value="jn">Antwoord: Ja / Nee</option>
+          <option value="getal">Antwoord: getal</option>
+          <option value="vrij">Antwoord: vrije tekst</option>
+        </select>
+        <button class="btn" onclick="addEigenVraag()">+ Toevoegen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- UITSLAG -->
+  <div class="card">
+    <div onclick="toggleUitslag()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+      <div class="card-title" style="margin-bottom:0;">🏁 Echte uitslag invullen</div>
+      <span id="uitslagArrow" style="color:var(--muted);font-size:14px;transition:transform .25s;">▼</span>
+    </div>
+    <div id="uitslagBody" style="display:none;margin-top:12px;">
+      <div id="adminUitslagContent"><div class="empty" style="padding:20px 0;"><span>❓</span>Voeg eerst vragen toe.</div></div>
+      <button class="btn" style="margin-top:12px;" onclick="saveUitslag()">💾 Uitslag opslaan</button>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <button class="btn" id="lockdownBtn" style="margin-bottom:10px;" onclick="toggleLockdown()">🔒 Vergrendel voorspellingen</button>
+  <button class="btn secondary" style="margin-bottom:10px;" onclick="startNieuwRondje()">🔄 Nieuw rondje</button>
+  <button class="btn secondary" style="margin-bottom:10px;border-color:rgba(255,23,68,.3);color:#ff6b8a;" onclick="showResetSheet()">🗑️ Reset</button>
+  <div style="height:50px;"></div>
+
+  <!-- RESET SHEET -->
+  <div id="resetSheet" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);" onclick="hideResetSheet()">
+    <div onclick="event.stopPropagation()" style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:24px 24px 0 0;padding:24px 20px 44px;border-top:1px solid var(--border-orange);">
+      <div style="font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;color:var(--oranje);margin-bottom:6px;text-transform:uppercase;">Reset</div>
+      <div style="font-size:13px;color:var(--muted2);margin-bottom:20px;">Kies wat je wil wissen</div>
+      <button class="btn secondary" style="margin-bottom:10px;text-align:left;justify-content:flex-start;gap:12px;" onclick="hideResetSheet();clearVoorspellingen()">
+        <span style="font-size:18px;">🗳️</span>
+        <div><div style="font-weight:700;">Voorspellingen wissen</div><div style="font-size:11px;color:var(--muted);font-weight:400;margin-top:1px;">Spelers en vragen blijven staan</div></div>
+      </button>
+      <button class="btn secondary" style="margin-bottom:10px;text-align:left;justify-content:flex-start;gap:12px;" onclick="hideResetSheet();resetSpelers()">
+        <span style="font-size:18px;">👤</span>
+        <div><div style="font-weight:700;">Spelers wissen</div><div style="font-size:11px;color:var(--muted);font-weight:400;margin-top:1px;">Voorspellingen gaan ook mee</div></div>
+      </button>
+      <button class="btn danger" style="text-align:left;justify-content:flex-start;gap:12px;" onclick="hideResetSheet();resetAll()">
+        <span style="font-size:18px;">💣</span>
+        <div><div style="font-weight:700;">Alles resetten</div><div style="font-size:11px;color:rgba(255,255,255,0.6);font-weight:400;margin-top:1px;">Terug naar fabrieksinstelling</div></div>
+      </button>
+      <button class="btn secondary" style="margin-top:14px;" onclick="hideResetSheet()">Annuleren</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYER POPUP -->
+<div id="playerPopupOverlay" class="player-popup-overlay" style="display:none;" onclick="popupOverlayClick(event)">
+  <div class="player-popup">
+    <div class="popup-label">Nu aan de beurt</div>
+    <div class="popup-avatar" id="popupAvatar">?</div>
+    <div class="popup-name" id="popupName">–</div>
+    <div class="popup-sub" id="popupSub">Vul jouw voorspellingen in</div>
+    <div class="popup-dots" id="popupDots"></div>
+    <button class="btn" onclick="startPlayerTurn()">Invullen 🏃</button>
+  </div>
+</div>
+
+<!-- ═══════════════ MAIN APP ═══════════════ -->
+<header>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <h1>Golazo</h1>
+        <span style="display:inline-block;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(242,201,76,.35);border-radius:6px;padding:3px 8px;white-space:nowrap;flex-shrink:0;">BETA</span>
+        <span class="sync-dot" id="mainSyncDot" title="Verbonden met Supabase"></span>
+      </div>
+      <div class="header-sub" id="headerSub">Voorspel. Vergelijk. Claim de eer.</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="user-indicator" id="userIndicator" onclick="switchPlayer()" style="display:none;">
+        <div class="user-indicator-avatar" id="userIndicatorAvatar">?</div>
+        <span id="userIndicatorName">–</span>
+      </div>
+      <button class="admin-toggle" id="adminToggleBtn" onclick="toggleAdmin()">
+        <span class="admin-dot"></span> ADMIN
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('invullen')">Invullen</div>
+  <div class="tab" onclick="showTab('resultaat')">Resultaat</div>
+</div>
+
+<!-- INVULLEN -->
+<div class="screen active" id="screen-invullen">
+  <div id="countdownWidget"></div>
+  <div id="matchupWidget"></div>
+  <p class="section-header">Voorspellingen</p>
+  <div class="player-selector" id="playerSelector"></div>
+  <div id="invullenContent"><div class="empty"><span>👤</span>Voeg spelers toe via Admin.</div></div>
+  <div class="fab-row" id="invullenFab" style="display:none;">
+    <button class="btn" id="invullenFabBtn" onclick="handleSaveBtn()">💾 Opslaan</button>
+  </div>
+</div>
+
+<!-- RESULTAAT -->
+<div class="screen" id="screen-resultaat">
+  <p class="section-header">Resultaat 🏆</p>
+  <div id="resultaatContent"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════
+//  SUPABASE CONFIG
+// ════════════════════════════════════════════════
+const CONFIG_KEY = 'golazo_supabase_config';
+const GAME_ID = 'golazo_main'; // één vaste game ID voor iedereen
+
+let supabaseUrl = '';
+let supabaseKey = '';
+let supabase = null;
+let realtimeChannel = null;
+let currentUserId = null; // welke speler is deze gebruiker
+
+// ── SUPABASE SETUP ──
+function loadSupabaseConfig(){
+  try{
+    const cfg = JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');
+    supabaseUrl = cfg.url||'';
+    supabaseKey = cfg.key||'';
+  }catch(e){}
+}
+
+function saveSupabaseConfig(){
+  const url = document.getElementById('setupUrl').value.trim().replace(/\/$/,'');
+  const key = document.getElementById('setupKey').value.trim();
+  const errEl = document.getElementById('setupError');
+  if(!url || !key){
+    errEl.textContent = 'Vul beide velden in.';
+    errEl.style.display = 'block';
+    return;
+  }
+  localStorage.setItem(CONFIG_KEY, JSON.stringify({url, key}));
+  supabaseUrl = url;
+  supabaseKey = key;
+  errEl.style.display = 'none';
+  initSupabase();
+}
+
+async function initSupabase(){
+  if(!supabaseUrl || !supabaseKey){
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('setupScreen').style.display = 'flex';
+    return;
+  }
+
+  // Dynamisch Supabase JS laden
+  if(!window.supabaseLoaded){
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      s.onload = () => { window.supabaseLoaded = true; resolve(); };
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  try{
+    supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    // Test de verbinding
+    const { error } = await supabase.from('golazo_state').select('id').limit(1);
+    if(error && error.code !== 'PGRST116'){
+      throw error;
+    }
+    document.getElementById('setupScreen').style.display = 'none';
+    await loadStateFromSupabase();
+    setupRealtime();
+    document.getElementById('loadingScreen').style.display = 'none';
+    showPickScreen();
+  } catch(err){
+    document.getElementById('loadingScreen').style.display = 'none';
+    const setup = document.getElementById('setupScreen');
+    setup.style.display = 'flex';
+    const errEl = document.getElementById('setupError');
+    errEl.textContent = 'Verbinding mislukt. Controleer URL en Key. (' + (err.message||err) + ')';
+    errEl.style.display = 'block';
+  }
+}
+
+// ════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════
+const VAST_VRAGEN = [
+  {id:'v1',tekst:'__TEAM1_LABEL__ scoort als eerste',type:'team',vast:true},
+  {id:'v2',tekst:'Welke speler scoort het eerste doelpunt?',type:'speler',vast:true},
+  {id:'v3',tekst:'Welke speler pakt de eerste gele kaart?',type:'speler',vast:true},
+  {id:'v4',tekst:'Komt er een rode kaart?',type:'jn_met_sub',vast:true,subVraag:{id:'v5',tekst:'Wie pakt de rode kaart?',type:'speler'}},
+  {id:'v6',tekst:'Eindstand',type:'score',vast:true},
+];
+
+let state = {
+  mode:'landen', team1:'', team2:'',
+  players:[], vragen:JSON.parse(JSON.stringify(VAST_VRAGEN)),
+  voorspellingen:{}, geheim:{}, uitslag:{},
+  activePlayer:null, countdown:{date:'',time:''},
+  locked:false,
+};
+
+// ── LOAD / SAVE via Supabase ──
+async function loadStateFromSupabase(){
+  setSyncStatus('syncing');
+  try{
+    const { data, error } = await supabase
+      .from('golazo_state')
+      .select('*')
+      .eq('id', GAME_ID)
+      .single();
+
+    if(error && error.code === 'PGRST116'){
+      // Geen rij gevonden — eerste keer, maak aan
+      await saveStateToSupabase();
+    } else if(!error && data){
+      const saved = data.state_json;
+      state = {...state, ...saved};
+      // Zorg dat vaste vragen altijd aanwezig zijn
+      const ids = state.vragen.map(v=>v.id);
+      VAST_VRAGEN.forEach(v=>{ if(!ids.includes(v.id)) state.vragen.unshift(v); });
+    }
+    setSyncStatus('ok');
+  } catch(e){
+    setSyncStatus('error');
+    console.error('Load error:', e);
+  }
+}
+
+async function saveStateToSupabase(){
+  if(!supabase) return;
+  setSyncStatus('syncing');
+  try{
+    const { error } = await supabase
+      .from('golazo_state')
+      .upsert({ id: GAME_ID, state_json: state, updated_at: new Date().toISOString() });
+    if(error) throw error;
+    setSyncStatus('ok');
+  } catch(e){
+    setSyncStatus('error');
+    console.error('Save error:', e);
+  }
+}
+
+// Wrapper: saveState sloeg op naar localStorage, nu naar Supabase
+function saveState(){
+  saveStateToSupabase();
+}
+
+// ── REALTIME ──
+function setupRealtime(){
+  if(!supabase) return;
+  realtimeChannel = supabase
+    .channel('golazo_changes')
+    .on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'golazo_state',
+      filter: `id=eq.${GAME_ID}`
+    }, (payload) => {
+      const newState = payload.new.state_json;
+      if(!newState) return;
+      state = {...state, ...newState};
+      const ids = state.vragen.map(v=>v.id);
+      VAST_VRAGEN.forEach(v=>{ if(!ids.includes(v.id)) state.vragen.unshift(v); });
+      // Re-render alles behalve de actieve invoervelden
+      renderInvullen();
+      renderMatchup();
+      renderCountdown();
+      if(adminOpen) refreshAdminUI();
+      setSyncStatus('ok');
+    })
+    .subscribe();
+}
+
+// ════════════════════════════════════════════════
+//  PLAYER PICK SCREEN
+// ════════════════════════════════════════════════
+function showPickScreen(){
+  const screen = document.getElementById('pickScreen');
+  if(!state.players.length){
+    // Geen spelers → ga direct naar app
+    screen.classList.remove('active');
+    renderAll();
+    return;
+  }
+  screen.classList.add('active');
+  renderPickGrid();
+}
+
+function renderPickGrid(){
+  const grid = document.getElementById('pickGrid');
+  if(!grid) return;
+  if(!state.players.length){
+    grid.innerHTML = '<div class="empty"><span>👤</span>Nog geen spelers. Vraag de admin om spelers toe te voegen.</div>';
+    return;
+  }
+  grid.innerHTML = state.players.map(p => {
+    const pred = state.voorspellingen[p.id] || {};
+    const vis = getVisibleVragen(pred);
+    const ingevuld = vis.filter(v => pred[v.id] && pred[v.id] !== '').length;
+    const heeftAlles = ingevuld === vis.length && vis.length > 0;
+    const statusText = ingevuld === 0 ? 'Nog niets ingevuld' : heeftAlles ? '✅ Klaar!' : `${ingevuld} van ${vis.length} ingevuld`;
+    return `<div class="pick-card ${heeftAlles?'done':''}" onclick="pickPlayer('${p.id}')">
+      <div class="pick-card-avatar">${p.name[0].toUpperCase()}</div>
+      <div>
+        <div class="pick-card-name">${p.name}</div>
+        <div class="pick-card-status">${statusText}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function pickPlayer(id){
+  currentUserId = id;
+  const p = state.players.find(x => x.id === id);
+  if(!p) return;
+  // Toon user indicator in header
+  document.getElementById('userIndicator').style.display = 'flex';
+  document.getElementById('userIndicatorAvatar').textContent = p.name[0].toUpperCase();
+  document.getElementById('userIndicatorName').textContent = p.name;
+  // Ga naar invullen voor deze speler
+  document.getElementById('pickScreen').classList.remove('active');
+  editingPlayer = id;
+  state.activePlayer = id;
+  renderAll();
+  document.getElementById('invullenFab').style.display = 'flex';
+  updateFabLabel();
+  renderInvullenForm();
+}
+
+function switchPlayer(){
+  // Sla huidige op en ga terug naar pick screen
+  if(editingPlayer) saveCurrentVoorspelling(false);
+  editingPlayer = null;
+  currentUserId = null;
+  document.getElementById('userIndicator').style.display = 'none';
+  showPickScreen();
+}
+
+function renderAll(){
+  renderInvullen();
+  renderMatchup();
+  renderCountdown();
+}
+
+// ── SYNC INDICATOR ──
+function setSyncStatus(status){
+  ['mainSyncDot','adminSyncDot'].forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.className = 'sync-dot ' + status;
+  });
+}
+
+// ════════════════════════════════════════════════
+//  ADMIN
+// ════════════════════════════════════════════════
+let adminOpen = false;
+function toggleAdmin(){
+  adminOpen = !adminOpen;
+  document.getElementById('adminScreen').classList.toggle('active', adminOpen);
+  document.getElementById('adminToggleBtn').classList.toggle('active', adminOpen);
+  if(adminOpen) refreshAdminUI();
+}
+
+function refreshAdminUI(){
+  document.getElementById('modeToggle').checked = state.mode==='clubs';
+  document.getElementById('modeLabel').textContent = state.mode==='landen'?'🌍 Landen':'🏟️ Clubs';
+  document.getElementById('team1Input').value = state.team1;
+  document.getElementById('team2Input').value = state.team2;
+  syncModeLabels();
+  document.getElementById('cdDate').value = state.countdown?.date||'';
+  document.getElementById('cdTime').value = state.countdown?.time||'';
+  renderPlayers();
+  renderAdminVragen();
+  renderAdminUitslag();
+  syncLockdownBtn();
+}
+
+// ── TABS ──
+function showTab(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  ['invullen','resultaat'].forEach((t,i)=>{
+    if(t===name) document.querySelectorAll('.tab')[i].classList.add('active');
+  });
+  if(name==='invullen'){ renderInvullen(); }
+  if(name==='resultaat') renderResultaat();
+}
+
+// ── FLAG LOOKUP ──
+const FLAG_MAP = {
+  'nederland':'🇳🇱','netherlands':'🇳🇱','holland':'🇳🇱',
+  'duitsland':'🇩🇪','germany':'🇩🇪','deutschland':'🇩🇪',
+  'frankrijk':'🇫🇷','france':'🇫🇷',
+  'spanje':'🇪🇸','spain':'🇪🇸','españa':'🇪🇸',
+  'engeland':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','england':'🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  'groot-brittannië':'🇬🇧','great britain':'🇬🇧','uk':'🇬🇧',
+  'italië':'🇮🇹','italy':'🇮🇹','italia':'🇮🇹',
+  'portugal':'🇵🇹',
+  'belgie':'🇧🇪','belgië':'🇧🇪','belgium':'🇧🇪',
+  'brazilië':'🇧🇷','brazil':'🇧🇷','brasil':'🇧🇷',
+  'argentinië':'🇦🇷','argentina':'🇦🇷',
+  'usa':'🇺🇸','verenigde staten':'🇺🇸','united states':'🇺🇸','america':'🇺🇸',
+  'mexico':'🇲🇽','marokko':'🇲🇦','morocco':'🇲🇦',
+  'tunesië':'🇹🇳','tunisia':'🇹🇳','senegal':'🇸🇳','nigeria':'🇳🇬',
+  'ghana':'🇬🇭','egypte':'🇪🇬','egypt':'🇪🇬',
+  'kroatië':'🇭🇷','croatia':'🇭🇷','servië':'🇷🇸','serbia':'🇷🇸',
+  'zwitserland':'🇨🇭','switzerland':'🇨🇭','oostenrijk':'🇦🇹','austria':'🇦🇹',
+  'denemarken':'🇩🇰','denmark':'🇩🇰','zweden':'🇸🇪','sweden':'🇸🇪',
+  'noorwegen':'🇳🇴','norway':'🇳🇴','finland':'🇫🇮',
+  'schotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','wales':'🏴󠁧󠁢󠁷󠁬󠁳󠁿',
+  'ierland':'🇮🇪','ireland':'🇮🇪','turkije':'🇹🇷','turkey':'🇹🇷','türkiye':'🇹🇷',
+  'griekenland':'🇬🇷','greece':'🇬🇷','oekraine':'🇺🇦','oekraïne':'🇺🇦','ukraine':'🇺🇦',
+  'polen':'🇵🇱','poland':'🇵🇱','tsjechie':'🇨🇿','tsjechië':'🇨🇿','czech republic':'🇨🇿','czechia':'🇨🇿',
+  'slowakije':'🇸🇰','slovakia':'🇸🇰','hongarije':'🇭🇺','hungary':'🇭🇺',
+  'roemenie':'🇷🇴','roemenië':'🇷🇴','romania':'🇷🇴','rusland':'🇷🇺','russia':'🇷🇺',
+  'japan':'🇯🇵','china':'🇨🇳','zuid-korea':'🇰🇷','south korea':'🇰🇷','korea':'🇰🇷',
+  'australie':'🇦🇺','australië':'🇦🇺','australia':'🇦🇺','iran':'🇮🇷',
+  'saoedi-arabie':'🇸🇦','saudi arabia':'🇸🇦','qatar':'🇶🇦','canada':'🇨🇦',
+  'colombia':'🇨🇴','chili':'🇨🇱','chile':'🇨🇱','uruguay':'🇺🇾',
+  'ecuador':'🇪🇨','peru':'🇵🇪','venezuela':'🇻🇪','costa rica':'🇨🇷','panama':'🇵🇦',
+};
+
+function getFlag(name){
+  if(!name) return '';
+  return FLAG_MAP[name.trim().toLowerCase()] || '';
+}
+
+function flagBadge(name){
+  const f = getFlag(name);
+  if(!f) return '';
+  return `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--surface3);font-size:16px;border:1px solid var(--border);margin-right:6px;flex-shrink:0;">${f}</span>`;
+}
+
+// ── LOCKDOWN ──
+function toggleLockdown(){
+  state.locked = !state.locked;
+  saveState();
+  syncLockdownBtn();
+  showToast(state.locked ? '🔒 Voorspellingen vergrendeld!' : '🔓 Voorspellingen ontgrendeld');
+  renderInvullen();
+}
+function syncLockdownBtn(){
+  const btn = document.getElementById('lockdownBtn');
+  if(!btn) return;
+  if(state.locked){
+    btn.textContent = '🔓 Ontgrendel voorspellingen';
+    btn.style.background = 'linear-gradient(135deg,#ff1744,#ff4569)';
+    btn.style.color = '#fff';
+  } else {
+    btn.textContent = '🔒 Vergrendel voorspellingen';
+    btn.style.background = '';
+    btn.style.color = '';
+  }
+}
+
+function capitalizeInput(el){
+  const v = el.value;
+  if(v.length > 0) el.value = v.charAt(0).toUpperCase() + v.slice(1);
+}
+
+// ── COLLAPSIBLES ──
+function toggleVragenAdmin(){
+  const body = document.getElementById('vragenBody');
+  const arrow = document.getElementById('vragenArrow');
+  const open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  arrow.style.transform = open ? 'rotate(180deg)' : '';
+}
+function toggleEigenVraag(){
+  const body = document.getElementById('eigenVraagBody');
+  const arrow = document.getElementById('eigenVraagArrow');
+  const open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  arrow.style.transform = open ? 'rotate(180deg)' : '';
+}
+function toggleUitslag(){
+  const body = document.getElementById('uitslagBody');
+  const arrow = document.getElementById('uitslagArrow');
+  const open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  arrow.style.transform = open ? 'rotate(180deg)' : '';
+}
+
+// ── RESET SHEET ──
+function showResetSheet(){ document.getElementById('resetSheet').style.display = 'block'; }
+function hideResetSheet(){ document.getElementById('resetSheet').style.display = 'none'; }
+
+function resetSpelers(){
+  state.players = [];
+  state.voorspellingen = {};
+  state.geheim = {};
+  state.activePlayer = null;
+  tourMode = false; tourIndex = 0; editingPlayer = null;
+  saveState();
+  renderPlayers();
+  renderInvullen();
+  showToast('👤 Spelers gewist');
+}
+
+// ── MODE ──
+function toggleMode(){
+  state.mode = document.getElementById('modeToggle').checked ? 'clubs' : 'landen';
+  syncModeLabels();
+  saveState();
+}
+function syncModeLabels(){
+  const landen = state.mode === 'landen';
+  const modeLbl = document.getElementById('modeLabel');
+  const cardTitle = document.getElementById('teamsCardTitle');
+  const t1 = document.getElementById('team1Input');
+  const t2 = document.getElementById('team2Input');
+  if(modeLbl) modeLbl.textContent = landen ? '🌍 Landen' : '🏟️ Clubs';
+  if(cardTitle) cardTitle.textContent = landen ? 'Landen' : 'Teams';
+  if(t1) t1.placeholder = landen ? 'Land 1' : 'Team 1';
+  if(t2) t2.placeholder = landen ? 'Land 2' : 'Team 2';
+}
+function saveTeams(){
+  state.team1 = document.getElementById('team1Input').value;
+  state.team2 = document.getElementById('team2Input').value;
+  const f1 = document.getElementById('flag1Preview');
+  const f2 = document.getElementById('flag2Preview');
+  if(f1) f1.textContent = getFlag(state.team1) || '🏴';
+  if(f2) f2.textContent = getFlag(state.team2) || '🏴';
+  saveState();
+  renderMatchup();
+}
+
+let cdInterval = null;
+function formatDateInput(el){
+  let v = el.value.replace(/\D/g,'');
+  if(v.length > 8) v = v.slice(0,8);
+  if(v.length >= 5) v = v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);
+  else if(v.length >= 3) v = v.slice(0,2)+'/'+v.slice(2);
+  el.value = v;
+}
+function saveCountdown(){
+  if(!state.countdown) state.countdown={};
+  state.countdown.date = document.getElementById('cdDate').value;
+  state.countdown.time = document.getElementById('cdTime').value;
+  saveState();
+  renderCountdown();
+}
+function renderCountdown(){
+  const w = document.getElementById('countdownWidget');
+  if(!w) return;
+  const cd = state.countdown||{};
+  if(!cd.date||!cd.time){w.innerHTML='';return;}
+  const parts = cd.date.split(/[\/\-]/);
+  if(parts.length!==3){w.innerHTML='';return;}
+  const [dd,mm,yyyy]=parts;
+  if(!dd||!mm||!yyyy||yyyy.length<4){w.innerHTML='';return;}
+  const target = new Date(`${yyyy}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}T${cd.time}:00`);
+  if(isNaN(target)){w.innerHTML='';return;}
+  let prevS = -1;
+  function update(){
+    const diff = target - new Date();
+    if(diff<=0){
+      w.innerHTML=`<div class="countdown-card"><div class="countdown-label">⚽ Wedstrijd is bezig!</div><div class="countdown-done">Aftrap!</div></div>`;
+      if(cdInterval){clearInterval(cdInterval);cdInterval=null;}
+      return;
+    }
+    const d=Math.floor(diff/86400000);
+    const h=Math.floor((diff%86400000)/3600000);
+    const m=Math.floor((diff%3600000)/60000);
+    const s=Math.floor((diff%60000)/1000);
+    const tick = s!==prevS; prevS=s;
+    w.innerHTML=`
+      <div class="countdown-card">
+        <div class="countdown-label">⏱️ Aftrap over</div>
+        <div class="countdown-digits">
+          ${d>0?`<div class="cd-block"><span class="cd-num">${String(d).padStart(2,'0')}</span><div class="cd-label">dagen</div></div><div class="cd-sep">:</div>`:''}
+          <div class="cd-block"><span class="cd-num">${String(h).padStart(2,'0')}</span><div class="cd-label">uur</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-block"><span class="cd-num">${String(m).padStart(2,'0')}</span><div class="cd-label">min</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-block"><span class="cd-num ${tick?'tick':''}">${String(s).padStart(2,'0')}</span><div class="cd-label">sec</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:10px;">${state.team1||'Team 1'} vs ${state.team2||'Team 2'} — ${cd.date} ${cd.time}</div>
+      </div>`;
+  }
+  update();
+  if(cdInterval) clearInterval(cdInterval);
+  cdInterval = setInterval(update, 1000);
+}
+
+function renderMatchup(){
+  const w = document.getElementById('matchupWidget');
+  if(!w) return;
+  const t1 = state.team1;
+  const t2 = state.team2;
+  if(!t1 && !t2){ w.innerHTML=''; return; }
+  function flagHtml(name) {
+    const emoji = getFlag(name);
+    if(emoji) return `<div class="matchup-flag">${emoji}</div>`;
+    return `<div class="matchup-flag" style="font-size:22px;font-weight:800;color:var(--oranje);font-family:'Oswald','Arial Black',system-ui,sans-serif;">${(name||'?')[0].toUpperCase()}</div>`;
+  }
+  w.innerHTML=`
+    <div class="matchup">
+      <div class="matchup-team">
+        ${flagHtml(t1)}
+        <div class="matchup-team-name">${t1||'Team 1'}</div>
+      </div>
+      <div class="matchup-vs">VS</div>
+      <div class="matchup-team">
+        ${flagHtml(t2)}
+        <div class="matchup-team-name">${t2||'Team 2'}</div>
+      </div>
+    </div>`;
+}
+
+function addPlayer(){
+  const inp=document.getElementById('playerInput');
+  const name=inp.value.trim();
+  if(!name) return;
+  const id='p'+Date.now();
+  state.players.push({id,name});
+  state.voorspellingen[id]={};
+  state.geheim[id]=false;
+  inp.value='';
+  saveState();
+  renderPlayers();
+  renderAdminUitslag();
+  showToast('👤 '+name+' toegevoegd!');
+}
+function removePlayer(id){
+  state.players=state.players.filter(p=>p.id!==id);
+  delete state.voorspellingen[id];
+  delete state.geheim[id];
+  if(state.activePlayer===id) state.activePlayer=null;
+  saveState();
+  renderPlayers();
+}
+function renderPlayers(){
+  const list=document.getElementById('playerList');
+  if(!list) return;
+  document.getElementById('playerCount').textContent=state.players.length;
+  list.innerHTML=state.players.map(p=>`
+    <div class="player-chip">
+      <div style="display:flex;align-items:center;">
+        <div class="player-avatar">${p.name[0].toUpperCase()}</div>
+        <div class="player-name">${p.name}</div>
+      </div>
+      <button class="del-btn" onclick="removePlayer('${p.id}')">✕</button>
+    </div>`).join('');
+}
+
+// ── DRAG TO REORDER VRAGEN ──
+let dragSrcId = null;
+function dragStart(e, id){
+  dragSrcId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(()=> e.currentTarget.classList.add('dragging'), 0);
+}
+function dragEnd(e){
+  document.querySelectorAll('.vraag-item').forEach(el=>{
+    el.classList.remove('dragging','drop-above','drop-below');
+  });
+  dragSrcId = null;
+}
+function dragOver(e){
+  e.preventDefault();
+  if(!dragSrcId) return;
+  const el = e.currentTarget;
+  if(el.dataset.id === dragSrcId) return;
+  const rect = el.getBoundingClientRect();
+  const mid  = rect.top + rect.height / 2;
+  document.querySelectorAll('.vraag-item').forEach(x=>x.classList.remove('drop-above','drop-below'));
+  if(e.clientY < mid) el.classList.add('drop-above');
+  else                 el.classList.add('drop-below');
+}
+function dragLeave(e){ e.currentTarget.classList.remove('drop-above','drop-below'); }
+function dragDrop(e, targetId){
+  e.preventDefault();
+  const el = e.currentTarget;
+  const above = el.classList.contains('drop-above');
+  el.classList.remove('drop-above','drop-below');
+  if(!dragSrcId || dragSrcId === targetId) return;
+  reorderVraag(dragSrcId, targetId, above);
+}
+function reorderVraag(fromId, toId, insertBefore){
+  const fromIdx = state.vragen.findIndex(v=>v.id===fromId);
+  const toIdx   = state.vragen.findIndex(v=>v.id===toId);
+  if(fromIdx<0||toIdx<0) return;
+  const moved = state.vragen.splice(fromIdx,1)[0];
+  const newToIdx = state.vragen.findIndex(v=>v.id===toId);
+  state.vragen.splice(insertBefore ? newToIdx : newToIdx+1, 0, moved);
+  saveState();
+  renderAdminVragen();
+  renderAdminUitslag();
+}
+
+// Touch drag (mobile)
+let touchDragId = null;
+function touchDragStart(e, id){
+  touchDragId = id;
+  e.currentTarget.closest('.vraag-item').classList.add('dragging');
+}
+function touchDragMove(e){
+  e.preventDefault();
+  if(!touchDragId) return;
+  const touch = e.touches[0];
+  document.querySelectorAll('.vraag-item').forEach(el=>el.classList.remove('drop-above','drop-below'));
+  const els = document.elementsFromPoint(touch.clientX, touch.clientY);
+  const target = els.find(el=>el.classList.contains('vraag-item') && el.dataset.id && el.dataset.id !== touchDragId);
+  if(target){
+    const rect = target.getBoundingClientRect();
+    const mid  = rect.top + rect.height / 2;
+    if(touch.clientY < mid) target.classList.add('drop-above');
+    else                    target.classList.add('drop-below');
+  }
+}
+function touchDragEnd(e){
+  if(!touchDragId) return;
+  const touch = e.changedTouches[0];
+  const els = document.elementsFromPoint(touch.clientX, touch.clientY);
+  const target = els.find(el=>el.classList.contains('vraag-item') && el.dataset.id && el.dataset.id !== touchDragId);
+  document.querySelectorAll('.vraag-item').forEach(el=>{
+    el.classList.remove('dragging','drop-above','drop-below');
+  });
+  if(target && target.dataset.id){
+    const above = touch.clientY < target.getBoundingClientRect().top + target.getBoundingClientRect().height/2;
+    reorderVraag(touchDragId, target.dataset.id, above);
+  }
+  touchDragId = null;
+}
+
+// ── VRAGEN ADMIN ──
+function renderAdminVragen(){
+  const list=document.getElementById('adminVragenList');
+  if(!list) return;
+  document.getElementById('vraagCount').textContent=state.vragen.length;
+  list.innerHTML=state.vragen.map((v,i)=>`
+    <div class="vraag-item" data-id="${v.id}"
+      draggable="true"
+      ondragstart="dragStart(event,'${v.id}')"
+      ondragover="dragOver(event)"
+      ondragleave="dragLeave(event)"
+      ondrop="dragDrop(event,'${v.id}')"
+      ondragend="dragEnd(event)">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="drag-handle"
+          ontouchstart="touchDragStart(event,'${v.id}')"
+          ontouchmove="touchDragMove(event)"
+          ontouchend="touchDragEnd(event)">⠿</div>
+        <div class="vraag-num">${i+1}</div>
+        <div style="flex:1;">
+          <div class="vraag-text">${getVraagTekst(v)}</div>
+          <div class="vraag-meta">
+            <span class="tag">${typeLabel(v.type)}</span>
+            <span>${v.vast?'Vast':'Eigen'}</span>
+          </div>
+        </div>
+        ${!v.vast?`<button class="del-btn" onclick="removeVraag('${v.id}')">✕</button>`:''}
+      </div>
+    </div>`).join('');
+}
+function typeLabel(t){
+  return {team:'Team',team3:'Team/Gelijkspel',speler:'Speler',jn:'Ja/Nee',getal:'Getal',vrij:'Vrij'}[t]||t;
+}
+function addEigenVraag(){
+  const tekst=document.getElementById('eigenVraagInput').value.trim();
+  const type=document.getElementById('eigenVraagType').value;
+  if(!tekst) return;
+  state.vragen.push({id:'e'+Date.now(),tekst,type,vast:false});
+  document.getElementById('eigenVraagInput').value='';
+  saveState();
+  renderAdminVragen();
+  renderAdminUitslag();
+  showToast('✅ Vraag toegevoegd');
+}
+function removeVraag(id){
+  state.vragen=state.vragen.filter(v=>v.id!==id);
+  saveState();
+  renderAdminVragen();
+  renderAdminUitslag();
+}
+
+// ── UITSLAG ADMIN ──
+function renderAdminUitslag(){
+  const content=document.getElementById('adminUitslagContent');
+  if(!content) return;
+  if(!state.vragen.length){content.innerHTML='<div class="empty" style="padding:16px 0;"><span>❓</span>Geen vragen.</div>';return;}
+  content.innerHTML=getVisibleVragen(state.uitslag).map((v,i)=>{
+    const filled = state.uitslag[v.id] && state.uitslag[v.id]!=='';
+    return `<div style="background:var(--surface2);border:1px solid ${filled?'rgba(103,242,143,.25)':'var(--border)'};border-radius:14px;margin-bottom:8px;overflow:hidden;">
+      <div onclick="toggleUitslagVraag('uv_${v.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;gap:10px;">
+        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+          <div style="width:20px;height:20px;border-radius:50%;background:var(--surface3);color:var(--muted2);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</div>
+          <div style="font-size:13px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${getVraagTekst(v)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          ${filled ? `<span style="font-size:11px;font-weight:700;color:var(--oranje);background:var(--oranje-dim);border-radius:999px;padding:2px 8px;">${state.uitslag[v.id]}</span>` : ''}
+          <span style="color:var(--muted);font-size:13px;transition:transform .2s;" id="arrow_uv_${v.id}">▼</span>
+        </div>
+      </div>
+      <div id="uv_${v.id}" style="display:none;padding:0 14px 14px;">
+        ${renderAntwoordInput(v,state.uitslag[v.id]||'','uit',state.uitslag)}
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleUitslagVraag(id){
+  const el = document.getElementById(id);
+  const arrow = document.getElementById('arrow_'+id);
+  const open = el.style.display === 'none';
+  el.style.display = open ? 'block' : 'none';
+  if(arrow) arrow.style.transform = open ? 'rotate(180deg)' : '';
+}
+function saveUitslag(){
+  state.vragen.forEach(v=>{
+    if(v.type==='score'){
+      const e1=document.getElementById('uit_'+v.id+'_1');
+      const e2=document.getElementById('uit_'+v.id+'_2');
+      if(e1||e2) state.uitslag[v.id]=`${e1?e1.value:''}${e2?'-'+e2.value:''}`;
+    } else if(v.type==='jn_met_sub'){
+      const el=document.getElementById('uit_'+v.id);
+      if(el) state.uitslag[v.id]=el.value;
+      if(v.subVraag){
+        const sub=document.getElementById('uit_'+v.subVraag.id);
+        if(sub) state.uitslag[v.subVraag.id]=sub.value;
+      }
+    } else {
+      const el=document.getElementById('uit_'+v.id);
+      if(el) state.uitslag[v.id]=el.value;
+    }
+  });
+  saveState();
+  showToast('🏁 Uitslag opgeslagen!');
+}
+
+// ── POPUP FLOW ──
+let tourMode = false;
+let tourIndex = 0;
+
+function checkStartTour(){
+  if(!state.players.length || !state.vragen.length) return;
+  const anyEmpty = state.players.some(p => {
+    const pred = state.voorspellingen[p.id] || {};
+    return Object.values(pred).filter(v=>v&&v!=='').length === 0;
+  });
+  if(anyEmpty && !tourMode){
+    tourMode = true; tourIndex = 0;
+    state.players.forEach((p,i) => {
+      const pred = state.voorspellingen[p.id]||{};
+      if(Object.values(pred).some(v=>v&&v!=='')) tourIndex = i+1;
+    });
+    if(tourIndex < 0) tourIndex = 0;
+    showPlayerPopup(tourIndex);
+  }
+}
+
+function showPlayerPopup(idx){
+  if(!state.players.length) return;
+  const p = state.players[idx];
+  if(!p) return;
+  const overlay = document.getElementById('playerPopupOverlay');
+  document.getElementById('popupAvatar').textContent = p.name[0].toUpperCase();
+  document.getElementById('popupName').textContent = p.name;
+  const remaining = state.players.length - idx - 1;
+  document.getElementById('popupSub').textContent =
+    idx === 0 && state.players.length === 1 ? 'Jij bent de enige speler!' :
+    idx === 0 ? `Nog ${remaining} speler${remaining===1?'':'s'} na jou` :
+    idx === state.players.length - 1 ? 'Jij bent de laatste! 🎉' :
+    `Nog ${remaining} speler${remaining===1?'':'s'} na jou`;
+  const dots = document.getElementById('popupDots');
+  dots.innerHTML = state.players.map((_,i) =>
+    `<div class="popup-dot ${i<idx?'done':i===idx?'active':''}"></div>`
+  ).join('');
+  overlay.style.display = 'flex';
+}
+
+function startPlayerTurn(){
+  const overlay = document.getElementById('playerPopupOverlay');
+  overlay.style.display = 'none';
+  if(state.players[tourIndex]){
+    editingPlayer = state.players[tourIndex].id;
+    state.activePlayer = editingPlayer;
+  }
+  updateFabLabel();
+  renderInvullen();
+}
+function popupOverlayClick(e){}
+
+function handleSaveBtn(){
+  if(editingPlayer){
+    saveCurrentVoorspelling(false);
+    const name = state.players.find(x=>x.id===state.activePlayer)?.name;
+    showToast('💾 Voorspelling van '+name+' opgeslagen!');
+    editingPlayer = null;
+    renderInvullen();
+  } else {
+    saveAndNextPlayer();
+  }
+}
+
+function updateFabLabel(){
+  const btn = document.getElementById('invullenFabBtn');
+  if(!btn) return;
+  btn.textContent = editingPlayer ? '💾 Opslaan' : '💾 Opslaan & volgende';
+}
+
+function backToOverview(){
+  saveCurrentVoorspelling(false);
+  editingPlayer = null;
+  // Als de gebruiker ingelogd is als een speler, stay op die context
+  if(currentUserId){
+    renderInvullen();
+    // Toon pick screen opnieuw
+    showPickScreen();
+  } else {
+    renderInvullen();
+  }
+}
+
+function saveAndNextPlayer(){
+  saveCurrentVoorspelling(false);
+  const name = state.players.find(x=>x.id===state.activePlayer)?.name;
+  showToast('💾 Voorspelling van '+name+' opgeslagen!');
+  if(tourMode){
+    tourIndex++;
+    if(tourIndex < state.players.length){
+      editingPlayer = null;
+      setTimeout(()=> showPlayerPopup(tourIndex), 600);
+    } else {
+      tourMode = false;
+      editingPlayer = null;
+      renderInvullen();
+      showToast('✅ Iedereen heeft voorspeld!');
+    }
+  } else {
+    editingPlayer = null;
+    renderInvullen();
+  }
+}
+
+// ── INVULLEN ──
+let editingPlayer = null;
+
+function renderInvullen(){
+  renderCountdown();
+  renderMatchup();
+  const sel=document.getElementById('playerSelector');
+  const content=document.getElementById('invullenContent');
+  const fab=document.getElementById('invullenFab');
+  sel.innerHTML='';
+
+  if(!state.players.length){
+    content.innerHTML='<div class="empty"><span>👤</span>Voeg spelers toe via Admin.</div>';
+    fab.style.display='none';
+    return;
+  }
+
+  if(editingPlayer){
+    state.activePlayer = editingPlayer;
+    fab.style.display='flex';
+    renderInvullenForm();
+    return;
+  }
+
+  fab.style.display='none';
+  renderLockedOverview();
+}
+
+function renderLockedOverview(){
+  const content=document.getElementById('invullenContent');
+  const bannerHtml = state.locked
+    ? `<div class="lockdown-banner"><span class="lockdown-icon">🔒</span>Voorspellingen zijn vergrendeld — wedstrijd is begonnen!</div>`
+    : `<div class="info-bar" style="margin-bottom:14px;">Klik op je naam bovenin om voorspellingen in te vullen ✏️</div>`;
+  content.innerHTML=`
+    ${bannerHtml}
+    <div class="player-locked-grid">
+      ${state.players.map(p=>{
+        const pred=state.voorspellingen[p.id]||{};
+        const visV=getVisibleVragen(pred);
+        const ingevuld=visV.filter(v=>pred[v.id]&&pred[v.id]!=='').length;
+        const heeftAlles = ingevuld===visV.length && visV.length>0;
+        const statusText = ingevuld===0 ? 'Nog niets ingevuld' : `${ingevuld} van ${visV.length} ingevuld`;
+        const cls = ingevuld===0?'empty':heeftAlles?'done':'';
+        const editBtnHtml = state.locked ? '' : `<div class="edit-btn" onclick="editPlayer('${p.id}')">✏️</div>`;
+        return `<div class="player-locked-card ${cls}">
+          <div class="player-locked-left">
+            <div class="player-avatar">${p.name[0].toUpperCase()}</div>
+            <div>
+              <div style="font-weight:700;font-size:15px;">${p.name}</div>
+              <div class="player-locked-status ${heeftAlles?'done':''}">${statusText}</div>
+            </div>
+          </div>
+          ${editBtnHtml}
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function editPlayer(id){
+  if(state.locked){ showToast('🔒 Voorspellingen zijn vergrendeld!'); return; }
+  editingPlayer = id;
+  state.activePlayer = id;
+  document.getElementById('invullenFab').style.display='flex';
+  updateFabLabel();
+  renderInvullenForm();
+}
+
+function selectPlayer(id){
+  saveCurrentVoorspelling(false);
+  state.activePlayer=id;
+  renderInvullen();
+}
+
+function renderInvullenForm(){
+  const content=document.getElementById('invullenContent');
+  const p=state.players.find(x=>x.id===state.activePlayer);
+  if(!p){content.innerHTML='';return;}
+  const opgeslagen=state.voorspellingen[p.id]||{};
+  const isGeheim=state.geheim[p.id]||false;
+  const visibleVragen = getVisibleVragen(opgeslagen);
+  const ingevuld=visibleVragen.filter(v=>opgeslagen[v.id]&&opgeslagen[v.id]!=='').length;
+  const pct=visibleVragen.length?Math.round(ingevuld/visibleVragen.length*100):0;
+
+  const vragenHtml = visibleVragen.map((v,i)=>{
+    const waarde = opgeslagen[v.id]||'';
+    const filled = waarde !== '';
+    return `<div style="background:var(--surface);border:1px solid ${filled?'rgba(103,242,143,.25)':'var(--border)'};border-radius:14px;margin-bottom:8px;overflow:hidden;">
+      <div onclick="togglePredVraag('pv_${v.id}','${v.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;gap:10px;">
+        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+          <div style="width:20px;height:20px;border-radius:50%;background:var(--surface2);color:var(--muted2);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</div>
+          <div style="font-size:13px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${getVraagTekst(v)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          ${filled ? `<span style="font-size:11px;font-weight:700;color:var(--oranje);background:var(--oranje-dim);border-radius:999px;padding:2px 8px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${isGeheim?'🔒':waarde}</span>` : ''}
+          <span style="color:var(--muted);font-size:13px;transition:transform .2s;" id="arrow_pv_${v.id}">▼</span>
+        </div>
+      </div>
+      <div id="pv_${v.id}" style="display:none;padding:0 14px 14px;">
+        ${renderAntwoordInput(v,waarde,'pred',opgeslagen)}
+      </div>
+    </div>`;
+  }).join('');
+
+  content.innerHTML=`
+    <button class="btn secondary sm" style="margin-bottom:14px;width:auto;" onclick="backToOverview()">← Terug</button>
+    <div class="info-bar">Voorspellingen van <strong>${p.name}</strong></div>
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;">
+        <span>Voortgang</span><span>${ingevuld} / ${visibleVragen.length} ingevuld</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    ${vragenHtml}
+    <div class="secret-row">
+      <div>
+        <div class="secret-label">🔒 Antwoorden geheimhouden</div>
+        <div class="secret-desc">In het overzicht verborgen voor anderen</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="secretToggle_${p.id}" ${isGeheim?'checked':''} onchange="toggleSecret('${p.id}')">
+        <span class="slider"></span>
+      </label>
+    </div>`;
+}
+
+function togglePredVraag(id, vraagId){
+  const el = document.getElementById(id);
+  const arrow = document.getElementById('arrow_'+id);
+  const open = el.style.display === 'none';
+  el.style.display = open ? 'block' : 'none';
+  if(arrow) arrow.style.transform = open ? 'rotate(180deg)' : '';
+  if(!open){
+    saveCurrentVoorspelling(false);
+    const hasDependents = state.vragen.some(v=>v.dependsOn && v.dependsOn.id === vraagId);
+    if(hasDependents) renderInvullenForm();
+  }
+}
+function toggleSecret(pid){
+  const el=document.getElementById('secretToggle_'+pid);
+  if(!el) return;
+  state.geheim[pid]=el.checked;
+  saveState();
+  showToast(el.checked?'🔒 Antwoorden verborgen':'👁️ Antwoorden zichtbaar');
+}
+
+function getVisibleVragen(antwoorden){
+  return state.vragen.filter(v=>{
+    if(!v.dependsOn) return true;
+    const dep = antwoorden[v.dependsOn.id] || '';
+    return dep.trim().toLowerCase() === v.dependsOn.waarde.toLowerCase();
+  });
+}
+
+function getVraagTekst(v){
+  const label = state.mode==='landen' ? 'Welk land' : 'Welk team';
+  return v.tekst.replace('__TEAM1_LABEL__', label);
+}
+
+function renderAntwoordInput(v, waarde, prefix, antwoorden){
+  const t1=state.team1||(state.mode==='landen'?'Land 1':'Team 1');
+  const t2=state.team2||(state.mode==='landen'?'Land 2':'Team 2');
+  const id=prefix+'_'+v.id;
+  const onchangeRender = prefix==='pred' ? `onchange="saveCurrentVoorspelling(false);renderInvullenForm();"` : '';
+
+  if(v.type==='team') return `<select id="${id}" ${onchangeRender}><option value="">Kies...</option><option value="${t1}" ${waarde===t1?'selected':''}>${t1}</option><option value="${t2}" ${waarde===t2?'selected':''}>${t2}</option></select>`;
+  if(v.type==='team3') return `<select id="${id}"><option value="">Kies...</option><option value="${t1}" ${waarde===t1?'selected':''}>${t1}</option><option value="${t2}" ${waarde===t2?'selected':''}>${t2}</option><option value="Gelijkspel" ${waarde==='Gelijkspel'?'selected':''}>Gelijkspel</option></select>`;
+  if(v.type==='jn') return `<select id="${id}" ${onchangeRender}><option value="">Kies...</option><option value="Ja" ${waarde==='Ja'?'selected':''}>Ja</option><option value="Nee" ${waarde==='Nee'?'selected':''}>Nee</option></select>`;
+
+  if(v.type==='jn_met_sub'){
+    const sub = v.subVraag;
+    const subWaarde = antwoorden ? (antwoorden[sub.id]||'') : '';
+    const showSub = waarde.toLowerCase()==='ja';
+    const subDivId = `${prefix}_sub_${v.id}`;
+    const onchangeSub = `document.getElementById('${subDivId}').style.display=this.value==='Ja'?'block':'none';`;
+    return `<select id="${id}" onchange="${onchangeSub}"><option value="">Kies...</option><option value="Ja" ${waarde==='Ja'?'selected':''}>Ja</option><option value="Nee" ${waarde==='Nee'?'selected':''}>Nee</option></select>
+    <div id="${subDivId}" style="display:${showSub?'block':'none'};margin-top:10px;padding:10px 12px;background:var(--surface3);border-radius:10px;border:1px solid var(--border);">
+      <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">↳ ${sub.tekst}</div>
+      <input type="text" id="${prefix}_${sub.id}" value="${subWaarde}" placeholder="Naam speler..." autocapitalize="words" oninput="capitalizeInput(this)" style="border-radius:10px;">
+    </div>`;
+  }
+
+  if(v.type==='score'){
+    const parts = waarde ? waarde.split('-') : ['',''];
+    const s1 = parts[0]||''; const s2 = parts[1]||'';
+    return `<div style="display:flex;align-items:center;gap:10px;">
+      <div style="flex:1;text-align:center;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600;">${t1||'Team 1'}</div>
+        <input type="text" inputmode="numeric" id="${id}_1" value="${s1}" placeholder="0"
+          style="text-align:center;font-size:22px;font-weight:800;padding:14px 8px;border-radius:12px;"
+          oninput="syncScore('${id}')">
+      </div>
+      <div style="font-size:28px;font-weight:800;color:var(--muted);font-family:'Oswald',sans-serif;">—</div>
+      <div style="flex:1;text-align:center;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600;">${t2||'Team 2'}</div>
+        <input type="text" inputmode="numeric" id="${id}_2" value="${s2}" placeholder="0"
+          style="text-align:center;font-size:22px;font-weight:800;padding:14px 8px;border-radius:12px;"
+          oninput="syncScore('${id}')">
+      </div>
+    </div>`;
+  }
+
+  if(v.type==='getal') return `<input type="text" inputmode="numeric" id="${id}" value="${waarde}" placeholder="bijv. 3">`;
+  return `<input type="text" id="${id}" value="${waarde}" placeholder="Jouw antwoord..." autocapitalize="words" oninput="capitalizeWordsInput(this)">`;
+}
+
+function syncScore(baseId){}
+
+function capitalizeWordsInput(el){
+  const pos = el.selectionStart;
+  el.value = el.value.replace(/\b\w/g, c => c.toUpperCase());
+  el.setSelectionRange(pos, pos);
+}
+
+function saveCurrentVoorspelling(alert){
+  if(!state.activePlayer) return;
+  const pred=state.voorspellingen[state.activePlayer];
+  if(!pred) return;
+  state.vragen.forEach(v=>{
+    if(v.type==='score'){
+      const e1=document.getElementById('pred_'+v.id+'_1');
+      const e2=document.getElementById('pred_'+v.id+'_2');
+      if(e1||e2) pred[v.id]=`${e1?e1.value:''}${e2?'-'+e2.value:''}`;
+    } else if(v.type==='jn_met_sub'){
+      const el=document.getElementById('pred_'+v.id);
+      if(el) pred[v.id]=el.value;
+      if(v.subVraag){
+        const sub=document.getElementById('pred_'+v.subVraag.id);
+        if(sub) pred[v.subVraag.id]=sub.value;
+      }
+    } else {
+      const el=document.getElementById('pred_'+v.id);
+      if(el) pred[v.id]=el.value;
+    }
+  });
+  saveState();
+  if(alert){
+    const name=state.players.find(x=>x.id===state.activePlayer)?.name;
+    showToast('💾 Voorspelling van '+name+' opgeslagen!');
+    renderInvullenForm();
+  }
+}
+
+// ── RESULTAAT ──
+function renderResultaat(){
+  const content=document.getElementById('resultaatContent');
+  if(!state.players.length){content.innerHTML='<div class="empty"><span>😬</span>Geen spelers gevonden.</div>';return;}
+  const uitslagSet=Object.values(state.uitslag).some(v=>v&&v!=='');
+  if(!uitslagSet){content.innerHTML='<div class="empty"><span>🏁</span>Vul de uitslag in via Admin.</div>';return;}
+
+  const uitslagKeys = Object.keys(state.uitslag).filter(k=>state.uitslag[k]&&state.uitslag[k]!=='');
+  const vragenSorted = [...state.vragen].sort((a,b)=>{
+    const ai = uitslagKeys.indexOf(a.id);
+    const bi = uitslagKeys.indexOf(b.id);
+    const aHas = ai !== -1;
+    const bHas = bi !== -1;
+    if(aHas && bHas) return bi - ai;
+    if(aHas) return -1;
+    if(bHas) return 1;
+    return 0;
+  });
+
+  const scores=state.players.map(p=>{
+    const pred=state.voorspellingen[p.id]||{};
+    let goed=0,totaal=0;
+    const visVragen=getVisibleVragen(pred);
+    const details=vragenSorted.filter(v=>visVragen.find(vv=>vv.id===v.id)).map(v=>{
+      const antwoord=pred[v.id]||'';
+      const correct=state.uitslag[v.id]||'';
+      const correctValid = v.type==='score'
+        ? (()=>{ const p=correct.split('-'); return p[0].trim()!==''&&p[1]&&p[1].trim()!==''; })()
+        : correct!=='';
+      const isGoed=antwoord.trim().toLowerCase()===correct.trim().toLowerCase()&&correctValid;
+      if(correctValid) totaal++;
+      if(isGoed) goed++;
+      return {v,antwoord,correct,isGoed};
+    });
+    return {p,goed,totaal,details};
+  }).sort((a,b)=>b.goed-a.goed);
+
+  const perVraagHtml = vragenSorted.map(v=>{
+    let correct = state.uitslag[v.id]||'';
+    if(v.type==='score'){
+      const parts = correct.split('-');
+      if(!parts[0].trim() && (!parts[1] || !parts[1].trim())) return '';
+    }
+    if(!correct) return '';
+    const winnaars = state.players.filter(p=>{
+      const pred = state.voorspellingen[p.id]||{};
+      const ant = pred[v.id]||'';
+      return ant.trim().toLowerCase()===correct.trim().toLowerCase();
+    });
+    const verliezers = state.players.filter(p=>{
+      const pred = state.voorspellingen[p.id]||{};
+      const ant = pred[v.id]||'';
+      return ant.trim().toLowerCase()!==correct.trim().toLowerCase();
+    });
+    const chips = [
+      ...winnaars.map(p=>`
+        <div class="winner-chip goed">
+          <div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>
+          ${p.name}
+        </div>`),
+      ...verliezers.map(p=>{
+        const pred = state.voorspellingen[p.id]||{};
+        const ant = pred[v.id]||'';
+        return `<div class="winner-chip fout">
+          <div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>
+          ${p.name}${ant ? ` <span style="color:var(--muted);font-weight:400">(${ant})</span>` : ''}
+        </div>`;
+      })
+    ].join('');
+    return `
+      <div class="vraag-summary">
+        <div class="vraag-summary-header">
+          <div class="vraag-summary-tekst">${getVraagTekst(v)}</div>
+          <div class="vraag-summary-antwoord">✓ ${v.type==='score' ? correct.replace('-',' — ') : correct}</div>
+        </div>
+        <div class="vraag-summary-winners">
+          ${chips || '<div class="vraag-summary-none">Niemand had dit goed 😬</div>'}
+        </div>
+      </div>`;
+  }).filter(Boolean).join('');
+
+  const medals=['🥇','🥈','🥉'];
+  const standenHtml = scores.map((s,i)=>`
+    <div class="result-player-card ${i===0?'rank-1':''}" id="rcard_${s.p.id}" style="animation-delay:${i*0.06}s">
+      <div class="result-player-header" onclick="toggleResultCard('${s.p.id}')">
+        <div class="player-avatar">${s.p.name[0].toUpperCase()}</div>
+        <div style="margin-left:10px;flex:1;">
+          <div style="font-weight:800;font-size:16px;"><span class="rank-badge">${medals[i]||'  '}</span>${s.p.name} <span class="expand-arrow">▼</span></div>
+          <div style="font-size:12px;color:var(--muted);font-weight:500;">${s.goed} van ${s.totaal} goed</div>
+          <div class="progress-bar" style="max-width:140px;margin-top:5px;"><div class="progress-fill" style="width:${s.totaal?Math.round(s.goed/s.totaal*100):0}%"></div></div>
+        </div>
+        <div class="result-score">${s.goed}/${s.totaal}</div>
+      </div>
+      <div class="result-rows">
+        ${s.details.map(d=>`
+          <div class="result-row">
+            <div class="result-vraag">${getVraagTekst(d.v)}</div>
+            <div class="result-antwoord">${d.antwoord||'<span style="color:var(--muted)">—</span>'}</div>
+            <div class="result-icon">${d.correct===''?'⬜':d.isGoed?'✅':'❌'}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  let schaamtepaalHtml = '';
+  if(scores.length > 1){
+    const verliezers = scores.filter(s=>s.totaal>0);
+    if(verliezers.length){
+      const laatste = verliezers[verliezers.length-1];
+      const shames = ['🤡','😭','🙈','💩','🫠','😬'];
+      const emoji = shames[Math.floor(Math.random()*shames.length)];
+      const pct = laatste.totaal ? Math.round(laatste.goed/laatste.totaal*100) : 0;
+      schaamtepaalHtml = `
+        <div class="schaamtepaal-card">
+          <span class="schaamtepaal-emoji">${emoji}</span>
+          <div class="schaamtepaal-title">Wall of Shame</div>
+          <div class="schaamtepaal-name">${laatste.p.name}</div>
+          <div class="schaamtepaal-sub">${laatste.goed} van ${laatste.totaal} goed · ${pct}% raak</div>
+        </div>`;
+    }
+  }
+
+  content.innerHTML = `
+    <div class="result-section-label">Per vraag</div>
+    ${perVraagHtml || '<div class="empty" style="padding:20px 0;"><span>⏳</span>Nog geen uitslag ingevuld</div>'}
+    <div class="result-section-label" style="margin-top:24px;">Eindstand</div>
+    ${standenHtml}
+    ${schaamtepaalHtml}
+  `;
+}
+
+function toggleResultCard(pid){
+  const card = document.getElementById('rcard_'+pid);
+  if(card) card.classList.toggle('expanded');
+}
+
+function clearVoorspellingen(){
+  state.players.forEach(p => { state.voorspellingen[p.id] = {}; state.geheim[p.id] = false; });
+  tourMode = false; tourIndex = 0; editingPlayer = null;
+  saveState();
+  showToast('🗑️ Voorspellingen gewist');
+}
+
+function startNieuwRondje(){
+  state.players.forEach(p => { state.voorspellingen[p.id] = {}; state.geheim[p.id] = false; });
+  state.uitslag = {};
+  tourMode = true; tourIndex = 0; editingPlayer = null; state.locked = false;
+  saveState();
+  if(adminOpen) toggleAdmin();
+  renderInvullen();
+  setTimeout(()=> checkStartTour(), 300);
+  showToast('🔄 Nieuw rondje gestart!');
+}
+
+function resetAll(){
+  state={
+    mode:'landen',team1:'',team2:'',
+    players:[],vragen:JSON.parse(JSON.stringify(VAST_VRAGEN)),
+    voorspellingen:{},geheim:{},uitslag:{},
+    activePlayer:null,countdown:{date:'',time:''},
+    locked:false,
+  };
+  tourMode = false;
+  tourIndex = 0;
+  currentUserId = null;
+  document.getElementById('userIndicator').style.display = 'none';
+  if(adminOpen) toggleAdmin();
+  saveState();
+  renderInvullen();
+  renderMatchup();
+  showToast('🗑️ Alles gereset');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ── ENTER KEY NAVIGATION ──
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Enter') return;
+  const active = document.activeElement;
+  if(!active) return;
+  const id = active.id || '';
+  if(!id.startsWith('pred_') || active.tagName === 'SELECT') return;
+  e.preventDefault();
+  const tegels = Array.from(document.querySelectorAll('[id^="pv_"]'));
+  const openTegel = tegels.find(t => t.style.display !== 'none');
+  if(!openTegel) return;
+  saveCurrentVoorspelling(false);
+  const curId = openTegel.id;
+  const curArrow = document.getElementById('arrow_' + curId);
+  openTegel.style.display = 'none';
+  if(curArrow) curArrow.style.transform = '';
+  const curIdx = tegels.indexOf(openTegel);
+  const next = tegels[curIdx + 1];
+  if(next){
+    next.style.display = 'block';
+    const nextArrow = document.getElementById('arrow_' + next.id);
+    if(nextArrow) nextArrow.style.transform = 'rotate(180deg)';
+    const inp = next.querySelector('input, select');
+    if(inp) setTimeout(()=>inp.focus(), 50);
+  }
+});
+
+// ── INIT ──
+loadSupabaseConfig();
+initSupabase();
+</script>
+</body>
+</html>

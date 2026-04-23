@@ -1,0 +1,5 @@
+Project URL:
+https://tzdlbbkamzcsbhyymmzk.supabase.co
+
+Project API keys:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6ZGxiYmthbXpjc2JoeXltbXprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NjA0NjUsImV4cCI6MjA5MjQzNjQ2NX0.qUxJlTpfOt1AU0EpG5ijsKF9w_fRqWZDhtbsaYXoIgE
