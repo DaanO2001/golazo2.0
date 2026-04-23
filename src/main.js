@@ -359,6 +359,12 @@ function renderAll(){
   renderInvullen();
   renderMatchup();
   renderCountdown();
+  checkTabParam();
+}
+
+function checkTabParam(){
+  const tab = new URLSearchParams(window.location.search).get('tab');
+  if(tab === 'resultaat') showTab('resultaat');
 }
 
 // ── SYNC INDICATOR ──

@@ -5,7 +5,7 @@ self.addEventListener('push', event => {
       body: data.body || 'Er is een update!',
       icon: '/icon.png',
       badge: '/icon.png',
-      data: { url: self.location.origin }
+      data: { url: self.location.origin + '/?tab=resultaat' }
     })
   );
 });
