@@ -1805,6 +1805,9 @@ Object.assign(window, {
   pickPlayer, uploadFoto, editPlayer,
   togglePredVraag, toggleResultCard,
   backToOverview, handleSaveBtn, copyLink,
+  toggleSecret, saveStraf,
+  saveCurrentVoorspelling, renderInvullenForm,
+  syncScore, capitalizeWordsInput,
 });
 
 // ── INIT ──
