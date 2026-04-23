@@ -104,8 +104,10 @@ let state = {
   strafMode:false,
   straffen:{},
   pincode:'',
+  pushTitel:'Golazo 🏆',
   pushGoedBericht:'Lekker pik! Bekijk hier wat je goed hebt gedaan.',
   pushFoutBericht:'Haha sukkel.. bekijk wat je fout hebt gedaan.',
+  pushedVragen:[],
   fotos:{},
   devices:{},
 };
@@ -990,8 +992,10 @@ function removeVraag(id){
 function renderAdminUitslag(){
   const content=document.getElementById('adminUitslagContent');
   if(!content) return;
+  const titelEl2 = document.getElementById('pushTitelInput');
   const goedEl = document.getElementById('pushGoedInput');
   const foutEl = document.getElementById('pushFoutInput');
+  if(titelEl2 && !titelEl2.value) titelEl2.value = state.pushTitel || '';
   if(goedEl && !goedEl.value) goedEl.value = state.pushGoedBericht || '';
   if(foutEl && !foutEl.value) foutEl.value = state.pushFoutBericht || '';
   if(!state.vragen.length){content.innerHTML='<div class="empty" style="padding:16px 0;"><span>❓</span>Geen vragen.</div>';return;}
@@ -1627,6 +1631,7 @@ function clearVoorspellingen(){
 function startNieuwRondje(){
   state.players.forEach(p => { state.voorspellingen[p.id] = {}; state.geheim[p.id] = false; });
   state.uitslag = {};
+  state.pushedVragen = [];
   tourMode = true; tourIndex = 0; editingPlayer = null; state.locked = false;
   saveState();
   if(adminOpen) toggleAdmin();
@@ -1882,8 +1887,10 @@ async function subscribeToPush(playerId) {
 }
 
 function savePushBerichten() {
+  const titelEl = document.getElementById('pushTitelInput');
   const goedEl = document.getElementById('pushGoedInput');
   const foutEl = document.getElementById('pushFoutInput');
+  if(titelEl) state.pushTitel = titelEl.value.trim() || 'Golazo 🏆';
   if(goedEl) state.pushGoedBericht = goedEl.value.trim() || 'Lekker pik! Bekijk hier wat je goed hebt gedaan.';
   if(foutEl) state.pushFoutBericht = foutEl.value.trim() || 'Haha sukkel.. bekijk wat je fout hebt gedaan.';
   saveState();
@@ -1891,22 +1898,27 @@ function savePushBerichten() {
 }
 
 async function sendPersonalizedPushNotifications() {
+  const titel = state.pushTitel || 'Golazo 🏆';
   const goedBericht = state.pushGoedBericht || 'Lekker pik! Bekijk hier wat je goed hebt gedaan.';
   const foutBericht = state.pushFoutBericht || 'Haha sukkel.. bekijk wat je fout hebt gedaan.';
+  if (!state.pushedVragen) state.pushedVragen = [];
   const messages = [];
+  const nieuweVragen = [];
   state.vragen.forEach(v => {
+    if (state.pushedVragen.includes(v.id)) return; // al verzonden
     const correct = state.uitslag[v.id] || '';
     const correctValid = (v.type === 'score' || v.type === 'tussenstand')
       ? (()=>{ const parts = correct.split('-'); return parts[0].trim() !== '' && parts[1] && parts[1].trim() !== ''; })()
       : correct !== '';
     if (!correctValid) return;
 
+    nieuweVragen.push(v.id);
     state.players.forEach(p => {
       const antwoord = (state.voorspellingen[p.id] || {})[v.id] || '';
       const isGoed = antwoord.trim().toLowerCase() === correct.trim().toLowerCase();
       messages.push({
         player_id: p.id,
-        title: 'Golazo 🏆',
+        title: titel,
         body: isGoed ? goedBericht : foutBericht
       });
     });
@@ -1920,6 +1932,8 @@ async function sendPersonalizedPushNotifications() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages })
     });
+    state.pushedVragen.push(...nieuweVragen);
+    saveState();
   } catch(e) {
     console.error('Push versturen mislukt:', e);
   }
