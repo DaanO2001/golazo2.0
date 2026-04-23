@@ -1912,8 +1912,8 @@ async function sendPersonalizedPushNotifications() {
       const isGoed = antwoord.trim().toLowerCase() === correct.trim().toLowerCase();
       messages.push({
         player_id: p.id,
-        title: '',
-        body: isGoed ? goedBericht : foutBericht
+        title: isGoed ? goedBericht : foutBericht,
+        body: ''
       });
     });
   });
