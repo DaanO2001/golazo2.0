@@ -66,7 +66,14 @@ async function initSupabase(){
     setupRealtime();
     document.getElementById('loadingScreen').style.display = 'none';
     generateShareLinks();
-    showPickScreen();
+    if(isAdmin){
+      renderAll();
+      adminOpen = true;
+      document.getElementById('adminScreen').classList.add('active');
+      refreshAdminUI();
+    } else {
+      showPickScreen();
+    }
   } catch(err){
     document.getElementById('loadingScreen').style.display = 'none';
     const setup = document.getElementById('setupScreen');
