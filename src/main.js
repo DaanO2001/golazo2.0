@@ -264,6 +264,13 @@ function pickPlayer(id){
   if(!p) return;
   const deviceId = getDeviceId();
   const devices = state.devices || {};
+  // Check if this device already claimed a different player
+  const myClaimedId = Object.keys(devices).find(pid => devices[pid] === deviceId);
+  if(myClaimedId && myClaimedId !== id){
+    const myName = state.players.find(x => x.id === myClaimedId)?.name || 'iemand anders';
+    showToast(`⚠️ Je bent al aangemeld als ${myName}!`);
+    return;
+  }
   // Check if this name is already claimed by another device
   if(devices[id] && devices[id] !== deviceId){
     showToast('⚠️ Deze naam is al gekoppeld aan een ander apparaat!');
