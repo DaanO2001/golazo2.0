@@ -103,7 +103,7 @@ let state = {
   locked:false,
   strafMode:false,
   straffen:{},
-  pincode:'',
+  pincode:'0001',
   pushGoedBericht:'Lekker pik! Bekijk hier wat je goed hebt gedaan.',
   pushFoutBericht:'Haha sukkel.. bekijk wat je fout hebt gedaan.',
   pushedVragen:[],
@@ -1648,7 +1648,7 @@ function resetAll(){
     locked:false,
     strafMode:false,
     straffen:{},
-    pincode:'',
+    pincode:'0001',
     fotos:{},
     devices:{},
   };
