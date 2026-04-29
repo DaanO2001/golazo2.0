@@ -1856,7 +1856,7 @@ Object.assign(window, {
   toggleVragenAdmin, toggleEigenVraag, addEigenVraag,
   startEditVraag, saveEditVraag, cancelEditVraag, removeVraag,
   toggleUitslag, toggleUitslagVraag, saveUitslag, savePushBerichten,
-  fetchLineup, clearLineup,
+  fetchLineup, clearLineup, searchFixtures,
   toggleLockdown, startNieuwRondje,
   showResetSheet, hideResetSheet,
   clearVoorspellingen, resetSpelers, resetAll,
@@ -1915,15 +1915,44 @@ async function subscribeToPush(playerId) {
 }
 
 // ── OPSTELLING ──
-async function fetchLineup(){
-  const id = document.getElementById('fixtureIdInput')?.value.trim();
-  if(!id){ showToast('❌ Voer een fixture ID in'); return; }
-  showToast('⏳ Opstelling ophalen...');
+async function searchFixtures(){
+  const query = document.getElementById('fixtureSearchInput')?.value.trim();
+  if(!query){ showToast('❌ Voer een teamnaam in'); return; }
+  const resultsEl = document.getElementById('fixtureResults');
+  resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Zoeken...</div>';
   try {
-    const res = await fetch(`/api/get-lineup?fixture=${id}`);
+    const res = await fetch(`/api/search-fixtures?query=${encodeURIComponent(query)}`);
+    const data = await res.json();
+    if(!data.fixtures?.length){
+      resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">Geen wedstrijden gevonden.</div>';
+      return;
+    }
+    resultsEl.innerHTML = data.fixtures.map(f => {
+      const d = new Date(f.date);
+      const dateStr = d.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
+      const timeStr = d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+      return `<div onclick="fetchLineup(${f.id})" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface3);border-radius:12px;margin-bottom:6px;cursor:pointer;border:1px solid var(--border);">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.home} – ${f.away}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${dateStr} · ${timeStr} · ${f.league}</div>
+        </div>
+        <div style="font-size:18px;flex-shrink:0;">▶</div>
+      </div>`;
+    }).join('');
+  } catch(e){
+    resultsEl.innerHTML = '<div style="font-size:13px;color:#ff6b8a;padding:8px 0;">❌ Zoekopdracht mislukt.</div>';
+  }
+}
+
+async function fetchLineup(fixtureId){
+  const resultsEl = document.getElementById('fixtureResults');
+  if(resultsEl) resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Opstelling ophalen...</div>';
+  try {
+    const res = await fetch(`/api/get-lineup?fixture=${fixtureId}`);
     const data = await res.json();
     if(!data.response || data.response.length < 2){
-      showToast('❌ Geen opstelling gevonden. Probeer later opnieuw (beschikbaar ~1u voor aftrap).');
+      showToast('❌ Opstelling nog niet beschikbaar (verschijnt ~1u voor aftrap).');
+      if(resultsEl) resultsEl.innerHTML = '';
       return;
     }
     const [homeData, awayData] = data.response;
@@ -1935,8 +1964,9 @@ async function fetchLineup(){
       home: { name: homeData.team.name, players: parsePlayers(homeData) },
       away: { name: awayData.team.name, players: parsePlayers(awayData) }
     };
-    state.fixtureId = id;
+    state.fixtureId = fixtureId;
     saveState();
+    if(resultsEl) resultsEl.innerHTML = '';
     renderAdminLineup();
     renderAll();
     showToast('✅ Opstelling geladen!');
@@ -1957,8 +1987,6 @@ function clearLineup(){
 function renderAdminLineup(){
   const el = document.getElementById('lineupPreview');
   if(!el) return;
-  const inp = document.getElementById('fixtureIdInput');
-  if(inp && state.fixtureId && !inp.value) inp.value = state.fixtureId;
   if(!state.lineup){ el.innerHTML=''; return; }
   const { home, away } = state.lineup;
   const renderTeam = (team, label) => `
