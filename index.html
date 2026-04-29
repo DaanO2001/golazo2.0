@@ -147,6 +147,7 @@
     <div style="display:flex;gap:8px;margin-bottom:8px;">
       <input type="text" id="fixtureSearchInput" placeholder="bijv. Ajax, PSV, Arsenal..." autocapitalize="words" style="flex:1;" onkeydown="if(event.key==='Enter')searchFixtures()">
       <button class="btn sm" onclick="searchFixtures()" style="width:auto;padding:8px 14px;flex-shrink:0;">🔍</button>
+      <button class="btn sm" onclick="fetchLiveFixtures()" style="width:auto;padding:8px 14px;flex-shrink:0;background:var(--oranje);border-color:var(--oranje);">🔴 Live</button>
     </div>
     <div id="fixtureResults"></div>
     <div id="lineupPreview"></div>
