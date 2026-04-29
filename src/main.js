@@ -1923,6 +1923,7 @@ async function searchFixtures(){
   try {
     const res = await fetch(`/api/search-fixtures?query=${encodeURIComponent(query)}`);
     const data = await res.json();
+    if(data.error){ throw new Error(data.error); }
     if(!data.fixtures?.length){
       resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">Geen wedstrijden gevonden.</div>';
       return;
@@ -1940,7 +1941,7 @@ async function searchFixtures(){
       </div>`;
     }).join('');
   } catch(e){
-    resultsEl.innerHTML = '<div style="font-size:13px;color:#ff6b8a;padding:8px 0;">❌ Zoekopdracht mislukt.</div>';
+    resultsEl.innerHTML = `<div style="font-size:13px;color:#ff6b8a;padding:8px 0;">❌ ${e.message || 'Zoekopdracht mislukt.'}</div>`;
   }
 }
 
