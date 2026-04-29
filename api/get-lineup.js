@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   const { fixture } = req.query;
   if (!fixture) return res.status(400).json({ error: 'fixture required' });
 
-  const response = await fetch(`https://v3.api-sports.io/fixtures/lineups?fixture=${fixture}`, {
+  const response = await fetch(`https://v3.football.api-sports.io/fixtures/lineups?fixture=${fixture}`, {
     headers: { 'x-apisports-key': process.env.APISPORTS_KEY }
   });
 

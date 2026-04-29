@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   const headers = { 'x-apisports-key': process.env.APISPORTS_KEY };
 
   const teamsRes = await fetch(
-    `https://v3.api-sports.io/teams?search=${encodeURIComponent(query)}`,
+    `https://v3.football.api-sports.io/teams?search=${encodeURIComponent(query)}`,
     { headers }
   );
   const teamsData = await teamsRes.json();
@@ -27,7 +27,7 @@ export default async function handler(req, res) {
   const teamId = teamsData.response[0].team.id;
 
   const fixturesRes = await fetch(
-    `https://v3.api-sports.io/fixtures?team=${teamId}&next=8`,
+    `https://v3.football.api-sports.io/fixtures?team=${teamId}&next=8`,
     { headers }
   );
   const fixturesData = await fixturesRes.json();
