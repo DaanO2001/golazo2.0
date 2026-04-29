@@ -1028,7 +1028,6 @@ function saveUitslag(){
   });
   saveState();
   showToast('🏁 Uitslag opgeslagen!');
-  sendPersonalizedPushNotifications();
 }
 
 // ── POPUP FLOW ──
