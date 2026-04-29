@@ -1824,20 +1824,33 @@ function renderShareLinks(){
   const el = document.getElementById('shareLinksBox');
   if(!el || !window._friendLink) return;
   el.innerHTML = `
-    <div style="margin-top:16px;background:var(--surface2);border:1px solid var(--border-orange);border-radius:16px;padding:14px;">
-      <div style="font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">🔗 Deelbare links</div>
-      <div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:600;">👥 Link voor vrienden:</div>
-      <div style="display:flex;gap:6px;margin-bottom:10px;">
-        <input type="text" value="${window._friendLink}" readonly style="font-size:11px;padding:8px 12px;border-radius:10px;flex:1;">
-        <button class="btn sm" onclick="copyLink('friend')" style="flex-shrink:0;width:auto;">📋</button>
+    <div style="margin-top:16px;display:flex;gap:10px;align-items:stretch;">
+      <div style="flex:1;min-width:0;background:var(--surface2);border:1px solid var(--border-orange);border-radius:16px;padding:14px;">
+        <div style="font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">🔗 Deelbare links</div>
+        <div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:600;">👥 Link voor vrienden:</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
+          <input type="text" value="${window._friendLink}" readonly style="font-size:11px;padding:8px 12px;border-radius:10px;flex:1;min-width:0;">
+          <button class="btn sm" onclick="copyLink('friend')" style="flex-shrink:0;width:auto;">📋</button>
+        </div>
+        <div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:600;">🔐 Jouw admin-link:</div>
+        <div style="display:flex;gap:6px;">
+          <input type="text" value="${window._adminLink}" readonly style="font-size:11px;padding:8px 12px;border-radius:10px;flex:1;min-width:0;">
+          <button class="btn sm" onclick="copyLink('admin')" style="flex-shrink:0;width:auto;">📋</button>
+        </div>
       </div>
-      <div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:600;">🔐 Jouw admin-link:</div>
-      <div style="display:flex;gap:6px;">
-        <input type="text" value="${window._adminLink}" readonly style="font-size:11px;padding:8px 12px;border-radius:10px;flex:1;">
-        <button class="btn sm" onclick="copyLink('admin')" style="flex-shrink:0;width:auto;">📋</button>
+      <div style="flex-shrink:0;position:relative;">
+        <button onclick="toggleWielWidget()" id="wielWidgetBtn" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:10px 8px;cursor:pointer;height:100%;width:80px;box-sizing:border-box;">
+          <canvas id="wielMiniCanvas" width="54" height="54" style="border-radius:50%;display:block;border:2px solid var(--border);"></canvas>
+          <span style="font-size:9px;color:var(--muted2);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">🎰 Rad</span>
+        </button>
+        <div id="wielWidgetDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:280px;background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:14px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,.5);">
+          <div id="wielDropdownContent"></div>
+        </div>
       </div>
     </div>
   `;
+  renderWielDropdown();
+  drawWielMini();
 }
 
 function copyLink(type){
@@ -1927,41 +1940,76 @@ Object.assign(window, {
   saveCurrentVoorspelling, renderInvullenForm,
   syncScore, capitalizeWordsInput,
   stuurWiel, sluitWiel, spinWiel,
-  addWielSegment, removeWielSegment, saveWielSegment,
+  addWielSegment, removeWielSegment, saveWielSegment, toggleWielWidget,
 });
 
 // ── WIEL ──
-const WIEL_COLORS = ['#ff6b35','#f7c948','#67f28f','#4ecdc4','#ff8e53','#a29bfe','#fd79a8','#55efc4'];
+const WIEL_COLORS = ['#67f28f', '#04252A'];
 let wielRotation = 0;
 let wielAnim = null;
 let wielSpinning = false;
 
-function renderWielAdmin(){
-  const el = document.getElementById('wielAdminContent');
+function toggleWielWidget(){
+  const dd = document.getElementById('wielWidgetDropdown');
+  if(!dd) return;
+  dd.style.display = dd.style.display==='none' ? 'block' : 'none';
+}
+
+function drawWielMini(){
+  const canvas = document.getElementById('wielMiniCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const segs = state.wiel||[];
+  if(!segs.length){ ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+  const cx=canvas.width/2, cy=canvas.height/2, r=Math.min(cx,cy)-2;
+  const n=segs.length, arc=(2*Math.PI)/n;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  segs.forEach((seg,i)=>{
+    const start=i*arc-Math.PI/2, end=start+arc;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,end); ctx.closePath();
+    ctx.fillStyle=WIEL_COLORS[i%WIEL_COLORS.length]; ctx.fill();
+    ctx.strokeStyle='rgba(4,37,42,.8)'; ctx.lineWidth=1.5; ctx.stroke();
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,7,0,2*Math.PI);
+  ctx.fillStyle='#04252A'; ctx.fill();
+  // Pointer at top
+  ctx.beginPath();
+  ctx.moveTo(cx-5,cy-r-1); ctx.lineTo(cx+5,cy-r-1); ctx.lineTo(cx,cy-r-9);
+  ctx.closePath(); ctx.fillStyle='white'; ctx.fill();
+}
+
+function renderWielDropdown(){
+  const el = document.getElementById('wielDropdownContent');
   if(!el) return;
   const segs = state.wiel||[];
   const playerBtns = state.players.map(p=>`
-    <button onclick="stuurWiel('${p.id}')" style="display:flex;align-items:center;gap:8px;background:var(--surface3);border:1px solid var(--border);border-radius:12px;padding:10px 14px;cursor:pointer;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;width:100%;text-align:left;">
-      <div style="width:30px;height:30px;border-radius:50%;background:var(--oranje-dim);border:1px solid var(--border-orange);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--oranje);flex-shrink:0;">${p.name[0].toUpperCase()}</div>
+    <button onclick="stuurWiel('${p.id}')" style="display:flex;align-items:center;gap:8px;background:var(--surface3);border:1px solid var(--border);border-radius:12px;padding:9px 12px;cursor:pointer;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;width:100%;text-align:left;margin-bottom:6px;">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--oranje-dim);border:1px solid var(--border-orange);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--oranje);flex-shrink:0;">${p.name[0].toUpperCase()}</div>
       ${p.name}
     </button>`).join('');
   const segList = segs.map((s,i)=>`
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-      <div style="width:12px;height:12px;border-radius:50%;background:${WIEL_COLORS[i%WIEL_COLORS.length]};flex-shrink:0;"></div>
-      <input type="text" value="${s.tekst}" id="wielseg_${s.id}" onchange="saveWielSegment('${s.id}')" style="flex:1;border-radius:8px;font-size:13px;padding:6px 10px;">
-      <button onclick="removeWielSegment('${s.id}')" style="width:28px;height:28px;border-radius:50%;background:rgba(255,71,106,.15);border:1px solid rgba(255,71,106,.3);color:#ff6b8a;font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">✕</button>
+      <div style="width:10px;height:10px;border-radius:50%;background:${WIEL_COLORS[i%WIEL_COLORS.length]};flex-shrink:0;border:1px solid rgba(255,255,255,.2);"></div>
+      <input type="text" value="${s.tekst}" id="wielseg_${s.id}" onchange="saveWielSegment('${s.id}')" style="flex:1;border-radius:8px;font-size:12px;padding:5px 9px;min-width:0;">
+      <button onclick="removeWielSegment('${s.id}')" style="width:26px;height:26px;border-radius:50%;background:rgba(255,71,106,.15);border:1px solid rgba(255,71,106,.3);color:#ff6b8a;font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">✕</button>
     </div>`).join('');
   el.innerHTML = `
-    <div style="font-size:12px;color:var(--muted2);margin-bottom:8px;">Klik op een naam om het rad naar die speler te sturen:</div>
-    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">${playerBtns||'<div style="font-size:12px;color:var(--muted);">Voeg eerst spelers toe</div>'}</div>
+    <div style="font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">🎰 Rad van fortuin</div>
+    <div style="font-size:12px;color:var(--muted2);margin-bottom:6px;">Stuur rad naar speler:</div>
+    <div style="margin-bottom:14px;">${playerBtns||'<div style="font-size:12px;color:var(--muted);">Voeg eerst spelers toe</div>'}</div>
     <div style="border-top:1px solid var(--border);padding-top:12px;">
       <div style="font-size:12px;color:var(--muted2);margin-bottom:8px;font-weight:600;">Segmenten:</div>
       ${segList}
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <input type="text" id="nieuwSegInput" placeholder="Nieuw segment..." style="flex:1;border-radius:8px;font-size:13px;padding:6px 10px;" onkeydown="if(event.key==='Enter')addWielSegment()">
-        <button class="btn sm" onclick="addWielSegment()" style="width:auto;padding:8px 12px;flex-shrink:0;">+ Add</button>
+        <input type="text" id="nieuwSegInput" placeholder="Nieuw segment..." style="flex:1;border-radius:8px;font-size:12px;padding:6px 10px;min-width:0;" onkeydown="if(event.key==='Enter')addWielSegment()">
+        <button class="btn sm" onclick="addWielSegment()" style="width:auto;padding:7px 12px;flex-shrink:0;">+ Add</button>
       </div>
     </div>`;
+}
+
+function renderWielAdmin(){
+  renderWielDropdown();
+  drawWielMini();
 }
 
 function addWielSegment(){
@@ -1990,6 +2038,8 @@ function stuurWiel(playerId){
   saveState();
   const player = state.players.find(p=>p.id===playerId);
   showToast(`🎰 Rad gestuurd naar ${player?.name||'speler'}!`);
+  const dd = document.getElementById('wielWidgetDropdown');
+  if(dd) dd.style.display='none';
 }
 
 function sluitWiel(){
@@ -2034,11 +2084,12 @@ function drawWiel(canvas, rotation){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   segs.forEach((seg,i)=>{
     const start=rotation+i*arc-Math.PI/2, end=start+arc;
+    const segColor = WIEL_COLORS[i%WIEL_COLORS.length];
     ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,end); ctx.closePath();
-    ctx.fillStyle=WIEL_COLORS[i%WIEL_COLORS.length]; ctx.fill();
+    ctx.fillStyle=segColor; ctx.fill();
     ctx.strokeStyle='rgba(4,37,42,.5)'; ctx.lineWidth=2; ctx.stroke();
     ctx.save(); ctx.translate(cx,cy); ctx.rotate(start+arc/2);
-    ctx.textAlign='right'; ctx.fillStyle='#04252A';
+    ctx.textAlign='right'; ctx.fillStyle=segColor==='#04252A'?'#67f28f':'#04252A';
     ctx.font=`bold ${Math.max(11,Math.min(15,Math.floor(r*0.16)))}px "DM Sans",sans-serif`;
     ctx.fillText(seg.tekst, r-12, 5); ctx.restore();
   });
@@ -2072,6 +2123,10 @@ function spinWiel(){
     drawWiel(canvas,wielRotation);
     if(t<1){ wielAnim=requestAnimationFrame(animate); }
     else {
+      // Force exact snap: full rotations + exact target angle
+      const fullTurns = Math.floor(endRot / (2*Math.PI));
+      wielRotation = fullTurns * (2*Math.PI) + targetAngle;
+      drawWiel(canvas, wielRotation);
       wielAnim=null;
       const resultTekst=document.getElementById('wielResultTekst');
       const resultDiv=document.getElementById('wielResult');
