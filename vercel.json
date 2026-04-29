@@ -1,13 +1,1 @@
-{
-  "functions": {
-    "api/search-fixtures.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/get-lineup.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/send-push.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
-}
+{}
