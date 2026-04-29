@@ -1892,8 +1892,6 @@ async function fetchLiveFixtures(){
     }
     resultsEl.innerHTML = data.fixtures.map(f => {
       const d = new Date(f.date);
-      const dateStr = d.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
-      const d = new Date(f.date);
       const timeStr = d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
       return `<div onclick="fetchLineup(${f.id})" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface3);border-radius:12px;margin-bottom:6px;cursor:pointer;border:1px solid rgba(255,100,50,.4);">
         <div style="flex:1;min-width:0;">
@@ -2026,7 +2024,7 @@ async function sendBroadcast(){
     await fetch(`${location.origin}/api/send-push`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: tekst, body: '' })
+      body: JSON.stringify({ title: '', body: tekst })
     });
     showToast('📤 Bericht verstuurd!');
     if(inp) inp.value = '';
@@ -2064,8 +2062,8 @@ async function sendPersonalizedPushNotifications() {
       const isGoed = antwoord.trim().toLowerCase() === correct.trim().toLowerCase();
       messages.push({
         player_id: p.id,
-        title: isGoed ? goedBericht : foutBericht,
-        body: ''
+        title: '',
+        body: isGoed ? goedBericht : foutBericht
       });
     });
   });
