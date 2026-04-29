@@ -2057,7 +2057,9 @@ function spinWiel(){
   if(spinBtn) spinBtn.disabled=true;
   const n=segs.length, arc=(2*Math.PI)/n;
   const targetSeg=Math.floor(Math.random()*n);
-  const targetAngle=((Math.PI/2-targetSeg*arc-arc/2)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
+  // Center of segment i is at: rotation + i*arc - π/2 + arc/2
+  // We want that = -π/2 (pointer at top), so: rotation = -(i+0.5)*arc
+  const targetAngle=((-targetSeg*arc-arc/2)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
   const currentNorm=((wielRotation%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
   let diff=targetAngle-currentNorm; if(diff<=0) diff+=2*Math.PI;
   const extraSpins=(6+Math.floor(Math.random()*4))*2*Math.PI;
