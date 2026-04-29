@@ -31,6 +31,10 @@ export default async function handler(req, res) {
       process.env.APISPORTS_KEY
     );
 
+    if (data.errors && Object.keys(data.errors).length) {
+      return res.status(500).json({ error: Object.values(data.errors).join(', ') });
+    }
+
     const fixtures = (data.response || []).map(f => ({
       id: f.fixture.id,
       date: f.fixture.date,
