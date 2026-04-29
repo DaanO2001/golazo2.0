@@ -107,6 +107,8 @@ let state = {
   pushGoedBericht:'Lekker pik! Bekijk hier wat je goed hebt gedaan.',
   pushFoutBericht:'Haha sukkel.. bekijk wat je fout hebt gedaan.',
   pushedVragen:[],
+  lineup:null,
+  fixtureId:'',
   fotos:{},
   devices:{},
 };
@@ -416,6 +418,7 @@ function refreshAdminUI(){
   renderPlayers();
   renderAdminVragen();
   renderAdminUitslag();
+  renderAdminLineup();
   syncLockdownBtn();
 }
 
@@ -1368,7 +1371,10 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
     return `<select id="${id}" onchange="${onchangeSub}"><option value="">Kies...</option><option value="Ja" ${waarde==='Ja'?'selected':''}>Ja</option><option value="Nee" ${waarde==='Nee'?'selected':''}>Nee</option></select>
     <div id="${subDivId}" style="display:${showSub?'block':'none'};margin-top:10px;padding:10px 12px;background:var(--surface3);border-radius:10px;border:1px solid var(--border);">
       <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">↳ ${sub.tekst}</div>
-      <input type="text" id="${prefix}_${sub.id}" value="${subWaarde}" placeholder="Naam speler..." autocapitalize="words" style="border-radius:10px;">
+      ${state.lineup && sub.type==='speler'
+        ? `<select id="${prefix}_${sub.id}" style="border-radius:10px;">${buildPlayerOptions(subWaarde)}</select>`
+        : `<input type="text" id="${prefix}_${sub.id}" value="${subWaarde}" placeholder="Naam speler..." autocapitalize="words" style="border-radius:10px;">`
+      }
     </div>`;
   }
 
@@ -1392,6 +1398,10 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
     </div>`;
   }
 
+  if(v.type==='speler'){
+    if(state.lineup) return `<select id="${id}">${buildPlayerOptions(waarde)}</select>`;
+    return `<input type="text" id="${id}" value="${waarde}" placeholder="Jouw antwoord..." autocapitalize="words">`;
+  }
   if(v.type==='getal') return `<input type="text" inputmode="numeric" id="${id}" value="${waarde}" placeholder="bijv. 3">`;
   return `<input type="text" id="${id}" value="${waarde}" placeholder="Jouw antwoord..." autocapitalize="words">`;
 }
@@ -1846,6 +1856,7 @@ Object.assign(window, {
   toggleVragenAdmin, toggleEigenVraag, addEigenVraag,
   startEditVraag, saveEditVraag, cancelEditVraag, removeVraag,
   toggleUitslag, toggleUitslagVraag, saveUitslag, savePushBerichten,
+  fetchLineup, clearLineup,
   toggleLockdown, startNieuwRondje,
   showResetSheet, hideResetSheet,
   clearVoorspellingen, resetSpelers, resetAll,
@@ -1901,6 +1912,88 @@ async function subscribeToPush(playerId) {
   } catch(e) {
     console.error('Push subscribe mislukt:', e);
   }
+}
+
+// ── OPSTELLING ──
+async function fetchLineup(){
+  const id = document.getElementById('fixtureIdInput')?.value.trim();
+  if(!id){ showToast('❌ Voer een fixture ID in'); return; }
+  showToast('⏳ Opstelling ophalen...');
+  try {
+    const res = await fetch(`/api/get-lineup?fixture=${id}`);
+    const data = await res.json();
+    if(!data.response || data.response.length < 2){
+      showToast('❌ Geen opstelling gevonden. Probeer later opnieuw (beschikbaar ~1u voor aftrap).');
+      return;
+    }
+    const [homeData, awayData] = data.response;
+    const parsePlayers = (team) => [
+      ...team.startXI.map(p=>({ name:p.player.name, number:p.player.number, pos:p.player.pos, sub:false })),
+      ...team.substitutes.map(p=>({ name:p.player.name, number:p.player.number, pos:p.player.pos, sub:true }))
+    ];
+    state.lineup = {
+      home: { name: homeData.team.name, players: parsePlayers(homeData) },
+      away: { name: awayData.team.name, players: parsePlayers(awayData) }
+    };
+    state.fixtureId = id;
+    saveState();
+    renderAdminLineup();
+    renderAll();
+    showToast('✅ Opstelling geladen!');
+  } catch(e){
+    showToast('❌ Kon opstelling niet ophalen');
+  }
+}
+
+function clearLineup(){
+  state.lineup = null;
+  state.fixtureId = '';
+  saveState();
+  renderAdminLineup();
+  renderAll();
+  showToast('🗑️ Opstelling verwijderd');
+}
+
+function renderAdminLineup(){
+  const el = document.getElementById('lineupPreview');
+  if(!el) return;
+  const inp = document.getElementById('fixtureIdInput');
+  if(inp && state.fixtureId && !inp.value) inp.value = state.fixtureId;
+  if(!state.lineup){ el.innerHTML=''; return; }
+  const { home, away } = state.lineup;
+  const renderTeam = (team, label) => `
+    <div style="margin-bottom:10px;">
+      <div style="font-size:11px;font-weight:700;color:var(--oranje);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">${label}: ${team.name}</div>
+      ${team.players.map(p=>`
+        <div style="font-size:13px;padding:3px 0;color:${p.sub?'var(--muted)':'var(--text)'};display:flex;gap:8px;border-bottom:1px solid var(--border);">
+          <span style="color:var(--muted2);font-size:11px;min-width:22px;">${p.number}</span>
+          <span>${p.name}</span>
+          ${p.sub?'<span style="font-size:10px;color:var(--muted);margin-left:auto;">wissel</span>':''}
+        </div>`).join('')}
+    </div>`;
+  el.innerHTML = `<div style="margin-top:10px;padding:12px;background:var(--surface3);border-radius:12px;">
+    ${renderTeam(home,'🏠 Thuis')}
+    ${renderTeam(away,'✈️ Uit')}
+    <button class="btn secondary sm" onclick="clearLineup()" style="font-size:12px;margin-top:8px;color:#ff6b8a;border-color:rgba(255,23,68,.3);">🗑️ Opstelling wissen</button>
+  </div>`;
+}
+
+function buildPlayerOptions(selected){
+  if(!state.lineup) return '';
+  const { home, away } = state.lineup;
+  const renderGroup = (team, label) => {
+    const starters = team.players.filter(p=>!p.sub);
+    const subs = team.players.filter(p=>p.sub);
+    return `<optgroup label="${label}: ${team.name} — Basiself">
+        ${starters.map(p=>`<option value="${p.name}" ${selected===p.name?'selected':''}>${p.number}. ${p.name}</option>`).join('')}
+      </optgroup>
+      <optgroup label="${team.name} — Wissels">
+        ${subs.map(p=>`<option value="${p.name}" ${selected===p.name?'selected':''}>${p.number}. ${p.name}</option>`).join('')}
+      </optgroup>`;
+  };
+  return `<option value="">Kies een speler...</option>
+    ${renderGroup(home,'🏠')}
+    ${renderGroup(away,'✈️')}`;
 }
 
 function savePushBerichten() {
