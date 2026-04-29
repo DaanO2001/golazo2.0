@@ -39,10 +39,11 @@ export default async function handler(req, res) {
     }
 
     if (!teamsData.response?.length) {
-      return res.status(200).json({ fixtures: [] });
+      return res.status(200).json({ fixtures: [], debug: 'Geen team gevonden voor: ' + query });
     }
 
     const teamId = teamsData.response[0].team.id;
+    const teamName = teamsData.response[0].team.name;
 
     const fixturesData = await apiGet(
       `https://v3.football.api-sports.io/fixtures?team=${teamId}&next=8`,
@@ -56,6 +57,10 @@ export default async function handler(req, res) {
       away: f.teams.away.name,
       league: f.league.name,
     }));
+
+    if (!fixtures.length) {
+      return res.status(200).json({ fixtures: [], debug: `Team gevonden: ${teamName} (id: ${teamId}), maar geen komende wedstrijden` });
+    }
 
     res.status(200).json({ fixtures });
   } catch(e) {

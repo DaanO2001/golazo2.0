@@ -1925,7 +1925,7 @@ async function searchFixtures(){
     const data = await res.json();
     if(data.error){ throw new Error(data.error); }
     if(!data.fixtures?.length){
-      resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">Geen wedstrijden gevonden.</div>';
+      resultsEl.innerHTML = `<div style="font-size:13px;color:var(--muted);padding:8px 0;">${data.debug || 'Geen wedstrijden gevonden.'}</div>`;
       return;
     }
     resultsEl.innerHTML = data.fixtures.map(f => {
