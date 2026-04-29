@@ -1858,7 +1858,7 @@ function renderShareLinks(){
   const el = document.getElementById('shareLinksBox');
   if(!el || !window._friendLink) return;
   el.innerHTML = `
-    <div style="margin-top:16px;display:flex;gap:10px;align-items:stretch;">
+    <div style="margin-top:16px;margin-bottom:12px;display:flex;gap:10px;align-items:stretch;">
       <div style="flex:1;min-width:0;background:var(--surface2);border:1px solid var(--border-orange);border-radius:16px;padding:14px;">
         <div style="font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">🔗 Deelbare links</div>
         <div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:600;">👥 Link voor vrienden:</div>
