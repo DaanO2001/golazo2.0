@@ -1921,7 +1921,7 @@ async function searchFixtures(){
   const resultsEl = document.getElementById('fixtureResults');
   resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Zoeken...</div>';
   try {
-    const res = await fetch(`/api/search-fixtures?query=${encodeURIComponent(query)}`);
+    const res = await fetch(`${location.origin}/api/search-fixtures?query=${encodeURIComponent(query)}`);
     const data = await res.json();
     if(data.error){ throw new Error(data.error); }
     if(!data.fixtures?.length){
@@ -1949,7 +1949,7 @@ async function fetchLineup(fixtureId){
   const resultsEl = document.getElementById('fixtureResults');
   if(resultsEl) resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Opstelling ophalen...</div>';
   try {
-    const res = await fetch(`/api/get-lineup?fixture=${fixtureId}`);
+    const res = await fetch(`${location.origin}/api/get-lineup?fixture=${fixtureId}`);
     const data = await res.json();
     if(!data.response || data.response.length < 2){
       showToast('❌ Opstelling nog niet beschikbaar (verschijnt ~1u voor aftrap).');
@@ -2063,7 +2063,7 @@ async function sendPersonalizedPushNotifications() {
   if (!messages.length) return;
 
   try {
-    await fetch('/api/send-push', {
+    await fetch(`${location.origin}/api/send-push`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages })
@@ -2077,7 +2077,7 @@ async function sendPersonalizedPushNotifications() {
 
 async function sendPushNotification(title, body) {
   try {
-    await fetch('/api/send-push', {
+    await fetch(`${location.origin}/api/send-push`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, body })
