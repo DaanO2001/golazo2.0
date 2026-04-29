@@ -101,15 +101,15 @@
   </div>
 
   <!-- MODE -->
-  <div class="toggle-row">
-    <div>
-      <div class="toggle-label" id="modeLabel">🌍 Landen</div>
-      <div class="toggle-sub">Landen of clubs</div>
-    </div>
-    <label class="switch">
-      <input type="checkbox" id="modeToggle" onchange="toggleMode()">
-      <span class="slider"></span>
-    </label>
+  <div style="display:flex;gap:8px;margin-bottom:12px;">
+    <button id="modeWidgetLanden" onclick="setMode('landen')" style="flex:1;padding:16px 12px;border-radius:16px;border:2px solid var(--border);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;transition:background .2s,border-color .2s,opacity .2s;">
+      <span style="font-size:30px;">🌍</span>
+      <span style="font-size:13px;font-weight:700;color:var(--text);">Landen</span>
+    </button>
+    <button id="modeWidgetClubs" onclick="setMode('clubs')" style="flex:1;padding:16px 12px;border-radius:16px;border:2px solid var(--border);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;transition:background .2s,border-color .2s,opacity .2s;">
+      <span style="font-size:30px;">🏟️</span>
+      <span style="font-size:13px;font-weight:700;color:var(--text);">Clubs</span>
+    </button>
   </div>
 
   <!-- STRAFFEN TOGGLE -->

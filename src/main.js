@@ -389,10 +389,8 @@ function toggleAdmin(){
 }
 
 function refreshAdminUI(){
-  document.getElementById('modeToggle').checked = state.mode==='clubs';
   document.getElementById('strafToggle').checked = state.strafMode||false;
   document.getElementById('pincodeInput').value = state.pincode||'';
-  document.getElementById('modeLabel').textContent = state.mode==='landen'?'🌍 Landen':'🏟️ Clubs';
   document.getElementById('team1Input').value = state.team1;
   document.getElementById('team2Input').value = state.team2;
   syncModeLabels();
@@ -587,21 +585,31 @@ function toggleStraffen(){
   showToast(state.strafMode ? '🍺 Straffen aan!' : 'Straffen uit');
 }
 
-function toggleMode(){
-  state.mode = document.getElementById('modeToggle').checked ? 'clubs' : 'landen';
+function setMode(mode){
+  state.mode = mode;
   syncModeLabels();
   saveState();
 }
 function syncModeLabels(){
   const landen = state.mode === 'landen';
-  const modeLbl = document.getElementById('modeLabel');
   const cardTitle = document.getElementById('teamsCardTitle');
   const t1 = document.getElementById('team1Input');
   const t2 = document.getElementById('team2Input');
-  if(modeLbl) modeLbl.textContent = landen ? '🌍 Landen' : '🏟️ Clubs';
   if(cardTitle) cardTitle.textContent = landen ? 'Landen' : 'Teams';
   if(t1) t1.placeholder = landen ? 'Land 1' : 'Team 1';
   if(t2) t2.placeholder = landen ? 'Land 2' : 'Team 2';
+  const wl = document.getElementById('modeWidgetLanden');
+  const wc = document.getElementById('modeWidgetClubs');
+  if(wl){
+    wl.style.background = landen ? 'rgba(103,242,143,.18)' : 'rgba(255,255,255,.04)';
+    wl.style.borderColor = landen ? 'rgba(103,242,143,.6)' : 'var(--border)';
+    wl.style.opacity = landen ? '1' : '0.45';
+  }
+  if(wc){
+    wc.style.background = !landen ? 'rgba(103,242,143,.18)' : 'rgba(255,255,255,.04)';
+    wc.style.borderColor = !landen ? 'rgba(103,242,143,.6)' : 'var(--border)';
+    wc.style.opacity = !landen ? '1' : '0.45';
+  }
 }
 function saveTeams(){
   state.team1 = document.getElementById('team1Input').value;
@@ -1954,7 +1962,7 @@ function checkAdminPassword(){
 // Maak functies globaal beschikbaar voor inline HTML handlers
 Object.assign(window, {
   saveSupabaseConfig, checkAdminPassword, checkPincode,
-  toggleAdmin, toggleMode, toggleStraffen,
+  toggleAdmin, setMode, toggleStraffen,
   savePincode, clearPincode, capitalizeInput, saveTeams,
   formatDateInput, saveCountdown, formatTimeInput,
   addPlayer, removePlayer,
