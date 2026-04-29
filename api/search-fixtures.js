@@ -8,11 +8,15 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'API key niet ingesteld (APISPORTS_KEY ontbreekt in Vercel)' });
   }
 
-  const headers = { 'x-apisports-key': process.env.APISPORTS_KEY };
+  const requestOptions = {
+    method: 'GET',
+    headers: { 'x-apisports-key': process.env.APISPORTS_KEY },
+    redirect: 'follow'
+  };
 
   const teamsRes = await fetch(
     `https://v3.football.api-sports.io/teams?search=${encodeURIComponent(query)}`,
-    { headers }
+    requestOptions
   );
   const teamsData = await teamsRes.json();
 
@@ -28,7 +32,7 @@ export default async function handler(req, res) {
 
   const fixturesRes = await fetch(
     `https://v3.football.api-sports.io/fixtures?team=${teamId}&next=8`,
-    { headers }
+    requestOptions
   );
   const fixturesData = await fixturesRes.json();
 
