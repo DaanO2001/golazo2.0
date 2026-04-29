@@ -1715,6 +1715,40 @@ function clearVoorspellingen(){
   showToast('🗑️ Voorspellingen gewist');
 }
 
+function clearUitslag(){
+  state.uitslag = {};
+  saveState();
+  showToast('🗑️ Echte resultaten gewist');
+}
+
+function berekenScores(){
+  return state.players.map(p=>{
+    const pred = state.voorspellingen[p.id]||{};
+    let goed=0, totaal=0;
+    state.vragen.forEach(v=>{
+      const correct = state.uitslag[v.id]||'';
+      const correctValid = (v.type==='score'||v.type==='tussenstand')
+        ? (()=>{ const pts=correct.split('-'); return pts[0].trim()!==''&&pts[1]&&pts[1].trim()!==''; })()
+        : correct!=='';
+      if(correctValid){
+        totaal++;
+        if((pred[v.id]||'').trim().toLowerCase()===correct.trim().toLowerCase()) goed++;
+      }
+    });
+    return {p, goed, totaal};
+  }).sort((a,b)=>b.goed-a.goed);
+}
+
+function eindWedstrijd(){
+  if(!state.players.length) return showToast('Geen spelers!');
+  const scores = berekenScores();
+  const relevant = scores.filter(s=>s.totaal>0);
+  const laatste = (relevant.length ? relevant[relevant.length-1] : scores[scores.length-1]);
+  state.wielSpeler = laatste.p.id;
+  saveState();
+  showToast(`🏁 Wedstrijd geëindigd! Rad gestuurd naar ${laatste.p.name}`);
+}
+
 function startNieuwRondje(){
   state.players.forEach(p => { state.voorspellingen[p.id] = {}; state.geheim[p.id] = false; });
   state.uitslag = {};
@@ -1930,7 +1964,7 @@ Object.assign(window, {
   fetchLineup, clearLineup, searchFixtures, fetchLiveFixtures,
   toggleLockdown, startNieuwRondje,
   showResetSheet, hideResetSheet,
-  clearVoorspellingen, resetSpelers, resetAll,
+  clearVoorspellingen, clearUitslag, resetSpelers, resetAll, eindWedstrijd,
   popupOverlayClick, startPlayerTurn,
   betaClick, switchPlayer, showTab,
   pickPlayer, uploadFoto, editPlayer,
