@@ -92,6 +92,7 @@ const VAST_VRAGEN = [
   {id:'v2',tekst:'Welke speler scoort het eerste doelpunt?',type:'speler',vast:true},
   {id:'v3',tekst:'Welke speler pakt de eerste gele kaart?',type:'speler',vast:true},
   {id:'v4',tekst:'Komt er een rode kaart?',type:'jn_met_sub',vast:true,subVraag:{id:'v5',tekst:'Wie pakt de rode kaart?',type:'speler'}},
+  {id:'v7',tekst:'Tussenstand',type:'tussenstand',vast:true},
   {id:'v6',tekst:'Eindstand',type:'score',vast:true},
 ];
 
@@ -139,7 +140,13 @@ async function loadStateFromSupabase(){
       state = {...state, ...saved};
       // Zorg dat vaste vragen altijd aanwezig zijn
       const ids = state.vragen.map(v=>v.id);
-      VAST_VRAGEN.forEach(v=>{ if(!ids.includes(v.id)) state.vragen.unshift(v); });
+      VAST_VRAGEN.forEach((v,vastIdx)=>{
+        if(!ids.includes(v.id)){
+          let insertIdx=0;
+          for(let j=vastIdx-1;j>=0;j--){ const pi=state.vragen.findIndex(x=>x.id===VAST_VRAGEN[j].id); if(pi>=0){insertIdx=pi+1;break;} }
+          state.vragen.splice(insertIdx,0,v); ids.splice(insertIdx,0,v.id);
+        }
+      });
     }
     setSyncStatus('ok');
   } catch(e){
@@ -213,7 +220,13 @@ function setupRealtime(){
       // Restore current user's in-progress predictions (don't let realtime overwrite what they're typing)
       if(!isReset && myPred && currentUserId) state.voorspellingen[currentUserId] = myPred;
       const ids = state.vragen.map(v=>v.id);
-      VAST_VRAGEN.forEach(v=>{ if(!ids.includes(v.id)) state.vragen.unshift(v); });
+      VAST_VRAGEN.forEach((v,vastIdx)=>{
+        if(!ids.includes(v.id)){
+          let insertIdx=0;
+          for(let j=vastIdx-1;j>=0;j--){ const pi=state.vragen.findIndex(x=>x.id===VAST_VRAGEN[j].id); if(pi>=0){insertIdx=pi+1;break;} }
+          state.vragen.splice(insertIdx,0,v); ids.splice(insertIdx,0,v.id);
+        }
+      });
       // Re-render alles behalve de actieve invoervelden
       renderInvullen();
       renderMatchup();
@@ -1968,6 +1981,8 @@ Object.assign(window, {
   addPlayer, removePlayer,
   toggleVragenAdmin, toggleEigenVraag, addEigenVraag,
   startEditVraag, saveEditVraag, cancelEditVraag, removeVraag,
+  dragStart, dragEnd, dragOver, dragLeave, dragDrop,
+  touchDragStart, touchDragMove, touchDragEnd,
   toggleUitslag, toggleUitslagVraag, saveUitslag, savePushBerichten, sendBroadcast,
   fetchLineup, clearLineup, searchFixtures, fetchLiveFixtures,
   toggleLockdown, startNieuwRondje,
