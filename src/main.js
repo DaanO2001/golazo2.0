@@ -110,7 +110,6 @@ let state = {
   lineup:null,
   fixtureId:'',
   fotos:{},
-  devices:{},
 };
 
 // ── LOAD / SAVE via Supabase ──
@@ -220,17 +219,12 @@ function setupRealtime(){
 //  PLAYER PICK SCREEN
 // ------------------------------------------------
 function showPickScreen(){
-  // Als dit apparaat al een speler heeft geclaimd, direct doorgaan als die speler
   if(!isAdmin){
     const savedId = localStorage.getItem(USER_KEY);
-    const deviceId = getDeviceId();
-    const stillClaimed = savedId && state.devices?.[savedId] === deviceId;
-    if(stillClaimed && state.players.find(p => p.id === savedId)){
+    if(savedId && state.players.find(p => p.id === savedId)){
       pickPlayer(savedId);
       return;
     }
-    // Admin heeft de koppeling gereset — wis localStorage zodat speler opnieuw kan kiezen
-    if(savedId && !stillClaimed) localStorage.removeItem(USER_KEY);
   }
   // Check pincode first (skip if no pincode set, or if already verified, or if admin)
   if(state.pincode && !isAdmin){
@@ -274,23 +268,19 @@ function renderPickGrid(){
     const heeftAlles = ingevuld === vis.length && vis.length > 0;
     const nietAlles = ingevuld > 0 && !heeftAlles;
     const statusText = ingevuld === 0 ? 'Nog niets ingevuld' : heeftAlles ? '✅ Klaar!' : `${ingevuld} van ${vis.length} ingevuld`;
-    const deviceId = getDeviceId();
-    const devices = state.devices || {};
-    const isMine = devices[p.id] === deviceId;
-    const isClaimed = devices[p.id] && !isMine;
+    const isIk = currentUserId === p.id;
     const foto = state.fotos && state.fotos[p.id];
     const avatarContent = foto
       ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`
       : p.name[0].toUpperCase();
     const avatarStyle = foto ? 'padding:0;overflow:hidden;' : '';
-    return `<div class="pick-card ${heeftAlles?'done':''} ${isClaimed?'claimed':''}" onclick="pickPlayer('${p.id}')" style="${isClaimed?'opacity:.5;':''}">
+    return `<div class="pick-card ${heeftAlles?'done':''}" onclick="pickPlayer('${p.id}')">
       <div style="position:relative;flex-shrink:0;">
         <div class="pick-card-avatar" id="pick_avatar_${p.id}" style="${avatarStyle}">${avatarContent}</div>
-        ${isMine?`<label for="foto_${p.id}" onclick="event.stopPropagation()" style="position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;border-radius:50%;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;" title="Foto uploaden">📷</label><input type="file" id="foto_${p.id}" accept="image/*" style="display:none;" onchange="uploadFoto('${p.id}',this)">`:``}
       </div>
       <div style="flex:1;min-width:0;">
-        <div class="pick-card-name">${p.name}${nietAlles?'<span style="color:var(--accent);margin-left:4px;">!</span>':''}${isClaimed?'<span style="color:var(--muted);font-size:11px;margin-left:6px;">🔒</span>':''}${isMine?'<span style="color:var(--oranje);font-size:11px;margin-left:6px;">● jij</span>':''}</div>
-        <div class="pick-card-status">${isClaimed?'Gekoppeld aan ander apparaat':statusText}</div>
+        <div class="pick-card-name">${p.name}${nietAlles?'<span style="color:var(--accent);margin-left:4px;">!</span>':''}${isIk?'<span style="color:var(--oranje);font-size:11px;margin-left:6px;">● jij</span>':''}</div>
+        <div class="pick-card-status">${statusText}</div>
       </div>
     </div>`;
   }).join('');
@@ -299,26 +289,6 @@ function renderPickGrid(){
 function pickPlayer(id){
   const p = state.players.find(x => x.id === id);
   if(!p) return;
-  const deviceId = getDeviceId();
-  const devices = state.devices || {};
-  // Check if this device already claimed a different player
-  const myClaimedId = Object.keys(devices).find(pid => devices[pid] === deviceId);
-  if(myClaimedId && myClaimedId !== id){
-    const myName = state.players.find(x => x.id === myClaimedId)?.name || 'iemand anders';
-    showToast(`⚠️ Je bent al aangemeld als ${myName}!`);
-    return;
-  }
-  // Check if this name is already claimed by another device
-  if(devices[id] && devices[id] !== deviceId){
-    showToast('⚠️ Deze naam is al gekoppeld aan een ander apparaat!');
-    return;
-  }
-  // Claim this name for this device
-  if(!devices[id]){
-    if(!state.devices) state.devices = {};
-    state.devices[id] = deviceId;
-    saveState();
-  }
   currentUserId = id;
   localStorage.setItem(USER_KEY, id);
   subscribeToPush(id);
@@ -374,10 +344,13 @@ function uploadFoto(playerId, input){
 }
 
 function switchPlayer(){
-  // Sla op en ga terug naar eigen overzicht (niet wisselen van speler)
   if(editingPlayer) saveCurrentVoorspelling(false);
   editingPlayer = null;
-  renderAll();
+  localStorage.removeItem(USER_KEY);
+  currentUserId = null;
+  document.getElementById('userIndicator').style.display = 'none';
+  document.getElementById('pickScreen').classList.add('active');
+  renderPickGrid();
 }
 
 function renderAll(){
@@ -759,13 +732,6 @@ function addPlayer(){
   renderAdminUitslag();
   showToast('👤 '+name+' toegevoegd!');
 }
-function resetDevice(id){
-  if(!state.devices) return;
-  delete state.devices[id];
-  saveState();
-  renderPlayers();
-  showToast('📱 Apparaatkoppeling gereset');
-}
 
 function removePlayer(id){
   state.players=state.players.filter(p=>p.id!==id);
@@ -781,8 +747,6 @@ function renderPlayers(){
   document.getElementById('playerCount').textContent=state.players.length;
   list.innerHTML=state.players.map(p=>{
     const foto = state.fotos && state.fotos[p.id];
-    const devices = state.devices || {};
-    const isClaimed = !!devices[p.id];
     const avatarContent = foto
       ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`
       : p.name[0].toUpperCase();
@@ -791,7 +755,6 @@ function renderPlayers(){
       <div style="display:flex;align-items:center;gap:0;flex:1;min-width:0;">
         <div class="player-avatar" style="${avatarStyle}">${avatarContent}</div>
         <div class="player-name" style="flex:1;">${p.name}</div>
-        ${isClaimed?`<button onclick="resetDevice('${p.id}')" style="background:none;border:1px solid rgba(255,107,0,.3);color:var(--accent);font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;cursor:pointer;margin-right:6px;white-space:nowrap;" title="Apparaatkoppeling resetten">📱 Reset</button>`:''}
       </div>
       <button class="del-btn" onclick="removePlayer('${p.id}')">✕</button>
     </div>`;
@@ -1680,8 +1643,7 @@ function resetAll(){
     straffen:{},
     pincode:'0001',
     fotos:{},
-    devices:{},
-  };
+    };
   tourMode = false;
   tourIndex = 0;
   currentUserId = null;
@@ -1729,15 +1691,9 @@ document.addEventListener('keydown', function(e){
 
 // ── ADMIN WACHTWOORD & CONFIG VIA URL ──
 const ADMIN_PASSWORD = '0801';
-const DEVICE_KEY = 'golazo_device_id';
 const USER_KEY = 'golazo_user_id';
 const ADMIN_SESSION_KEY = 'golazo_admin_session';
 const ADMIN_SESSION_DURATION = 60 * 60 * 1000; // 60 minuten in ms
-function getDeviceId(){
-  let id = localStorage.getItem(DEVICE_KEY);
-  if(!id){ id = 'dev_' + Math.random().toString(36).slice(2) + Date.now(); localStorage.setItem(DEVICE_KEY, id); }
-  return id;
-}
 let isAdmin = false;
 
 // Encode/decode config voor in de URL (simpele base64)
@@ -1852,7 +1808,7 @@ Object.assign(window, {
   toggleAdmin, toggleMode, toggleStraffen,
   savePincode, clearPincode, capitalizeInput, saveTeams,
   formatDateInput, saveCountdown, formatTimeInput,
-  addPlayer, removePlayer, resetDevice,
+  addPlayer, removePlayer,
   toggleVragenAdmin, toggleEigenVraag, addEigenVraag,
   startEditVraag, saveEditVraag, cancelEditVraag, removeVraag,
   toggleUitslag, toggleUitslagVraag, saveUitslag, savePushBerichten,
