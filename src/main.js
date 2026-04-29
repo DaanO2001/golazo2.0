@@ -110,6 +110,15 @@ let state = {
   lineup:null,
   fixtureId:'',
   fotos:{},
+  wiel:[
+    {id:'w1',tekst:'2 slokken'},
+    {id:'w2',tekst:'Adtje'},
+    {id:'w3',tekst:'Jij kiest'},
+    {id:'w4',tekst:'Iedereen drinkt'},
+    {id:'w5',tekst:'Vrij'},
+    {id:'w6',tekst:'3 slokken'},
+  ],
+  wielSpeler:null,
 };
 
 // ── LOAD / SAVE via Supabase ──
@@ -209,6 +218,7 @@ function setupRealtime(){
       renderInvullen();
       renderMatchup();
       renderCountdown();
+      checkWielOverlay();
       if(adminOpen) refreshAdminUI();
       setSyncStatus('ok');
     })
@@ -392,6 +402,7 @@ function refreshAdminUI(){
   renderAdminVragen();
   renderAdminUitslag();
   renderAdminLineup();
+  renderWielAdmin();
   syncLockdownBtn();
 }
 
@@ -1729,6 +1740,11 @@ function resetAll(){
     straffen:{},
     pincode:'0001',
     fotos:{},
+    wiel:[
+      {id:'w1',tekst:'2 slokken'},{id:'w2',tekst:'Adtje'},{id:'w3',tekst:'Jij kiest'},
+      {id:'w4',tekst:'Iedereen drinkt'},{id:'w5',tekst:'Vrij'},{id:'w6',tekst:'3 slokken'},
+    ],
+    wielSpeler:null,
     };
   tourMode = false;
   tourIndex = 0;
@@ -1910,7 +1926,162 @@ Object.assign(window, {
   toggleSecret, saveStraf,
   saveCurrentVoorspelling, renderInvullenForm,
   syncScore, capitalizeWordsInput,
+  stuurWiel, sluitWiel, spinWiel,
+  addWielSegment, removeWielSegment, saveWielSegment,
 });
+
+// ── WIEL ──
+const WIEL_COLORS = ['#ff6b35','#f7c948','#67f28f','#4ecdc4','#ff8e53','#a29bfe','#fd79a8','#55efc4'];
+let wielRotation = 0;
+let wielAnim = null;
+let wielSpinning = false;
+
+function renderWielAdmin(){
+  const el = document.getElementById('wielAdminContent');
+  if(!el) return;
+  const segs = state.wiel||[];
+  const playerBtns = state.players.map(p=>`
+    <button onclick="stuurWiel('${p.id}')" style="display:flex;align-items:center;gap:8px;background:var(--surface3);border:1px solid var(--border);border-radius:12px;padding:10px 14px;cursor:pointer;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;width:100%;text-align:left;">
+      <div style="width:30px;height:30px;border-radius:50%;background:var(--oranje-dim);border:1px solid var(--border-orange);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--oranje);flex-shrink:0;">${p.name[0].toUpperCase()}</div>
+      ${p.name}
+    </button>`).join('');
+  const segList = segs.map((s,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <div style="width:12px;height:12px;border-radius:50%;background:${WIEL_COLORS[i%WIEL_COLORS.length]};flex-shrink:0;"></div>
+      <input type="text" value="${s.tekst}" id="wielseg_${s.id}" onchange="saveWielSegment('${s.id}')" style="flex:1;border-radius:8px;font-size:13px;padding:6px 10px;">
+      <button onclick="removeWielSegment('${s.id}')" style="width:28px;height:28px;border-radius:50%;background:rgba(255,71,106,.15);border:1px solid rgba(255,71,106,.3);color:#ff6b8a;font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>`).join('');
+  el.innerHTML = `
+    <div style="font-size:12px;color:var(--muted2);margin-bottom:8px;">Klik op een naam om het rad naar die speler te sturen:</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">${playerBtns||'<div style="font-size:12px;color:var(--muted);">Voeg eerst spelers toe</div>'}</div>
+    <div style="border-top:1px solid var(--border);padding-top:12px;">
+      <div style="font-size:12px;color:var(--muted2);margin-bottom:8px;font-weight:600;">Segmenten:</div>
+      ${segList}
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <input type="text" id="nieuwSegInput" placeholder="Nieuw segment..." style="flex:1;border-radius:8px;font-size:13px;padding:6px 10px;" onkeydown="if(event.key==='Enter')addWielSegment()">
+        <button class="btn sm" onclick="addWielSegment()" style="width:auto;padding:8px 12px;flex-shrink:0;">+ Add</button>
+      </div>
+    </div>`;
+}
+
+function addWielSegment(){
+  const inp = document.getElementById('nieuwSegInput');
+  if(!inp||!inp.value.trim()) return;
+  if(!state.wiel) state.wiel=[];
+  state.wiel.push({id:'w'+Date.now(), tekst:inp.value.trim()});
+  saveState(); renderWielAdmin();
+}
+
+function removeWielSegment(id){
+  if(!state.wiel) return;
+  state.wiel = state.wiel.filter(s=>s.id!==id);
+  saveState(); renderWielAdmin();
+}
+
+function saveWielSegment(id){
+  const inp = document.getElementById('wielseg_'+id);
+  if(!inp||!state.wiel) return;
+  const seg = state.wiel.find(s=>s.id===id);
+  if(seg){ seg.tekst=inp.value.trim(); saveState(); }
+}
+
+function stuurWiel(playerId){
+  state.wielSpeler = playerId;
+  saveState();
+  const player = state.players.find(p=>p.id===playerId);
+  showToast(`🎰 Rad gestuurd naar ${player?.name||'speler'}!`);
+}
+
+function sluitWiel(){
+  state.wielSpeler = null;
+  saveState();
+  const overlay = document.getElementById('wielOverlay');
+  if(overlay) overlay.style.display = 'none';
+  if(wielAnim){ cancelAnimationFrame(wielAnim); wielAnim=null; }
+  wielSpinning = false;
+}
+
+function checkWielOverlay(){
+  const overlay = document.getElementById('wielOverlay');
+  if(!overlay) return;
+  const shouldShow = !!(state.wielSpeler && state.wielSpeler===currentUserId);
+  if(shouldShow && overlay.style.display!=='flex'){
+    const player = state.players.find(p=>p.id===state.wielSpeler);
+    const naam = document.getElementById('wielNaam');
+    if(naam) naam.textContent = player?.name||'';
+    overlay.style.display = 'flex';
+    wielRotation = 0; wielAnim = null; wielSpinning = false;
+    const spinBtn = document.getElementById('wielSpinBtn');
+    const sluitBtn = document.getElementById('wielSluitBtn');
+    const result = document.getElementById('wielResult');
+    if(spinBtn){ spinBtn.disabled=false; spinBtn.style.display='block'; }
+    if(sluitBtn) sluitBtn.style.display='none';
+    if(result) result.style.display='none';
+    setTimeout(()=>drawWiel(document.getElementById('wielCanvas'),0),50);
+  } else if(!shouldShow && overlay.style.display==='flex'){
+    overlay.style.display = 'none';
+    if(wielAnim){ cancelAnimationFrame(wielAnim); wielAnim=null; }
+  }
+}
+
+function drawWiel(canvas, rotation){
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const segs = state.wiel||[];
+  if(!segs.length) return;
+  const cx=canvas.width/2, cy=canvas.height/2, r=Math.min(cx,cy)-4;
+  const n=segs.length, arc=(2*Math.PI)/n;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  segs.forEach((seg,i)=>{
+    const start=rotation+i*arc-Math.PI/2, end=start+arc;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,end); ctx.closePath();
+    ctx.fillStyle=WIEL_COLORS[i%WIEL_COLORS.length]; ctx.fill();
+    ctx.strokeStyle='rgba(4,37,42,.5)'; ctx.lineWidth=2; ctx.stroke();
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(start+arc/2);
+    ctx.textAlign='right'; ctx.fillStyle='#04252A';
+    ctx.font=`bold ${Math.max(11,Math.min(15,Math.floor(r*0.16)))}px "DM Sans",sans-serif`;
+    ctx.fillText(seg.tekst, r-12, 5); ctx.restore();
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,16,0,2*Math.PI);
+  ctx.fillStyle='#04252A'; ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.2)'; ctx.lineWidth=2; ctx.stroke();
+}
+
+function spinWiel(){
+  if(wielSpinning) return;
+  const canvas=document.getElementById('wielCanvas');
+  const segs=state.wiel||[];
+  if(!canvas||!segs.length) return;
+  wielSpinning=true;
+  const spinBtn=document.getElementById('wielSpinBtn');
+  if(spinBtn) spinBtn.disabled=true;
+  const n=segs.length, arc=(2*Math.PI)/n;
+  const targetSeg=Math.floor(Math.random()*n);
+  const targetAngle=((Math.PI/2-targetSeg*arc-arc/2)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
+  const currentNorm=((wielRotation%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+  let diff=targetAngle-currentNorm; if(diff<=0) diff+=2*Math.PI;
+  const extraSpins=(6+Math.floor(Math.random()*4))*2*Math.PI;
+  const startRot=wielRotation, endRot=wielRotation+extraSpins+diff;
+  const duration=4500, t0=performance.now();
+  function animate(now){
+    const t=Math.min((now-t0)/duration,1);
+    const ease=1-Math.pow(1-t,4);
+    wielRotation=startRot+(endRot-startRot)*ease;
+    drawWiel(canvas,wielRotation);
+    if(t<1){ wielAnim=requestAnimationFrame(animate); }
+    else {
+      wielAnim=null;
+      const resultTekst=document.getElementById('wielResultTekst');
+      const resultDiv=document.getElementById('wielResult');
+      const sluitBtn=document.getElementById('wielSluitBtn');
+      if(spinBtn) spinBtn.style.display='none';
+      if(resultTekst) resultTekst.textContent=segs[targetSeg].tekst;
+      if(resultDiv) resultDiv.style.display='block';
+      if(sluitBtn) sluitBtn.style.display='block';
+    }
+  }
+  wielAnim=requestAnimationFrame(animate);
+}
 
 // ── PUSH NOTIFICATIONS ──
 function urlBase64ToUint8Array(base64String) {
