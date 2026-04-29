@@ -1935,7 +1935,7 @@ async function searchFixtures(){
       return `<div onclick="fetchLineup(${f.id})" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface3);border-radius:12px;margin-bottom:6px;cursor:pointer;border:1px solid var(--border);">
         <div style="flex:1;min-width:0;">
           <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.home} – ${f.away}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${dateStr} · ${timeStr} · ${f.league}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${dateStr} · ${timeStr} · ${f.league}${f.gespeeld?' · <span style="color:#ff8080;">al gespeeld</span>':''}</div>
         </div>
         <div style="font-size:18px;flex-shrink:0;">▶</div>
       </div>`;

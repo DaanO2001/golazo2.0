@@ -45,10 +45,18 @@ export default async function handler(req, res) {
     const teamId = teamsData.response[0].team.id;
     const teamName = teamsData.response[0].team.name;
 
-    const fixturesData = await apiGet(
+    let fixturesData = await apiGet(
       `https://v3.football.api-sports.io/fixtures?team=${teamId}&next=8`,
       process.env.APISPORTS_KEY
     );
+
+    // Geen komende wedstrijden → toon de laatste 8 gespeelde wedstrijden
+    if (!fixturesData.response?.length) {
+      fixturesData = await apiGet(
+        `https://v3.football.api-sports.io/fixtures?team=${teamId}&last=8`,
+        process.env.APISPORTS_KEY
+      );
+    }
 
     const fixtures = (fixturesData.response || []).map(f => ({
       id: f.fixture.id,
@@ -56,10 +64,11 @@ export default async function handler(req, res) {
       home: f.teams.home.name,
       away: f.teams.away.name,
       league: f.league.name,
+      gespeeld: f.fixture.status.short === 'FT',
     }));
 
     if (!fixtures.length) {
-      return res.status(200).json({ fixtures: [], debug: `Team gevonden: ${teamName} (id: ${teamId}), maar geen komende wedstrijden` });
+      return res.status(200).json({ fixtures: [], debug: `Team gevonden: ${teamName} (id: ${teamId}), maar geen wedstrijden gevonden` });
     }
 
     res.status(200).json({ fixtures });
