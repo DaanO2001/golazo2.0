@@ -1811,7 +1811,7 @@ Object.assign(window, {
   addPlayer, removePlayer,
   toggleVragenAdmin, toggleEigenVraag, addEigenVraag,
   startEditVraag, saveEditVraag, cancelEditVraag, removeVraag,
-  toggleUitslag, toggleUitslagVraag, saveUitslag, savePushBerichten,
+  toggleUitslag, toggleUitslagVraag, saveUitslag, savePushBerichten, sendBroadcast,
   fetchLineup, clearLineup, searchFixtures, fetchLiveFixtures,
   toggleLockdown, startNieuwRondje,
   showResetSheet, hideResetSheet,
@@ -2016,6 +2016,23 @@ function buildPlayerOptions(selected){
   return `<option value="">Kies een speler...</option>
     ${renderGroup(home,'🏠')}
     ${renderGroup(away,'✈️')}`;
+}
+
+async function sendBroadcast(){
+  const inp = document.getElementById('broadcastInput');
+  const tekst = inp?.value.trim();
+  if(!tekst){ showToast('❌ Typ eerst een bericht'); return; }
+  try {
+    await fetch(`${location.origin}/api/send-push`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: tekst, body: '' })
+    });
+    showToast('📤 Bericht verstuurd!');
+    if(inp) inp.value = '';
+  } catch(e) {
+    showToast('❌ Versturen mislukt');
+  }
 }
 
 function savePushBerichten() {

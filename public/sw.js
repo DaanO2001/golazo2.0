@@ -2,7 +2,7 @@ self.addEventListener('push', event => {
   const data = event.data?.json() ?? {};
   event.waitUntil(
     self.registration.showNotification(data.title || '', {
-      body: data.body || 'Er is een update!',
+      body: data.body != null ? data.body : '',
       icon: '/icon.png',
       badge: '/icon.png',
       data: { url: self.location.origin + '/?tab=resultaat' }
