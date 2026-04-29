@@ -172,6 +172,24 @@ function setupRealtime(){
       const newState = payload.new.state_json;
       if(!newState) return;
 
+      // Capture current user's unsaved DOM inputs before state gets overwritten
+      if(currentUserId && state.voorspellingen[currentUserId]){
+        const pred = state.voorspellingen[currentUserId];
+        state.vragen.forEach(v => {
+          if(v.type==='score'||v.type==='tussenstand'){
+            const e1=document.getElementById('pred_'+v.id+'_1');
+            const e2=document.getElementById('pred_'+v.id+'_2');
+            if(e1||e2){ const v1=e1?e1.value.trim():''; const v2=e2?e2.value.trim():''; if(v1||v2) pred[v.id]=`${v1}-${v2}`; }
+          } else if(v.type==='jn_met_sub'){
+            const el=document.getElementById('pred_'+v.id); if(el) pred[v.id]=el.value;
+            if(v.subVraag){ const sub=document.getElementById('pred_'+v.subVraag.id); if(sub) pred[v.subVraag.id]=sub.value; }
+          } else {
+            const el=document.getElementById('pred_'+v.id); if(el) pred[v.id]=el.value;
+          }
+        });
+      }
+      const myPred = currentUserId ? {...(state.voorspellingen[currentUserId]||{})} : null;
+
       // Detect reset: no teams and no players
       const isReset = !newState.team1 && !newState.team2 && (!newState.players || !newState.players.length);
       if(isReset){
@@ -182,6 +200,8 @@ function setupRealtime(){
       }
 
       state = {...state, ...newState};
+      // Restore current user's in-progress predictions (don't let realtime overwrite what they're typing)
+      if(!isReset && myPred && currentUserId) state.voorspellingen[currentUserId] = myPred;
       const ids = state.vragen.map(v=>v.id);
       VAST_VRAGEN.forEach(v=>{ if(!ids.includes(v.id)) state.vragen.unshift(v); });
       // Re-render alles behalve de actieve invoervelden
@@ -1348,7 +1368,7 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
     return `<select id="${id}" onchange="${onchangeSub}"><option value="">Kies...</option><option value="Ja" ${waarde==='Ja'?'selected':''}>Ja</option><option value="Nee" ${waarde==='Nee'?'selected':''}>Nee</option></select>
     <div id="${subDivId}" style="display:${showSub?'block':'none'};margin-top:10px;padding:10px 12px;background:var(--surface3);border-radius:10px;border:1px solid var(--border);">
       <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">↳ ${sub.tekst}</div>
-      <input type="text" id="${prefix}_${sub.id}" value="${subWaarde}" placeholder="Naam speler..." autocapitalize="words" oninput="capitalizeInput(this)" style="border-radius:10px;">
+      <input type="text" id="${prefix}_${sub.id}" value="${subWaarde}" placeholder="Naam speler..." autocapitalize="words" style="border-radius:10px;">
     </div>`;
   }
 
@@ -1373,7 +1393,7 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
   }
 
   if(v.type==='getal') return `<input type="text" inputmode="numeric" id="${id}" value="${waarde}" placeholder="bijv. 3">`;
-  return `<input type="text" id="${id}" value="${waarde}" placeholder="Jouw antwoord..." autocapitalize="words" oninput="capitalizeWordsInput(this)">`;
+  return `<input type="text" id="${id}" value="${waarde}" placeholder="Jouw antwoord..." autocapitalize="words">`;
 }
 
 function syncScore(baseId){}
