@@ -1421,7 +1421,7 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
     </div>`;
   }
 
-  if(v.type==='score'){
+  if(v.type==='score' || v.type==='tussenstand'){
     const parts = waarde ? waarde.split('-') : ['',''];
     const s1 = parts[0]||''; const s2 = parts[1]||'';
     return `<div style="display:flex;align-items:center;gap:10px;">
