@@ -1915,7 +1915,15 @@ async function subscribeToPush(playerId) {
 }
 
 // ── OPSTELLING ──
+let lastLiveFetch = 0;
 async function fetchLiveFixtures(){
+  const now = Date.now();
+  if(now - lastLiveFetch < 30000){
+    const sec = Math.ceil((30000 - (now - lastLiveFetch)) / 1000);
+    showToast(`⏳ Wacht nog ${sec} seconden`);
+    return;
+  }
+  lastLiveFetch = now;
   const resultsEl = document.getElementById('fixtureResults');
   resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Live wedstrijden ophalen...</div>';
   try {
@@ -1929,14 +1937,12 @@ async function fetchLiveFixtures(){
     resultsEl.innerHTML = data.fixtures.map(f => {
       const d = new Date(f.date);
       const dateStr = d.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
+      const d = new Date(f.date);
+      const timeStr = d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
       return `<div onclick="fetchLineup(${f.id})" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface3);border-radius:12px;margin-bottom:6px;cursor:pointer;border:1px solid rgba(255,100,50,.4);">
         <div style="flex:1;min-width:0;">
           <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.home} – ${f.away}</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
-            <span style="font-size:12px;font-weight:800;color:var(--oranje);">${f.score}</span>
-            <span style="font-size:11px;color:#ff6b6b;font-weight:700;">${f.minuut ? f.minuut+"'" : 'LIVE'}</span>
-            <span style="font-size:11px;color:var(--muted);">${f.league}</span>
-          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${timeStr} · ${f.league} · <span style="color:#ff6b6b;font-weight:700;">LIVE</span></div>
         </div>
         <div style="font-size:18px;flex-shrink:0;">▶</div>
       </div>`;

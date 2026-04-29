@@ -37,8 +37,6 @@ export default async function handler(req, res) {
       home: f.teams.home.name,
       away: f.teams.away.name,
       league: f.league.name,
-      score: `${f.goals.home ?? 0} - ${f.goals.away ?? 0}`,
-      minuut: f.fixture.status.elapsed,
     }));
 
     res.status(200).json({ fixtures });

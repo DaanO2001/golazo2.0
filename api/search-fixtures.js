@@ -29,13 +29,25 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'API key niet ingesteld (APISPORTS_KEY ontbreekt in Vercel)' });
     }
 
-    const teamsData = await apiGet(
+    let teamsData = await apiGet(
       `https://v3.football.api-sports.io/teams?search=${encodeURIComponent(query)}`,
       process.env.APISPORTS_KEY
     );
 
     if (teamsData.errors && Object.keys(teamsData.errors).length) {
       return res.status(500).json({ error: Object.values(teamsData.errors).join(', ') });
+    }
+
+    // Geen resultaat? Probeer zonder het eerste woord (bijv. "FC Den Bosch" → "Den Bosch")
+    if (!teamsData.response?.length) {
+      const words = query.trim().split(' ');
+      if (words.length > 1) {
+        const fallback = words.slice(1).join(' ');
+        teamsData = await apiGet(
+          `https://v3.football.api-sports.io/teams?search=${encodeURIComponent(fallback)}`,
+          process.env.APISPORTS_KEY
+        );
+      }
     }
 
     if (!teamsData.response?.length) {
