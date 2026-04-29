@@ -931,12 +931,24 @@ function renderStrafInput(v){
   </div>`;
 }
 
+function autoStrafType(getalId, typeId){
+  const getalEl = document.getElementById(getalId);
+  const typeEl  = document.getElementById(typeId);
+  if(!getalEl || !typeEl) return;
+  const val = getalEl.value.trim();
+  if(val==='1') typeEl.value='adtje';
+  else if(val!=='') typeEl.value='slokken';
+}
+
 function saveStraf(vraagId){
   if(!state.straffen) state.straffen = {};
-  const fouGetal = (document.getElementById('straf_fout_getal_'+vraagId)||{}).value||'';
-  const fouType  = (document.getElementById('straf_fout_type_'+vraagId)||{}).value||'slokken';
-  const goedGetal = (document.getElementById('straf_goed_getal_'+vraagId)||{}).value||'';
-  const goedType  = (document.getElementById('straf_goed_type_'+vraagId)||{}).value||'slokken';
+  autoStrafType('straf_fout_getal_'+vraagId,  'straf_fout_type_'+vraagId);
+  autoStrafType('straf_goed_getal_'+vraagId,  'straf_goed_type_'+vraagId);
+  autoStrafType('straf_bonus_getal_'+vraagId, 'straf_bonus_type_'+vraagId);
+  const fouGetal   = (document.getElementById('straf_fout_getal_'+vraagId)||{}).value||'';
+  const fouType    = (document.getElementById('straf_fout_type_'+vraagId)||{}).value||'slokken';
+  const goedGetal  = (document.getElementById('straf_goed_getal_'+vraagId)||{}).value||'';
+  const goedType   = (document.getElementById('straf_goed_type_'+vraagId)||{}).value||'slokken';
   const bonusGetal = (document.getElementById('straf_bonus_getal_'+vraagId)||{}).value||'';
   const bonusType  = (document.getElementById('straf_bonus_type_'+vraagId)||{}).value||'slokken';
   state.straffen[vraagId] = { fouGetal:fouGetal.trim(), fouType, goedGetal:goedGetal.trim(), goedType, bonusGetal:bonusGetal.trim(), bonusType };
