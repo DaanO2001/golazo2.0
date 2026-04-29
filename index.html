@@ -91,6 +91,15 @@
   </div>
   <div id="shareLinksBox"></div>
 
+  <!-- PUSHMELDING STUREN -->
+  <div class="card" style="margin-bottom:12px;border-color:rgba(255,100,50,.4);">
+    <div class="card-title">📣 Stuur pushmelding</div>
+    <input type="text" id="broadcastInput" placeholder="Typ hier je bericht..."
+      style="border-radius:10px;font-size:13px;padding:8px 12px;margin-bottom:10px;"
+      onkeydown="if(event.key==='Enter')sendBroadcast()">
+    <button class="btn" onclick="sendBroadcast()" style="margin-top:0;">📤 Verstuur naar iedereen</button>
+  </div>
+
   <!-- MODE -->
   <div class="toggle-row">
     <div>
@@ -221,14 +230,6 @@
         <button class="btn sm" onclick="savePushBerichten()" style="font-size:12px;">💾 Opslaan</button>
       </div>
     </div>
-  </div>
-
-  <!-- STUUR BERICHT -->
-  <div class="card">
-    <div class="card-title">📣 Stuur bericht naar iedereen</div>
-    <input type="text" id="broadcastInput" placeholder="Typ hier je bericht..."
-      style="border-radius:10px;font-size:13px;padding:8px 12px;margin-bottom:10px;">
-    <button class="btn" onclick="sendBroadcast()" style="margin-top:0;">📤 Verstuur</button>
   </div>
 
   <div class="divider"></div>

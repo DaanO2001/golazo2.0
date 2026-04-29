@@ -2024,7 +2024,7 @@ async function sendBroadcast(){
     await fetch(`${location.origin}/api/send-push`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: '', body: tekst })
+      body: JSON.stringify({ title: 'from Golazo', body: tekst })
     });
     showToast('📤 Bericht verstuurd!');
     if(inp) inp.value = '';
@@ -2062,7 +2062,7 @@ async function sendPersonalizedPushNotifications() {
       const isGoed = antwoord.trim().toLowerCase() === correct.trim().toLowerCase();
       messages.push({
         player_id: p.id,
-        title: '',
+        title: 'from Golazo',
         body: isGoed ? goedBericht : foutBericht
       });
     });
