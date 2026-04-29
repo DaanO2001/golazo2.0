@@ -1871,6 +1871,7 @@ async function subscribeToPush(playerId) {
 
 // ── OPSTELLING ──
 let lastLiveFetch = 0;
+let lastSearchFetch = 0;
 async function fetchLiveFixtures(){
   const now = Date.now();
   if(now - lastLiveFetch < 30000){
@@ -1906,6 +1907,13 @@ async function fetchLiveFixtures(){
 }
 
 async function searchFixtures(){
+  const now = Date.now();
+  if(now - lastSearchFetch < 10000){
+    const sec = Math.ceil((10000 - (now - lastSearchFetch)) / 1000);
+    showToast(`⏳ Wacht nog ${sec} seconden`);
+    return;
+  }
+  lastSearchFetch = now;
   const query = document.getElementById('fixtureSearchInput')?.value.trim();
   if(!query){ showToast('❌ Voer een teamnaam in'); return; }
   const resultsEl = document.getElementById('fixtureResults');
