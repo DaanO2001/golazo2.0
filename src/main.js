@@ -1578,15 +1578,30 @@ function renderResultaat(){
       const subKey = v.type==='jn_met_sub' ? v.subVraag.id : v.id+'_s';
       const subCorrect = (state.uitslag[subKey]||'').trim().toLowerCase();
       if(subCorrect){
-        const bonusWinnaars = state.players.filter(p=>{
-          const pred=state.voorspellingen[p.id]||{};
-          return (pred[v.id]||'').trim().toLowerCase()===correct.trim().toLowerCase()
-            && (pred[subKey]||'').trim().toLowerCase()===subCorrect;
-        });
-        if(bonusWinnaars.length){
-          bonusSection = `<div style="padding:8px 12px;border-top:1px solid var(--border);">
-            <div style="font-size:10px;font-weight:800;color:#67f28f;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">⭐ BONUS: ${strafInfo.bonusGetal} ${strafInfo.bonusType} uitdelen (${state.uitslag[subKey]})</div>
-            <div style="display:flex;flex-wrap:wrap;gap:5px;">${bonusWinnaars.map(p=>`<div class="winner-chip goed"><div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>${p.name}</div>`).join('')}</div>
+        const mainCorrectPlayers = state.players.filter(p=>
+          (state.voorspellingen[p.id]||{})[v.id]?.trim().toLowerCase()===correct.trim().toLowerCase()
+        );
+        const bonusWinnaars = mainCorrectPlayers.filter(p=>
+          ((state.voorspellingen[p.id]||{})[subKey]||'').trim().toLowerCase()===subCorrect
+        );
+        const bonusFout = mainCorrectPlayers.filter(p=>
+          ((state.voorspellingen[p.id]||{})[subKey]||'').trim().toLowerCase()!==subCorrect
+        );
+        const bonusGoedChips = bonusWinnaars.map(p=>`<div class="winner-chip goed"><div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>${p.name}</div>`).join('');
+        const bonusFoutChips = bonusFout.map(p=>{
+          const ant = (state.voorspellingen[p.id]||{})[subKey]||'';
+          return `<div class="winner-chip fout"><div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>${p.name}${ant?` <span style="color:var(--muted);font-weight:400">(${ant})</span>`:''}</div>`;
+        }).join('');
+        if(mainCorrectPlayers.length){
+          bonusSection = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);">
+            <div style="padding:10px 12px;border-right:1px solid var(--border);">
+              <div style="font-size:10px;font-weight:800;color:#ff8080;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">⭐ Bonus fout</div>
+              <div style="display:flex;flex-direction:column;gap:5px;">${bonusFoutChips||'<div style="font-size:11px;color:var(--muted);">Niemand fout 🎉</div>'}</div>
+            </div>
+            <div style="padding:10px 12px;">
+              <div style="font-size:10px;font-weight:800;color:#67f28f;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">⭐ ${strafInfo.bonusGetal} ${strafInfo.bonusType} uitdelen (${state.uitslag[subKey]})</div>
+              <div style="display:flex;flex-direction:column;gap:5px;">${bonusGoedChips||'<div style="font-size:11px;color:var(--muted);">Niemand goed 😬</div>'}</div>
+            </div>
           </div>`;
         }
       }
