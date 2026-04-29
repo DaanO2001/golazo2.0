@@ -890,7 +890,19 @@ function strafTypeOpties(selectedVal, prefix){
 }
 
 function renderStrafInput(v){
-  const straf = state.straffen[v.id] || {fouGetal:'', fouType:'slokken', goedGetal:'', goedType:'slokken'};
+  const straf = state.straffen[v.id] || {fouGetal:'', fouType:'slokken', goedGetal:'', goedType:'slokken', bonusGetal:'', bonusType:'slokken'};
+  const bonusRow = (v.type==='jn'||v.type==='jn_met_sub') ? `
+    <div style="display:flex;align-items:center;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);flex-wrap:wrap;">
+      <span style="font-size:12px;color:#67f28f;font-weight:700;min-width:38px;">⭐ Bonus:</span>
+      <input type="text" inputmode="numeric" value="${straf.bonusGetal||''}" placeholder="0"
+        id="straf_bonus_getal_${v.id}" oninput="saveStraf('${v.id}')"
+        style="width:48px;padding:5px 8px;border-radius:999px;font-size:13px;font-weight:800;text-align:center;">
+      <select id="straf_bonus_type_${v.id}" onchange="saveStraf('${v.id}')"
+        style="padding:5px 10px;border-radius:999px;font-size:12px;flex:1;">
+        ${strafTypeOpties(straf.bonusType||'slokken','bonus_'+v.id)}
+      </select>
+      <span style="font-size:10px;color:var(--muted2);width:100%;">Bij 'Ja' én correct speler ingevuld</span>
+    </div>` : '';
   return `<div style="padding:10px 12px 12px;border-top:1px solid var(--border);">
     <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🍺 Straffen instellen</div>
     <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
@@ -915,6 +927,7 @@ function renderStrafInput(v){
         ${strafTypeOpties(straf.goedType||'slokken','goed_'+v.id)}
       </select>
     </div>
+    ${bonusRow}
   </div>`;
 }
 
@@ -924,7 +937,9 @@ function saveStraf(vraagId){
   const fouType  = (document.getElementById('straf_fout_type_'+vraagId)||{}).value||'slokken';
   const goedGetal = (document.getElementById('straf_goed_getal_'+vraagId)||{}).value||'';
   const goedType  = (document.getElementById('straf_goed_type_'+vraagId)||{}).value||'slokken';
-  state.straffen[vraagId] = { fouGetal:fouGetal.trim(), fouType, goedGetal:goedGetal.trim(), goedType };
+  const bonusGetal = (document.getElementById('straf_bonus_getal_'+vraagId)||{}).value||'';
+  const bonusType  = (document.getElementById('straf_bonus_type_'+vraagId)||{}).value||'slokken';
+  state.straffen[vraagId] = { fouGetal:fouGetal.trim(), fouType, goedGetal:goedGetal.trim(), goedType, bonusGetal:bonusGetal.trim(), bonusType };
   saveState();
 }
 
@@ -1024,6 +1039,10 @@ function saveUitslag(){
     } else {
       const el=document.getElementById('uit_'+v.id);
       if(el) state.uitslag[v.id]=el.value;
+      if(v.type==='jn' && state.strafMode){
+        const subEl=document.getElementById('uit_'+v.id+'_s');
+        if(subEl) state.uitslag[v.id+'_s']=subEl.value||'';
+      }
     }
   });
   saveState();
@@ -1322,7 +1341,25 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
 
   if(v.type==='team') return `<select id="${id}" ${onchangeRender}><option value="">Kies...</option><option value="${t1}" ${waarde===t1?'selected':''}>${t1}</option><option value="${t2}" ${waarde===t2?'selected':''}>${t2}</option></select>`;
   if(v.type==='team3') return `<select id="${id}"><option value="">Kies...</option><option value="${t1}" ${waarde===t1?'selected':''}>${t1}</option><option value="${t2}" ${waarde===t2?'selected':''}>${t2}</option><option value="Gelijkspel" ${waarde==='Gelijkspel'?'selected':''}>Gelijkspel</option></select>`;
-  if(v.type==='jn') return `<select id="${id}" ${onchangeRender}><option value="">Kies...</option><option value="Ja" ${waarde==='Ja'?'selected':''}>Ja</option><option value="Nee" ${waarde==='Nee'?'selected':''}>Nee</option></select>`;
+  if(v.type==='jn'){
+    if(state.strafMode && (prefix==='pred'||prefix==='uit')){
+      const subKey=v.id+'_s';
+      const subWaarde=antwoorden?(antwoorden[subKey]||''):'';
+      const showSub=waarde.toLowerCase()==='ja';
+      const subDivId=`${prefix}_sdiv_${v.id}`;
+      const toggleSub=`this.value==='Ja'?document.getElementById('${subDivId}').style.display='block':document.getElementById('${subDivId}').style.display='none';`;
+      const onchangeJn=prefix==='pred'?`${toggleSub}saveCurrentVoorspelling(false);`:toggleSub;
+      const subInput=state.lineup
+        ?`<select id="${prefix}_${subKey}" style="border-radius:10px;">${buildPlayerOptions(subWaarde)}</select>`
+        :`<input type="text" id="${prefix}_${subKey}" value="${subWaarde}" placeholder="Welke speler?" autocapitalize="words" style="border-radius:10px;">`;
+      return `<select id="${id}" onchange="${onchangeJn}"><option value="">Kies...</option><option value="Ja" ${waarde==='Ja'?'selected':''}>Ja</option><option value="Nee" ${waarde==='Nee'?'selected':''}>Nee</option></select>
+      <div id="${subDivId}" style="display:${showSub?'block':'none'};margin-top:10px;padding:10px 12px;background:var(--surface3);border-radius:10px;border:1px solid var(--border);">
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">↳ Welke speler? <span style="font-weight:400;opacity:.7;">(bonus straf)</span></div>
+        ${subInput}
+      </div>`;
+    }
+    return `<select id="${id}" ${onchangeRender}><option value="">Kies...</option><option value="Ja" ${waarde==='Ja'?'selected':''}>Ja</option><option value="Nee" ${waarde==='Nee'?'selected':''}>Nee</option></select>`;
+  }
 
   if(v.type==='jn_met_sub'){
     const sub = v.subVraag;
@@ -1400,6 +1437,10 @@ function saveCurrentVoorspelling(alert){
     } else {
       const el=document.getElementById('pred_'+v.id);
       if(el) pred[v.id]=el.value;
+      if(v.type==='jn' && state.strafMode){
+        const subEl=document.getElementById('pred_'+v.id+'_s');
+        if(subEl) pred[v.id+'_s']=subEl.value||'';
+      }
     }
   });
   saveState();
@@ -1520,13 +1561,32 @@ function renderResultaat(){
           ${!goedChips && !fouChips ? '<div class="vraag-summary-none">Niemand had dit goed 😬</div>' : ''}
         </div>`;
 
+    let bonusSection = '';
+    if(strafInfo?.bonusGetal && (v.type==='jn'||v.type==='jn_met_sub')){
+      const subKey = v.type==='jn_met_sub' ? v.subVraag.id : v.id+'_s';
+      const subCorrect = (state.uitslag[subKey]||'').trim().toLowerCase();
+      if(subCorrect){
+        const bonusWinnaars = state.players.filter(p=>{
+          const pred=state.voorspellingen[p.id]||{};
+          return (pred[v.id]||'').trim().toLowerCase()===correct.trim().toLowerCase()
+            && (pred[subKey]||'').trim().toLowerCase()===subCorrect;
+        });
+        if(bonusWinnaars.length){
+          bonusSection = `<div style="padding:8px 12px;border-top:1px solid var(--border);">
+            <div style="font-size:10px;font-weight:800;color:#67f28f;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">⭐ BONUS: ${strafInfo.bonusGetal} ${strafInfo.bonusType} uitdelen (${state.uitslag[subKey]})</div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;">${bonusWinnaars.map(p=>`<div class="winner-chip goed"><div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>${p.name}</div>`).join('')}</div>
+          </div>`;
+        }
+      }
+    }
+
     return `
       <div class="vraag-summary">
         <div class="vraag-summary-header">
           <div class="vraag-summary-tekst">${getVraagTekst(v)}</div>
           <div class="vraag-summary-antwoord">✓ ${(v.type==='score'||v.type==='tussenstand') ? correct.replace('-',' — ') : correct}</div>
         </div>
-        ${winnersSection}
+        ${winnersSection}${bonusSection}
       </div>`;
   }).filter(Boolean).join('');
 
