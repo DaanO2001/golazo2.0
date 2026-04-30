@@ -120,6 +120,7 @@ let state = {
     {id:'w6',tekst:'3 slokken'},
   ],
   wielSpeler:null,
+  apiActief:false,
 };
 
 // ── LOAD / SAVE via Supabase ──
@@ -404,6 +405,8 @@ function toggleAdmin(){
 function refreshAdminUI(){
   document.getElementById('strafToggle').checked = state.strafMode||false;
   document.getElementById('pincodeInput').value = state.pincode||'';
+  const apiTog = document.getElementById('apiActiefToggle');
+  if(apiTog) apiTog.checked = state.apiActief||false;
   document.getElementById('team1Input').value = state.team1;
   document.getElementById('team2Input').value = state.team2;
   syncModeLabels();
@@ -1824,6 +1827,8 @@ function resetAll(){
       {id:'w4',tekst:'Iedereen drinkt'},{id:'w5',tekst:'Vrij'},{id:'w6',tekst:'3 slokken'},
     ],
     wielSpeler:null,
+    apiActief:false,
+    pincode: String(Math.floor(1000 + Math.random() * 9000)),
     };
   tourMode = false;
   tourIndex = 0;
@@ -1834,13 +1839,13 @@ function resetAll(){
   saveState();
   renderInvullen();
   renderMatchup();
-  showToast('🗑️ Alles gereset');
+  showToast(`🗑️ Gereset — nieuwe pincode: ${state.pincode}`, 8000);
 }
 
-function showToast(msg){
+function showToast(msg, duration=2500){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
+  setTimeout(()=>t.classList.remove('show'),duration);
 }
 
 // ── ENTER KEY NAVIGATION ──
@@ -1999,7 +2004,7 @@ function checkAdminPassword(){
 // Maak functies globaal beschikbaar voor inline HTML handlers
 Object.assign(window, {
   saveSupabaseConfig, checkAdminPassword, checkPincode,
-  toggleAdmin, setMode, toggleStraffen,
+  toggleAdmin, setMode, toggleStraffen, toggleApiActief,
   savePincode, clearPincode, capitalizeInput, saveTeams,
   formatDateInput, saveCountdown, formatTimeInput,
   addPlayer, removePlayer,
@@ -2266,6 +2271,11 @@ async function subscribeToPush(playerId) {
 }
 
 // ── OPSTELLING ──
+function toggleApiActief(){
+  state.apiActief = document.getElementById('apiActiefToggle').checked;
+  saveState();
+}
+
 let lastApiFetch = 0;
 let apiCooldownInterval = null;
 const API_COOLDOWN = 30000;
@@ -2288,6 +2298,7 @@ function startApiCooldownTimer(){
 }
 
 function apiCooldownCheck(){
+  if(!state.apiActief){ showToast('❌ API staat uit — zet hem aan via admin'); return true; }
   const rem = Math.ceil((API_COOLDOWN - (Date.now() - lastApiFetch)) / 1000);
   if(rem > 0){ showToast(`⏳ Wacht nog ${rem} seconden`); return true; }
   return false;
