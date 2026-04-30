@@ -1819,7 +1819,7 @@ function resetAll(){
     activePlayer:null,countdown:{date:'',time:''},
     locked:false,
     strafMode:false,
-    straffen:{},
+    straffen: state.straffen||{},
     pincode:'0001',
     fotos:{},
     wiel:[
