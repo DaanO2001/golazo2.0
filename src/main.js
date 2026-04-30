@@ -243,24 +243,24 @@ function setupRealtime(){
 // ------------------------------------------------
 function showPickScreen(){
   if(!isAdmin){
+    // Pincode altijd eerst — ook als er een opgeslagen speler is
+    if(state.pincode){
+      const stored = localStorage.getItem(PINCODE_KEY);
+      if(stored !== state.pincode){
+        document.getElementById('pincodeScreen').style.display = 'flex';
+        requestAnimationFrame(()=>{ const el=document.getElementById('pincodeUserInput'); if(el) el.focus(); });
+        return;
+      }
+    }
+    // Pincode ok → eventueel auto-inloggen op opgeslagen speler
     const savedId = localStorage.getItem(USER_KEY);
     if(savedId && state.players.find(p => p.id === savedId)){
       pickPlayer(savedId);
       return;
     }
   }
-  // Check pincode first (skip if no pincode set, or if already verified, or if admin)
-  if(state.pincode && !isAdmin){
-    const stored = localStorage.getItem(PINCODE_KEY);
-    if(stored !== state.pincode){
-      document.getElementById('pincodeScreen').style.display = 'flex';
-      requestAnimationFrame(()=>{ const el=document.getElementById('pincodeUserInput'); if(el) el.focus(); });
-      return;
-    }
-  }
   const screen = document.getElementById('pickScreen');
   if(!state.players.length){
-    // Geen spelers → ga direct naar app
     screen.classList.remove('active');
     renderAll();
     return;
