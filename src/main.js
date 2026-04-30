@@ -2242,16 +2242,36 @@ async function subscribeToPush(playerId) {
 }
 
 // ── OPSTELLING ──
-let lastLiveFetch = 0;
-let lastSearchFetch = 0;
-async function fetchLiveFixtures(){
-  const now = Date.now();
-  if(now - lastLiveFetch < 30000){
-    const sec = Math.ceil((30000 - (now - lastLiveFetch)) / 1000);
-    showToast(`⏳ Wacht nog ${sec} seconden`);
-    return;
+let lastApiFetch = 0;
+let apiCooldownInterval = null;
+const API_COOLDOWN = 30000;
+
+function startApiCooldownTimer(){
+  lastApiFetch = Date.now();
+  if(apiCooldownInterval) clearInterval(apiCooldownInterval);
+  const el = document.getElementById('apiCooldownTimer');
+  function tick(){
+    const rem = Math.ceil((API_COOLDOWN - (Date.now() - lastApiFetch)) / 1000);
+    if(rem <= 0){
+      clearInterval(apiCooldownInterval); apiCooldownInterval = null;
+      if(el) el.textContent = '';
+    } else {
+      if(el) el.textContent = `⏳ Volgende verzoek mogelijk over ${rem}s`;
+    }
   }
-  lastLiveFetch = now;
+  tick();
+  apiCooldownInterval = setInterval(tick, 1000);
+}
+
+function apiCooldownCheck(){
+  const rem = Math.ceil((API_COOLDOWN - (Date.now() - lastApiFetch)) / 1000);
+  if(rem > 0){ showToast(`⏳ Wacht nog ${rem} seconden`); return true; }
+  return false;
+}
+
+async function fetchLiveFixtures(){
+  if(apiCooldownCheck()) return;
+  startApiCooldownTimer();
   const resultsEl = document.getElementById('fixtureResults');
   resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Live wedstrijden ophalen...</div>';
   try {
@@ -2279,13 +2299,8 @@ async function fetchLiveFixtures(){
 }
 
 async function searchFixtures(){
-  const now = Date.now();
-  if(now - lastSearchFetch < 10000){
-    const sec = Math.ceil((10000 - (now - lastSearchFetch)) / 1000);
-    showToast(`⏳ Wacht nog ${sec} seconden`);
-    return;
-  }
-  lastSearchFetch = now;
+  if(apiCooldownCheck()) return;
+  startApiCooldownTimer();
   const query = document.getElementById('fixtureSearchInput')?.value.trim();
   if(!query){ showToast('❌ Voer een teamnaam in'); return; }
   const resultsEl = document.getElementById('fixtureResults');
@@ -2316,6 +2331,8 @@ async function searchFixtures(){
 }
 
 async function fetchLineup(fixtureId){
+  if(apiCooldownCheck()) return;
+  startApiCooldownTimer();
   const resultsEl = document.getElementById('fixtureResults');
   if(resultsEl) resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Opstelling ophalen...</div>';
   try {
