@@ -2373,12 +2373,17 @@ async function fetchLineup(fixtureId){
   try {
     const res = await fetch(`${location.origin}/api/get-lineup?fixture=${fixtureId}`);
     const data = await res.json();
-    if(!data.response || data.response.length < 2){
-      showToast('❌ Opstelling nog niet beschikbaar (verschijnt ~1u voor aftrap).');
-      if(resultsEl) resultsEl.innerHTML = '';
+    if(data.error){ throw new Error(data.error); }
+    if(!data.response || !data.response.length){
+      const info = data.results !== undefined ? ` (results: ${data.results})` : '';
+      if(resultsEl) resultsEl.innerHTML = `<div style="font-size:13px;color:#ff6b8a;padding:8px 0;">❌ Geen opstellingsdata beschikbaar voor deze wedstrijd${info}.</div>`;
       return;
     }
     const [homeData, awayData] = data.response;
+    if(!homeData || !awayData){
+      if(resultsEl) resultsEl.innerHTML = `<div style="font-size:13px;color:#ff6b8a;padding:8px 0;">❌ Slechts één team gevonden in de opstelling. Probeer later opnieuw.</div>`;
+      return;
+    }
     const parsePlayers = (team) => [
       ...team.startXI.map(p=>({ name:p.player.name, number:p.player.number, pos:p.player.pos, sub:false })),
       ...team.substitutes.map(p=>({ name:p.player.name, number:p.player.number, pos:p.player.pos, sub:true }))
