@@ -415,6 +415,7 @@ function refreshAdminUI(){
   renderAdminLineup();
   renderWielAdmin();
   syncLockdownBtn();
+  syncEindigenBtn();
 }
 
 // ── TABS ──
@@ -927,7 +928,7 @@ function renderStrafInput(v){
     <div style="display:flex;align-items:center;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);flex-wrap:wrap;">
       <span style="font-size:12px;color:#67f28f;font-weight:700;min-width:38px;">⭐ Bonus:</span>
       <input type="text" inputmode="numeric" value="${straf.bonusGetal||''}" placeholder="0"
-        id="straf_bonus_getal_${v.id}" oninput="saveStraf('${v.id}')"
+        id="straf_bonus_getal_${v.id}" onblur="saveStraf('${v.id}')"
         style="width:48px;padding:5px 8px;border-radius:999px;font-size:13px;font-weight:800;text-align:center;">
       <select id="straf_bonus_type_${v.id}" onchange="saveStraf('${v.id}')"
         style="padding:5px 10px;border-radius:999px;font-size:12px;flex:1;">
@@ -941,7 +942,7 @@ function renderStrafInput(v){
       <span style="font-size:12px;color:#ff8080;font-weight:700;min-width:38px;">❌ Fout:</span>
       <input type="text" inputmode="numeric" value="${straf.fouGetal||''}" placeholder="0"
         id="straf_fout_getal_${v.id}"
-        oninput="saveStraf('${v.id}')"
+        onblur="saveStraf('${v.id}')"
         style="width:48px;padding:5px 8px;border-radius:999px;font-size:13px;font-weight:800;text-align:center;">
       <select id="straf_fout_type_${v.id}" onchange="saveStraf('${v.id}')"
         style="padding:5px 10px;border-radius:999px;font-size:12px;flex:1;">
@@ -952,7 +953,7 @@ function renderStrafInput(v){
       <span style="font-size:12px;color:var(--oranje);font-weight:700;min-width:38px;">✅ Goed:</span>
       <input type="text" inputmode="numeric" value="${straf.goedGetal||''}" placeholder="0"
         id="straf_goed_getal_${v.id}"
-        oninput="saveStraf('${v.id}')"
+        onblur="saveStraf('${v.id}')"
         style="width:48px;padding:5px 8px;border-radius:999px;font-size:13px;font-weight:800;text-align:center;">
       <select id="straf_goed_type_${v.id}" onchange="saveStraf('${v.id}')"
         style="padding:5px 10px;border-radius:999px;font-size:12px;flex:1;">
@@ -1091,6 +1092,7 @@ function saveUitslag(){
   });
   saveState();
   showToast('🏁 Uitslag opgeslagen!');
+  syncEindigenBtn();
 }
 
 // ── POPUP FLOW ──
@@ -1760,8 +1762,30 @@ function berekenScores(){
   }).sort((a,b)=>b.goed-a.goed);
 }
 
+function uitslagCompleet(){
+  return state.vragen.every(v=>{
+    const val = state.uitslag[v.id]||'';
+    if(v.type==='score'||v.type==='tussenstand'){
+      const p=val.split('-');
+      return p[0].trim()!==''&&p[1]!==undefined&&p[1].trim()!=='';
+    }
+    return val.trim()!=='';
+  });
+}
+
+function syncEindigenBtn(){
+  const btn = document.getElementById('eindigenBtn');
+  if(!btn) return;
+  const ok = uitslagCompleet() && state.players.length>0;
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '1' : '0.35';
+  btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+  btn.title = ok ? '' : 'Vul eerst alle echte resultaten in';
+}
+
 function eindWedstrijd(){
   if(!state.players.length) return showToast('Geen spelers!');
+  if(!uitslagCompleet()) return showToast('❌ Vul eerst alle echte resultaten in');
   const scores = berekenScores();
   const relevant = scores.filter(s=>s.totaal>0);
   const laatste = (relevant.length ? relevant[relevant.length-1] : scores[scores.length-1]);
@@ -1847,7 +1871,7 @@ document.addEventListener('keydown', function(e){
 });
 
 // ── ADMIN WACHTWOORD & CONFIG VIA URL ──
-const ADMIN_PASSWORD = '0801';
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || '0801';
 const USER_KEY = 'golazo_user_id';
 const ADMIN_SESSION_KEY = 'golazo_admin_session';
 const ADMIN_SESSION_DURATION = 60 * 60 * 1000; // 60 minuten in ms
