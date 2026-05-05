@@ -59,10 +59,10 @@ export default async function handler(req, res) {
     const teamId   = teamsData.response[0].team.id;
     const teamName = teamsData.response[0].team.name;
 
-    // Stap 2: haal wedstrijden op van gisteren t/m 3 dagen vooruit
+    // Stap 2: haal wedstrijden op van vandaag t/m morgen (ruim genoeg voor live + komend uur)
     const now  = new Date();
-    const from = new Date(now); from.setDate(from.getDate() - 1);
-    const to   = new Date(now); to.setDate(to.getDate() + 3);
+    const from = new Date(now);
+    const to   = new Date(now); to.setDate(to.getDate() + 1);
     const fromStr = from.toISOString().split('T')[0];
     const toStr   = to.toISOString().split('T')[0];
 
@@ -93,7 +93,8 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: Object.values(fixturesData.errors).join(', ') });
     }
 
-    // Geen league-filter bij zoeken — de gebruiker zoekt een specifieke wedstrijd
+    // Filter: alleen live wedstrijden of wedstrijden die binnen 1 uur beginnen
+    const inEenUur = new Date(now.getTime() + 60 * 60 * 1000);
     const fixtures = (fixturesData.response || [])
       .map(f => ({
         id:       f.fixture.id,
@@ -105,12 +106,13 @@ export default async function handler(req, res) {
         gespeeld: ['FT','AET','PEN'].includes(f.fixture.status.short),
         live:     LIVE_STATUSES.has(f.fixture.status.short),
       }))
+      .filter(f => f.live || (!f.gespeeld && new Date(f.date) <= inEenUur))
       .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     if (!fixtures.length) {
       return res.status(200).json({
         fixtures: [],
-        debug: `Team gevonden: ${teamName}, maar geen wedstrijden in de komende 3 dagen.`
+        debug: `Team gevonden: ${teamName}, maar geen live of komende wedstrijden (binnen 1 uur).`
       });
     }
 
