@@ -229,11 +229,15 @@ function setupRealtime(){
           state.vragen.splice(insertIdx,0,v); ids.splice(insertIdx,0,v.id);
         }
       });
-      // Re-render — vlag zodat renderInvullen weet dat dit vanuit Supabase komt
+      // Re-render — als gebruiker actief aan het invullen is, raak de DOM niet aan
       _realtimeUpdate = true;
-      renderInvullen();
-      renderMatchup();
-      renderCountdown();
+      if(!isReset && editingPlayer){
+        // Sla alle DOM-updates over: elke innerHTML-wijziging kan op iOS het toetsenbord dismissen
+      } else {
+        renderInvullen();
+        renderMatchup();
+        renderCountdown();
+      }
       checkWielOverlay();
       if(adminOpen) refreshAdminUI();
       _realtimeUpdate = false;
