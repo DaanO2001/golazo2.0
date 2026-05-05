@@ -18,9 +18,7 @@ function apiGet(url, apiKey) {
   });
 }
 
-// Top 5 Europese competities + Eredivisie + Keuken Kampioen Divisie
-const ALLOWED_LEAGUES = new Set([39, 140, 78, 135, 61, 88, 89]);
-const LIVE_STATUSES   = new Set(['1H','2H','HT','ET','BT','P','LIVE']);
+const LIVE_STATUSES = new Set(['1H','2H','HT','ET','BT','P','LIVE']);
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
@@ -61,25 +59,42 @@ export default async function handler(req, res) {
     const teamId   = teamsData.response[0].team.id;
     const teamName = teamsData.response[0].team.name;
 
-    // Stap 2: haal wedstrijden op van gisteren t/m 3 dagen vooruit (dekt live + komende)
+    // Stap 2: haal wedstrijden op van gisteren t/m 3 dagen vooruit
     const now  = new Date();
     const from = new Date(now); from.setDate(from.getDate() - 1);
     const to   = new Date(now); to.setDate(to.getDate() + 3);
     const fromStr = from.toISOString().split('T')[0];
     const toStr   = to.toISOString().split('T')[0];
 
-    const fixturesData = await apiGet(
-      `https://v3.football.api-sports.io/fixtures?team=${teamId}&from=${fromStr}&to=${toStr}`,
+    // Bepaal seizoensjaar — Europese competities: aug-mei → seizoen = startjaar
+    // Aziatische/Noord-Amerikaanse: jan-dec → seizoen = kalenderjaar
+    const year = now.getFullYear();
+    const primarySeason   = now.getMonth() < 7 ? year - 1 : year;
+    const fallbackSeason  = now.getMonth() < 7 ? year     : year - 1;
+
+    let fixturesData = await apiGet(
+      `https://v3.football.api-sports.io/fixtures?team=${teamId}&season=${primarySeason}&from=${fromStr}&to=${toStr}`,
       process.env.APISPORTS_KEY
     );
+
+    // Als er API-errors zijn of geen resultaten, probeer het andere seizoensjaar
+    const hasErrors = fixturesData.errors && Object.keys(fixturesData.errors).length;
+    if (hasErrors || !fixturesData.response?.length) {
+      const fallback = await apiGet(
+        `https://v3.football.api-sports.io/fixtures?team=${teamId}&season=${fallbackSeason}&from=${fromStr}&to=${toStr}`,
+        process.env.APISPORTS_KEY
+      );
+      if (!fallback.errors || !Object.keys(fallback.errors).length) {
+        fixturesData = fallback;
+      }
+    }
 
     if (fixturesData.errors && Object.keys(fixturesData.errors).length) {
       return res.status(500).json({ error: Object.values(fixturesData.errors).join(', ') });
     }
 
-    // Filter op toegestane competities, sorteer op datum
+    // Geen league-filter bij zoeken — de gebruiker zoekt een specifieke wedstrijd
     const fixtures = (fixturesData.response || [])
-      .filter(f => ALLOWED_LEAGUES.has(f.league.id))
       .map(f => ({
         id:       f.fixture.id,
         date:     f.fixture.date,
@@ -95,7 +110,7 @@ export default async function handler(req, res) {
     if (!fixtures.length) {
       return res.status(200).json({
         fixtures: [],
-        debug: `Team gevonden: ${teamName}, maar geen wedstrijden in de ondersteunde competities (de komende 3 dagen).`
+        debug: `Team gevonden: ${teamName}, maar geen wedstrijden in de komende 3 dagen.`
       });
     }
 
