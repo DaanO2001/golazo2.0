@@ -2021,6 +2021,13 @@ function openAdminLogin(){
   requestAnimationFrame(()=>{ const el=document.getElementById('adminPwInput'); if(el) el.focus(); });
 }
 
+function closeAdminLogin(){
+  document.getElementById('adminPwScreen').style.display = 'none';
+  document.getElementById('adminPwInput').value = '';
+  document.getElementById('adminPwError').style.display = 'none';
+  showPickScreen();
+}
+
 function checkAdminUrl(){
   const params = new URLSearchParams(window.location.search);
 
@@ -2097,7 +2104,7 @@ Object.assign(window, {
   showResetSheet, hideResetSheet,
   clearVoorspellingen, clearUitslag, resetSpelers, resetAll, eindWedstrijd,
   popupOverlayClick, startPlayerTurn,
-  betaClick, openAdminLogin, switchPlayer, showTab,
+  betaClick, openAdminLogin, closeAdminLogin, switchPlayer, showTab,
   pickPlayer, uploadFoto, editPlayer,
   togglePredVraag, toggleResultCard,
   saveLocalVoorspelling, checkDependentRender,
