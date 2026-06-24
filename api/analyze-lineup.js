@@ -23,12 +23,12 @@ export default async function handler(req, res) {
             },
             {
               type: 'text',
-              text: 'This is a football team lineup screenshot. Extract all player names exactly as shown. Return ONLY a valid JSON array of player name strings, no markdown, no explanation. Example: ["Virgil van Dijk", "Memphis Depay", "Cody Gakpo"]'
+              text: 'You are an OCR tool. Read the player names from this football lineup image and copy them EXACTLY as they appear — letter by letter, character by character. Do NOT use your football knowledge to correct, complete, or change any name. Do NOT add or remove letters. If a name looks unusual, still copy it exactly as shown. Return ONLY a valid JSON array of strings, no markdown, no explanation. Example: ["Virgil van Dijk", "B. Brobbey", "Cody Gakpo"]'
             }
           ]
         }],
         max_tokens: 600,
-        temperature: 0.1
+        temperature: 0
       })
     });
 
