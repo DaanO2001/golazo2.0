@@ -2482,28 +2482,22 @@ function openPlayerPicker(inputId){
 
   const renderTeam = (team, label) => {
     if(!team?.players?.length) return '';
-    const chips = team.players.map(p => {
-      const px = Math.min(Math.max(p.x ?? 50, 6), 94);
-      const py = Math.min(Math.max(p.y ?? 50, 4), 96);
-      return `<button type="button" onclick="selectPlayerFromPicker('${p.name.replace(/'/g,"\\'")}',event)"
-        style="position:absolute;left:${px}%;top:${py}%;transform:translate(-50%,-50%);
-        background:rgba(15,15,20,0.82);border:1.5px solid var(--oranje);color:var(--text);
-        font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;line-height:1.2;
-        padding:4px 9px;border-radius:20px;cursor:pointer;white-space:nowrap;
-        backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,.5);
-        transition:background .15s,transform .1s;touch-action:manipulation;">
+    const chips = team.players.map(p =>
+      `<button type="button" onclick="selectPlayerFromPicker('${p.name.replace(/'/g,"\\'")}',event)"
+        style="background:var(--surface2);border:1.5px solid var(--border-orange);color:var(--text);
+        font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
+        padding:9px 14px;border-radius:20px;cursor:pointer;white-space:nowrap;
+        touch-action:manipulation;flex-shrink:0;">
         ${p.name}
-      </button>`;
-    }).join('');
+      </button>`
+    ).join('');
     const imgHtml = team.image
-      ? `<img src="${team.image}" style="width:100%;display:block;border-radius:12px;">`
+      ? `<img src="${team.image}" style="width:100%;display:block;border-radius:12px;margin-bottom:12px;">`
       : '';
-    return `<div style="margin-bottom:20px;">
+    return `<div style="margin-bottom:24px;">
       <div style="font-size:11px;font-weight:700;color:var(--oranje);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">${label}: ${team.name}</div>
-      <div style="position:relative;display:inline-block;width:100%;">
-        ${imgHtml}
-        ${chips}
-      </div>
+      ${imgHtml}
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">${chips}</div>
     </div>`;
   };
 
