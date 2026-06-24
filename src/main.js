@@ -2342,7 +2342,7 @@ async function analyzeLineup(side) {
     const res = await fetch(location.origin + '/api/analyze-lineup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: img.base64, mimeType: img.mime })
+      body: JSON.stringify({ imageBase64: img.base64, mimeType: img.mime, teamName: side === 1 ? (state.team1 || '') : (state.team2 || '') })
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
