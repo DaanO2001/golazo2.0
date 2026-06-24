@@ -43,8 +43,19 @@ export default async function handler(req, res) {
     const match = content.match(/\[[\s\S]*\]/);
     if (!match) return res.status(500).json({ error: 'AI kon geen spelersnamen vinden in de afbeelding' });
 
-    const jsonStr = match[0].replace(/,\s*([\]}])/g, '$1');
-    const rawPlayers = JSON.parse(jsonStr);
+    let rawPlayers;
+    try {
+      const jsonStr = match[0]
+        .replace(/,\s*([\]}])/g, '$1')          // trailing commas
+        .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // unquoted keys
+        .replace(/:\s*'([^']*)'/g, ': "$1"');    // single-quoted values
+      rawPlayers = JSON.parse(jsonStr);
+    } catch {
+      // Fallback: extract names with regex regardless of JSON structure
+      const nameMatches = [...match[0].matchAll(/"name"\s*:\s*"([^"]+)"/g)];
+      if (!nameMatches.length) return res.status(500).json({ error: 'AI kon geen spelersnamen vinden in de afbeelding' });
+      rawPlayers = nameMatches.map(m => ({ name: m[1], x: 50, y: 50 }));
+    }
     if (!Array.isArray(rawPlayers)) throw new Error('Onverwacht formaat van AI-respons');
 
     // Normaliseer: ondersteun zowel strings als {name, x, y} objecten
