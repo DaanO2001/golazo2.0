@@ -440,6 +440,8 @@ function refreshAdminUI(){
   document.getElementById('pincodeInput').value = state.pincode||'';
   document.getElementById('team1Input').value = state.team1;
   document.getElementById('team2Input').value = state.team2;
+  setFlagPreview(document.getElementById('flag1Preview'), state.team1);
+  setFlagPreview(document.getElementById('flag2Preview'), state.team2);
   syncModeLabels();
   document.getElementById('cdDate').value = state.countdown?.date||'';
   document.getElementById('cdTime').value = state.countdown?.time||'';
@@ -684,20 +686,18 @@ function syncModeLabels(){
     wc.style.opacity = !landen ? '1' : '0.45';
   }
 }
+function setFlagPreview(el, name){
+  if(!el) return;
+  el.style.padding = '0';
+  el.style.overflow = 'hidden';
+  el.style.position = 'relative';
+  el.innerHTML = name ? teamLogoImg(name) : '<span style="font-size:22px">🏴</span>';
+}
 function saveTeams(){
   state.team1 = document.getElementById('team1Input').value;
   state.team2 = document.getElementById('team2Input').value;
-  const f1 = document.getElementById('flag1Preview');
-  const f2 = document.getElementById('flag2Preview');
-  function setPreview(el, name){
-    if(!el) return;
-    el.style.padding = '0';
-    el.style.overflow = 'hidden';
-    el.style.position = 'relative';
-    el.innerHTML = name ? teamLogoImg(name) : '<span style="font-size:22px">🏴</span>';
-  }
-  setPreview(f1, state.team1);
-  setPreview(f2, state.team2);
+  setFlagPreview(document.getElementById('flag1Preview'), state.team1);
+  setFlagPreview(document.getElementById('flag2Preview'), state.team2);
   saveState();
   renderMatchup();
 }

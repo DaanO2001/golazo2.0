@@ -43,7 +43,8 @@ export default async function handler(req, res) {
     const match = content.match(/\[[\s\S]*\]/);
     if (!match) return res.status(500).json({ error: 'AI kon geen spelersnamen vinden in de afbeelding' });
 
-    const rawPlayers = JSON.parse(match[0]);
+    const jsonStr = match[0].replace(/,\s*([\]}])/g, '$1');
+    const rawPlayers = JSON.parse(jsonStr);
     if (!Array.isArray(rawPlayers)) throw new Error('Onverwacht formaat van AI-respons');
 
     // Normaliseer: ondersteun zowel strings als {name, x, y} objecten
