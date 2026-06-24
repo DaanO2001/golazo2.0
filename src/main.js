@@ -1998,11 +1998,19 @@ function copyLink(type){
   navigator.clipboard.writeText(link).then(()=> showToast('🔗 Link gekopieerd!'));
 }
 
-// BETA knop klik — alleen reageren als admin
+// BETA knop klik — admin toggle als ingelogd, anders admin login tonen
 let betaClickCount = 0;
 function betaClick(){
-  if(!isAdmin) return;
-  toggleAdmin();
+  if(isAdmin){ toggleAdmin(); return; }
+  openAdminLogin();
+}
+
+function openAdminLogin(){
+  document.getElementById('pincodeScreen').style.display = 'none';
+  document.getElementById('adminPwInput').value = '';
+  document.getElementById('adminPwError').style.display = 'none';
+  document.getElementById('adminPwScreen').style.display = 'flex';
+  requestAnimationFrame(()=>{ const el=document.getElementById('adminPwInput'); if(el) el.focus(); });
 }
 
 function checkAdminUrl(){
@@ -2020,17 +2028,17 @@ function checkAdminUrl(){
     }
   }
 
-  // Admin check (?admin=ja)
+  // Check admin sessie ongeacht URL — zodat PWA vanaf beginscherm (zonder ?admin=ja) werkt
+  const savedSession = localStorage.getItem(ADMIN_SESSION_KEY);
+  if(savedSession && (Date.now() - parseInt(savedSession, 10)) < ADMIN_SESSION_DURATION){
+    isAdmin = true;
+    return false;
+  }
+
+  // Admin check (?admin=ja) — toon wachtwoordscherm als er nog geen sessie is
   if(params.get('admin') === 'ja'){
-    // Controleer of er een geldige admin-sessie is (binnen 60 min)
-    const savedSession = localStorage.getItem(ADMIN_SESSION_KEY);
-    if(savedSession && (Date.now() - parseInt(savedSession, 10)) < ADMIN_SESSION_DURATION){
-      isAdmin = true;
-      return false; // Direct doorgaan zonder wachtwoordscherm
-    }
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('adminPwScreen').style.display = 'flex';
-    // Focus op wachtwoordveld
     requestAnimationFrame(()=>{ const el=document.getElementById('adminPwInput'); if(el) el.focus(); });
     return true;
   }
@@ -2044,13 +2052,18 @@ function checkAdminPassword(){
     isAdmin = true;
     localStorage.setItem(ADMIN_SESSION_KEY, Date.now().toString());
     document.getElementById('adminPwScreen').style.display = 'none';
-    // BETA knop krijgt subtiele admin-stijl
+    document.getElementById('pincodeScreen').style.display = 'none';
     const betaBtn = document.getElementById('betaAdminBtn');
-    if(betaBtn){
-      betaBtn.style.cursor = 'pointer';
-      betaBtn.title = 'Admin';
+    if(betaBtn){ betaBtn.style.cursor = 'pointer'; betaBtn.title = 'Admin'; }
+    if(db){
+      // Supabase al actief — direct naar admin scherm
+      renderAll();
+      adminOpen = true;
+      document.getElementById('adminScreen').classList.add('active');
+      refreshAdminUI();
+    } else {
+      initSupabase();
     }
-    initSupabase();
   } else {
     errEl.style.display = 'block';
     document.getElementById('adminPwInput').value = '';
@@ -2076,7 +2089,7 @@ Object.assign(window, {
   showResetSheet, hideResetSheet,
   clearVoorspellingen, clearUitslag, resetSpelers, resetAll, eindWedstrijd,
   popupOverlayClick, startPlayerTurn,
-  betaClick, switchPlayer, showTab,
+  betaClick, openAdminLogin, switchPlayer, showTab,
   pickPlayer, uploadFoto, editPlayer,
   togglePredVraag, toggleResultCard,
   saveLocalVoorspelling, checkDependentRender,
