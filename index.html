@@ -161,24 +161,29 @@
 
   <!-- OPSTELLING -->
   <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-      <div>
-        <div class="card-title" style="margin-bottom:2px;">⚽ Opstelling ophalen</div>
-        <div style="font-size:11px;color:var(--muted2);">Zet API aan om te zoeken</div>
+    <div class="card-title">📋 Opstelling invullen</div>
+    <div style="font-size:12px;color:var(--muted2);margin-bottom:12px;line-height:1.5;">Upload een screenshot per ploeg — AI leest de spelersnamen automatisch eruit.</div>
+    <div style="display:flex;gap:10px;margin-bottom:10px;">
+      <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--oranje);text-transform:uppercase;letter-spacing:.5px;">🏠 Thuisploeg</div>
+        <label for="lineupImg1" style="display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px dashed var(--border-orange);border-radius:12px;overflow:hidden;min-height:72px;position:relative;">
+          <img id="lineupImgPreview1" style="display:none;width:100%;border-radius:10px;max-height:180px;object-fit:cover;">
+          <div id="lineupImgPlaceholder1" style="padding:12px;text-align:center;color:var(--muted2);font-size:12px;pointer-events:none;">📷 Kies foto</div>
+        </label>
+        <input type="file" id="lineupImg1" accept="image/*" style="display:none;" onchange="previewLineupImg(1)">
+        <button class="btn sm" id="analyzeBtn1" onclick="analyzeLineup(1)" style="display:none;font-size:12px;">🤖 Analyseer</button>
       </div>
-      <label class="switch" style="flex-shrink:0;">
-        <input type="checkbox" id="apiActiefToggle" onchange="toggleApiActief()">
-        <span class="slider"></span>
-      </label>
+      <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.5px;">✈️ Uitploeg</div>
+        <label for="lineupImg2" style="display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px dashed var(--border-orange);border-radius:12px;overflow:hidden;min-height:72px;position:relative;">
+          <img id="lineupImgPreview2" style="display:none;width:100%;border-radius:10px;max-height:180px;object-fit:cover;">
+          <div id="lineupImgPlaceholder2" style="padding:12px;text-align:center;color:var(--muted2);font-size:12px;pointer-events:none;">📷 Kies foto</div>
+        </label>
+        <input type="file" id="lineupImg2" accept="image/*" style="display:none;" onchange="previewLineupImg(2)">
+        <button class="btn sm" id="analyzeBtn2" onclick="analyzeLineup(2)" style="display:none;font-size:12px;">🤖 Analyseer</button>
+      </div>
     </div>
-    <div style="font-size:12px;color:var(--muted2);margin-bottom:10px;line-height:1.5;">Zoek een team en tik op de wedstrijd. Spelers krijgen dan een keuzelijst bij spelervragen.</div>
-    <div style="display:flex;gap:8px;margin-bottom:8px;">
-      <input type="text" id="fixtureSearchInput" placeholder="bijv. Ajax, PSV, Arsenal..." autocapitalize="words" style="flex:1;" onkeydown="if(event.key==='Enter')searchFixtures()">
-      <button class="btn sm" onclick="searchFixtures()" style="width:auto;padding:8px 14px;flex-shrink:0;">🔍</button>
-      <button class="btn sm" onclick="fetchLiveFixtures()" style="width:auto;padding:8px 14px;flex-shrink:0;background:var(--oranje);border-color:var(--oranje);">🔴 Live</button>
-    </div>
-    <div id="apiCooldownTimer" style="font-size:11px;color:var(--muted);min-height:16px;margin-bottom:4px;"></div>
-    <div id="fixtureResults"></div>
+    <div id="lineupAiStatus" style="font-size:12px;min-height:16px;margin-bottom:4px;"></div>
     <div id="lineupPreview"></div>
   </div>
 

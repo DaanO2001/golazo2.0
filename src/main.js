@@ -109,8 +109,6 @@ let state = {
   pushFoutBericht:'Haha sukkel.. bekijk wat je fout hebt gedaan.',
   pushedVragen:[],
   lineup:null,
-  fixtureId:'',
-  selectedFixture:null,
   fotos:{},
   wiel:[
     {id:'w1',tekst:'2 slokken'},
@@ -121,7 +119,6 @@ let state = {
     {id:'w6',tekst:'3 slokken'},
   ],
   wielSpeler:null,
-  apiActief:false,
   wkModus:false,
 };
 
@@ -434,8 +431,6 @@ function refreshAdminUI(){
   }
   document.getElementById('strafToggle').checked = state.strafMode||false;
   document.getElementById('pincodeInput').value = state.pincode||'';
-  const apiTog = document.getElementById('apiActiefToggle');
-  if(apiTog) apiTog.checked = state.apiActief||false;
   document.getElementById('team1Input').value = state.team1;
   document.getElementById('team2Input').value = state.team2;
   syncModeLabels();
@@ -1867,7 +1862,6 @@ function resetAll(){
       {id:'w4',tekst:'Iedereen drinkt'},{id:'w5',tekst:'Vrij'},{id:'w6',tekst:'3 slokken'},
     ],
     wielSpeler:null,
-    apiActief:false,
     wkModus:false,
     pincode: String(Math.floor(1000 + Math.random() * 9000)),
     };
@@ -2046,7 +2040,7 @@ function checkAdminPassword(){
 // Maak functies globaal beschikbaar voor inline HTML handlers
 Object.assign(window, {
   saveSupabaseConfig, checkAdminPassword, checkPincode,
-  toggleAdmin, setMode, toggleStraffen, toggleWKModus, toggleApiActief,
+  toggleAdmin, setMode, toggleStraffen, toggleWKModus,
   savePincode, clearPincode, capitalizeInput, saveTeams,
   formatDateInput, saveCountdown, formatTimeInput,
   addPlayer, removePlayer,
@@ -2055,7 +2049,7 @@ Object.assign(window, {
   dragStart, dragEnd, dragOver, dragLeave, dragDrop,
   touchDragStart, touchDragMove, touchDragEnd,
   toggleUitslag, toggleUitslagVraag, saveUitslag, savePushBerichten, sendBroadcast,
-  fetchLineup, clearLineup, pickFixture, reloadLineup, searchFixtures, fetchLiveFixtures,
+  previewLineupImg, analyzeLineup, clearLineup,
   toggleLockdown, startNieuwRondje,
   showResetSheet, hideResetSheet,
   clearVoorspellingen, clearUitslag, resetSpelers, resetAll, eindWedstrijd,
@@ -2313,209 +2307,86 @@ async function subscribeToPush(playerId) {
   }
 }
 
-// ── OPSTELLING ──
-function toggleApiActief(){
-  state.apiActief = document.getElementById('apiActiefToggle').checked;
-  saveState();
+// ── OPSTELLING (AI via screenshots) ──
+let _lineupImgData = [null, null];
+
+function previewLineupImg(side) {
+  const input = document.getElementById('lineupImg' + side);
+  const file = input?.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    const base64 = dataUrl.split(',')[1];
+    const mime = (dataUrl.match(/data:(.*);base64/) || [])[1] || 'image/jpeg';
+    _lineupImgData[side - 1] = { base64, mime };
+    const preview = document.getElementById('lineupImgPreview' + side);
+    const placeholder = document.getElementById('lineupImgPlaceholder' + side);
+    const btn = document.getElementById('analyzeBtn' + side);
+    if (preview) { preview.src = dataUrl; preview.style.display = 'block'; }
+    if (placeholder) placeholder.style.display = 'none';
+    if (btn) btn.style.display = '';
+  };
+  reader.readAsDataURL(file);
 }
 
-let lastApiFetch = 0;
-let apiCooldownInterval = null;
-let _fixtures = [];
-const API_COOLDOWN = 30000;
-
-function startApiCooldownTimer(){
-  lastApiFetch = Date.now();
-  if(apiCooldownInterval) clearInterval(apiCooldownInterval);
-  const el = document.getElementById('apiCooldownTimer');
-  function tick(){
-    const rem = Math.ceil((API_COOLDOWN - (Date.now() - lastApiFetch)) / 1000);
-    if(rem <= 0){
-      clearInterval(apiCooldownInterval); apiCooldownInterval = null;
-      if(el) el.textContent = '';
-    } else {
-      if(el) el.textContent = `⏳ Volgende verzoek mogelijk over ${rem}s`;
-    }
-  }
-  tick();
-  apiCooldownInterval = setInterval(tick, 1000);
-}
-
-function apiCooldownCheck(){
-  if(!state.apiActief){ showToast('❌ API staat uit — zet hem aan via admin'); return true; }
-  const rem = Math.ceil((API_COOLDOWN - (Date.now() - lastApiFetch)) / 1000);
-  if(rem > 0){ showToast(`⏳ Wacht nog ${rem} seconden`); return true; }
-  return false;
-}
-
-async function fetchLiveFixtures(){
-  if(apiCooldownCheck()) return;
-  startApiCooldownTimer();
-  const resultsEl = document.getElementById('fixtureResults');
-  resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Live wedstrijden ophalen...</div>';
+async function analyzeLineup(side) {
+  const img = _lineupImgData[side - 1];
+  if (!img) return;
+  const btn = document.getElementById('analyzeBtn' + side);
+  const statusEl = document.getElementById('lineupAiStatus');
+  const label = side === 1 ? 'Thuisploeg' : 'Uitploeg';
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Bezig...'; }
+  if (statusEl) statusEl.innerHTML = `<span style="color:var(--muted2);">⏳ ${label} analyseren...</span>`;
   try {
-    const res = await fetch(`${location.origin}/api/live-fixtures`);
+    const res = await fetch(location.origin + '/api/analyze-lineup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: img.base64, mimeType: img.mime })
+    });
     const data = await res.json();
-    if(data.error){ throw new Error(data.error); }
-    if(!data.fixtures?.length){
-      resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">Geen live wedstrijden op dit moment.</div>';
-      return;
-    }
-    _fixtures = data.fixtures;
-    resultsEl.innerHTML = data.fixtures.map((f, i) => {
-      const d = new Date(f.date);
-      const timeStr = d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
-      return `<div onclick="pickFixture(${i})" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface3);border-radius:12px;margin-bottom:6px;cursor:pointer;border:1px solid rgba(255,100,50,.4);">
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.home} – ${f.away}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${timeStr} · ${f.league} · <span style="color:#ff6b6b;font-weight:700;">LIVE</span></div>
-        </div>
-        <div style="font-size:18px;flex-shrink:0;">▶</div>
-      </div>`;
-    }).join('');
-  } catch(e){
-    resultsEl.innerHTML = `<div style="font-size:13px;color:#ff6b8a;padding:8px 0;">❌ ${e.message || 'Ophalen mislukt.'}</div>`;
-  }
-}
-
-async function searchFixtures(){
-  if(apiCooldownCheck()) return;
-  startApiCooldownTimer();
-  const query = document.getElementById('fixtureSearchInput')?.value.trim();
-  if(!query){ showToast('❌ Voer een teamnaam in'); return; }
-  const resultsEl = document.getElementById('fixtureResults');
-  resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Zoeken...</div>';
-  try {
-    const res = await fetch(`${location.origin}/api/search-fixtures?query=${encodeURIComponent(query)}`);
-    const data = await res.json();
-    if(data.error){ throw new Error(data.error); }
-    if(!data.fixtures?.length){
-      resultsEl.innerHTML = `<div style="font-size:13px;color:var(--muted);padding:8px 0;">${data.debug || 'Geen wedstrijden gevonden.'}</div>`;
-      return;
-    }
-    _fixtures = data.fixtures;
-    resultsEl.innerHTML = data.fixtures.map((f, i) => {
-      const d = new Date(f.date);
-      const dateStr = d.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
-      const timeStr = d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
-      const liveTag = f.live ? ' · <span style="color:#ff6b6b;font-weight:700;">LIVE</span>' : '';
-      const oldTag = f.gespeeld ? ' · <span style="color:#ff8080;">al gespeeld</span>' : '';
-      return `<div onclick="pickFixture(${i})" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface3);border-radius:12px;margin-bottom:6px;cursor:pointer;border:1px solid ${f.live?'rgba(255,100,50,.4)':'var(--border)'};">
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.home} – ${f.away}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${dateStr} · ${timeStr} · ${f.league}${liveTag}${oldTag}</div>
-        </div>
-        <div style="font-size:18px;flex-shrink:0;">▶</div>
-      </div>`;
-    }).join('');
-  } catch(e){
-    resultsEl.innerHTML = `<div style="font-size:13px;color:#ff6b8a;padding:8px 0;">❌ ${e.message || 'Zoekopdracht mislukt.'}</div>`;
-  }
-}
-
-async function fetchLineup(fixtureId){
-  if(apiCooldownCheck()) return;
-  startApiCooldownTimer();
-  const resultsEl = document.getElementById('fixtureResults');
-  if(resultsEl) resultsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Opstelling ophalen...</div>';
-  try {
-    const res = await fetch(`${location.origin}/api/get-lineup?fixture=${fixtureId}`);
-    const data = await res.json();
-    if(data.error){ throw new Error(data.error); }
-    if(!data.response || !data.response.length){
-      const info = data.results !== undefined ? ` (results: ${data.results})` : '';
-      if(resultsEl) resultsEl.innerHTML = `<div style="font-size:13px;color:#ff6b8a;padding:8px 0;">❌ Geen opstellingsdata beschikbaar voor deze wedstrijd${info}.</div>`;
-      renderAdminLineup();
-      return;
-    }
-    const [homeData, awayData] = data.response;
-    if(!homeData || !awayData){
-      if(resultsEl) resultsEl.innerHTML = `<div style="font-size:13px;color:#ff6b8a;padding:8px 0;">❌ Slechts één team gevonden in de opstelling. Probeer later opnieuw.</div>`;
-      renderAdminLineup();
-      return;
-    }
-    const parsePlayers = (team) => [
-      ...team.startXI.map(p=>({ name:p.player.name, number:p.player.number, pos:p.player.pos, sub:false })),
-      ...team.substitutes.map(p=>({ name:p.player.name, number:p.player.number, pos:p.player.pos, sub:true }))
-    ];
-    state.lineup = {
-      home: { name: homeData.team.name, players: parsePlayers(homeData) },
-      away: { name: awayData.team.name, players: parsePlayers(awayData) }
-    };
-    state.fixtureId = fixtureId;
+    if (data.error) throw new Error(data.error);
+    const teamName = side === 1 ? (state.team1 || 'Thuisploeg') : (state.team2 || 'Uitploeg');
+    const players = data.players.map(name => ({ name, number: 0, sub: false }));
+    if (!state.lineup) state.lineup = { home: null, away: null };
+    if (side === 1) state.lineup.home = { name: teamName, players };
+    else state.lineup.away = { name: teamName, players };
     saveState();
-    if(resultsEl) resultsEl.innerHTML = '';
     renderAdminLineup();
     renderAll();
+    if (btn) { btn.disabled = false; btn.textContent = '🔄 Opnieuw'; }
+    if (statusEl) statusEl.innerHTML = `<span style="color:var(--oranje);">✅ ${players.length} spelers geladen voor ${teamName}</span>`;
     showToast('✅ Opstelling geladen!');
-  } catch(e){
-    showToast('❌ Kon opstelling niet ophalen');
-    renderAdminLineup();
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = '🤖 Analyseer'; }
+    if (statusEl) statusEl.innerHTML = `<span style="color:#ff6b8a;">❌ ${e.message}</span>`;
   }
 }
 
 function clearLineup(){
   state.lineup = null;
-  state.fixtureId = '';
-  state.selectedFixture = null;
   saveState();
   renderAdminLineup();
   renderAll();
   showToast('🗑️ Opstelling verwijderd');
 }
 
-function pickFixture(i){
-  const f = _fixtures[i];
-  if(!f) return;
-  state.selectedFixture = f;
-  state.lineup = null;
-  state.fixtureId = '';
-  saveState();
-  const resultsEl = document.getElementById('fixtureResults');
-  if(resultsEl) resultsEl.innerHTML = '';
-  renderAdminLineup();
-}
-
-function reloadLineup(){
-  if(!state.selectedFixture) return;
-  fetchLineup(state.selectedFixture.id);
-}
-
 function renderAdminLineup(){
   const el = document.getElementById('lineupPreview');
   if(!el) return;
-  if(!state.lineup){
-    if(state.selectedFixture){
-      const f = state.selectedFixture;
-      const d = new Date(f.date);
-      const dateStr = d.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
-      const timeStr = d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
-      const liveTag = f.live ? ' · <span style="color:#ff6b6b;font-weight:700;">LIVE</span>' : '';
-      el.innerHTML = `<div style="margin-top:10px;padding:12px;background:var(--surface3);border-radius:12px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:2px;">${f.home} – ${f.away}</div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">${dateStr} · ${timeStr} · ${f.league}${liveTag}</div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn primary sm" onclick="reloadLineup()" style="font-size:12px;">📋 Laad opstelling</button>
-          <button class="btn secondary sm" onclick="clearLineup()" style="font-size:12px;color:#ff6b8a;border-color:rgba(255,23,68,.3);">✕ Wissen</button>
-        </div>
-      </div>`;
-    } else {
-      el.innerHTML='';
-    }
+  if(!state.lineup || (!state.lineup.home && !state.lineup.away)){
+    el.innerHTML = '';
     return;
   }
   const { home, away } = state.lineup;
-  const renderTeam = (team, label) => `
-    <div style="margin-bottom:10px;">
-      <div style="font-size:11px;font-weight:700;color:var(--oranje);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">${label}: ${team.name}</div>
-      ${team.players.map(p=>`
-        <div style="font-size:13px;padding:3px 0;color:${p.sub?'var(--muted)':'var(--text)'};display:flex;gap:8px;border-bottom:1px solid var(--border);">
-          <span style="color:var(--muted2);font-size:11px;min-width:22px;">${p.number}</span>
-          <span>${p.name}</span>
-          ${p.sub?'<span style="font-size:10px;color:var(--muted);margin-left:auto;">wissel</span>':''}
-        </div>`).join('')}
+  const renderTeam = (team, label) => {
+    if(!team?.players?.length) return '';
+    return `<div style="margin-bottom:8px;">
+      <div style="font-size:11px;font-weight:700;color:var(--oranje);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">${label}: ${team.name}</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;">${team.players.map(p=>p.name).join(' · ')}</div>
     </div>`;
-  el.innerHTML = `<div style="margin-top:10px;padding:12px;background:var(--surface3);border-radius:12px;">
+  };
+  el.innerHTML = `<div style="margin-top:8px;padding:12px;background:var(--surface3);border-radius:12px;">
     ${renderTeam(home,'🏠 Thuis')}
     ${renderTeam(away,'✈️ Uit')}
     <button class="btn secondary sm" onclick="clearLineup()" style="font-size:12px;margin-top:8px;color:#ff6b8a;border-color:rgba(255,23,68,.3);">🗑️ Opstelling wissen</button>
@@ -2526,14 +2397,10 @@ function buildPlayerOptions(selected){
   if(!state.lineup) return '';
   const { home, away } = state.lineup;
   const renderGroup = (team, label) => {
-    const starters = team.players.filter(p=>!p.sub);
-    const subs = team.players.filter(p=>p.sub);
-    return `<optgroup label="${label}: ${team.name} — Basiself">
-        ${starters.map(p=>`<option value="${p.name}" ${selected===p.name?'selected':''}>${p.number}. ${p.name}</option>`).join('')}
-      </optgroup>
-      <optgroup label="${team.name} — Wissels">
-        ${subs.map(p=>`<option value="${p.name}" ${selected===p.name?'selected':''}>${p.number}. ${p.name}</option>`).join('')}
-      </optgroup>`;
+    if(!team?.players?.length) return '';
+    return `<optgroup label="${label}: ${team.name}">
+      ${team.players.map(p=>`<option value="${p.name}" ${selected===p.name?'selected':''}>${p.name}</option>`).join('')}
+    </optgroup>`;
   };
   return `<option value="">Kies een speler...</option>
     ${renderGroup(home,'🏠')}
