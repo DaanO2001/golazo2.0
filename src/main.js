@@ -766,6 +766,7 @@ function renderMatchup(){
     if(emoji) return `<div class="matchup-flag">${emoji}</div>`;
     return `<div class="matchup-flag" style="font-size:22px;font-weight:800;color:var(--oranje);font-family:'Oswald','Arial Black',system-ui,sans-serif;">${(name||'?')[0].toUpperCase()}</div>`;
   }
+  const hasLineupImg = state.lineup?.home?.image || state.lineup?.away?.image;
   w.innerHTML=`
     <div class="matchup">
       <div class="matchup-team">
@@ -777,7 +778,10 @@ function renderMatchup(){
         ${flagHtml(t2)}
         <div class="matchup-team-name">${t2||'Team 2'}</div>
       </div>
-    </div>`;
+    </div>
+    ${hasLineupImg ? `<div style="text-align:center;margin-top:10px;">
+      <button onclick="showLineupOverlay()" style="background:var(--surface2);border:1px solid var(--border-orange);color:var(--oranje);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;border-radius:999px;cursor:pointer;letter-spacing:.3px;">📋 Bekijk opstelling</button>
+    </div>` : ''}`;
 }
 
 function addPlayer(){
@@ -2049,7 +2053,7 @@ Object.assign(window, {
   dragStart, dragEnd, dragOver, dragLeave, dragDrop,
   touchDragStart, touchDragMove, touchDragEnd,
   toggleUitslag, toggleUitslagVraag, saveUitslag, savePushBerichten, sendBroadcast,
-  previewLineupImg, analyzeLineup, clearLineup,
+  previewLineupImg, analyzeLineup, clearLineup, showLineupOverlay, closeLineupOverlay,
   toggleLockdown, startNieuwRondje,
   showResetSheet, hideResetSheet,
   clearVoorspellingen, clearUitslag, resetSpelers, resetAll, eindWedstrijd,
@@ -2310,6 +2314,22 @@ async function subscribeToPush(playerId) {
 // ── OPSTELLING (AI via screenshots) ──
 let _lineupImgData = [null, null];
 
+function compressImage(dataUrl, maxWidth = 500, quality = 0.65) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxWidth / img.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
 function previewLineupImg(side) {
   const input = document.getElementById('lineupImg' + side);
   const file = input?.files?.[0];
@@ -2348,9 +2368,12 @@ async function analyzeLineup(side) {
     if (data.error) throw new Error(data.error);
     const teamName = side === 1 ? (state.team1 || 'Thuisploeg') : (state.team2 || 'Uitploeg');
     const players = data.players.map(name => ({ name, number: 0, sub: false }));
+    const previewUrl = document.getElementById('lineupImgPreview' + side)?.src || '';
+    const compressedImage = previewUrl ? await compressImage(previewUrl) : null;
     if (!state.lineup) state.lineup = { home: null, away: null };
-    if (side === 1) state.lineup.home = { name: teamName, players };
-    else state.lineup.away = { name: teamName, players };
+    const teamData = { name: teamName, players, image: compressedImage };
+    if (side === 1) state.lineup.home = teamData;
+    else state.lineup.away = teamData;
     saveState();
     renderAdminLineup();
     renderAll();
@@ -2405,6 +2428,31 @@ function buildPlayerOptions(selected){
   return `<option value="">Kies een speler...</option>
     ${renderGroup(home,'🏠')}
     ${renderGroup(away,'✈️')}`;
+}
+
+function showLineupOverlay(){
+  const overlay = document.getElementById('opstellingOverlay');
+  const content = document.getElementById('opstellingContent');
+  if(!overlay || !content) return;
+  const { home, away } = state.lineup || {};
+  const renderTeamImg = (team, label) => {
+    if(!team?.image) return '';
+    return `<div style="margin-bottom:24px;">
+      <div style="font-size:11px;font-weight:700;color:var(--oranje);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">${label}: ${team.name}</div>
+      <img src="${team.image}" style="width:100%;border-radius:14px;display:block;">
+    </div>`;
+  };
+  const html = renderTeamImg(home,'🏠 Thuis') + renderTeamImg(away,'✈️ Uit');
+  if(!html){ showToast('Geen opstelling beschikbaar'); return; }
+  content.innerHTML = html;
+  overlay.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLineupOverlay(){
+  const overlay = document.getElementById('opstellingOverlay');
+  if(overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 async function sendBroadcast(){
