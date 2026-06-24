@@ -413,7 +413,9 @@ function toggleAdmin(){
 }
 
 function applyWKTheme(){
-  document.body.classList.toggle('wk-theme', !!state.wkModus);
+  const on = !!state.wkModus;
+  document.body.classList.toggle('wk-theme', on);
+  try{ localStorage.setItem('golazo_wk_modus', on ? '1' : '0'); }catch(e){}
 }
 
 function toggleWKModus(){
@@ -425,7 +427,11 @@ function toggleWKModus(){
 
 function refreshAdminUI(){
   const wkTog = document.getElementById('wkModusToggle');
-  if(wkTog) wkTog.checked = state.wkModus||false;
+  if(wkTog){
+    const lsVal = localStorage.getItem('golazo_wk_modus')==='1';
+    wkTog.checked = state.wkModus || lsVal;
+    if(lsVal && !state.wkModus){ state.wkModus = true; }
+  }
   document.getElementById('strafToggle').checked = state.strafMode||false;
   document.getElementById('pincodeInput').value = state.pincode||'';
   const apiTog = document.getElementById('apiActiefToggle');
@@ -2625,5 +2631,7 @@ registerServiceWorker().then(() => {
   const tabParam = new URLSearchParams(window.location.search).get('tab');
   if (tabParam) setTimeout(() => showTab(tabParam), 500);
 });
+// Pas WK-thema meteen toe vanuit localStorage, zodat er geen flicker is bij laden
+try{ if(localStorage.getItem('golazo_wk_modus')==='1') document.body.classList.add('wk-theme'); }catch(e){}
 loadSupabaseConfig();
 if(!checkAdminUrl()) initSupabase();
