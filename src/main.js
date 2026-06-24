@@ -1286,7 +1286,7 @@ function renderLockedOverview(){
   const content=document.getElementById('invullenContent');
   const bannerHtml = state.locked
     ? `<div class="lockdown-banner"><span class="lockdown-icon">🔒</span>Voorspellingen zijn vergrendeld — wedstrijd is begonnen!</div>`
-    : `<div class="info-bar" style="margin-bottom:14px;">Klik op je naam bovenin om voorspellingen in te vullen ✏️</div>`;
+    : `<p style="font-size:13px;color:var(--muted2);text-align:center;margin-bottom:20px;padding:0 4px;">Klik op je naam om voorspellingen in te vullen</p>`;
   content.innerHTML=`
     ${bannerHtml}
     <div class="player-locked-grid">

@@ -213,14 +213,14 @@ header h1{
   box-shadow:0 8px 32px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.14);
 }
 .nav-btn{
-  width:52px;height:52px;border-radius:50%;border:none;
+  width:64px;height:56px;border-radius:18px;border:none;
   background:transparent;color:rgba(255,220,185,0.65);
-  cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;transition:all .2s;flex-shrink:0;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
 }
 .nav-btn svg{ transition:color .2s; }
 .nav-btn img{ opacity:.45;transition:opacity .2s; }
-.nav-btn span{ font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;transition:color .2s; }
+.nav-btn span{ display:none; }
 .nav-btn.active{ background:rgba(255,92,0,0.22);color:var(--oranje);box-shadow:0 0 14px var(--oranje-glow); }
 .nav-btn.active img{ opacity:1; }
 .nav-btn:active{ transform:scale(.90); }
@@ -415,26 +415,25 @@ select option{background:#1a1a2e;}
 
 /* COUNTDOWN */
 .countdown-card{
-  background:linear-gradient(135deg,rgba(255,107,0,0.1) 0%,rgba(255,140,0,0.04) 100%);
-  border:1px solid var(--border-orange);border-radius:var(--radius);
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:var(--radius);
   padding:18px 16px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.08);
 }
-.countdown-card::before{
-  content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,107,0,0.1) 0%,transparent 70%);pointer-events:none;
-}
-.countdown-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--oranje);font-weight:800;margin-bottom:12px;}
+.countdown-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:12px;}
 .countdown-digits{display:flex;justify-content:center;gap:6px;align-items:flex-start;}
 .cd-block{text-align:center;min-width:52px;}
 .cd-num{
-  font-family:'Oswald','Arial Black',system-ui,sans-serif;font-weight:700;font-size:42px;color:var(--accent);
+  font-family:'Oswald','Arial Black',system-ui,sans-serif;font-weight:700;font-size:42px;color:#fff;
   letter-spacing:2px;line-height:1;display:block;
   text-shadow:0 0 20px rgba(255,107,0,0.3);
   transition:transform .1s;
 }
 .cd-num.tick{transform:scaleY(1.06);}
-.cd-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
-.cd-sep{font-family:'Oswald','Arial Black',system-ui,sans-serif;font-weight:700;font-size:32px;color:var(--accent);opacity:.6;margin-top:6px;}
+.cd-label{font-size:9px;color:rgba(255,255,255,0.40);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.cd-sep{font-family:'Oswald','Arial Black',system-ui,sans-serif;font-weight:700;font-size:32px;color:rgba(255,255,255,0.30);margin-top:6px;}
 .countdown-done{font-family:'Oswald','Arial Black',system-ui,sans-serif;font-weight:800;font-size:28px;color:var(--oranje);letter-spacing:1px;animation:glow 1s infinite alternate;}
 @keyframes glow{from{text-shadow:0 0 8px var(--oranje);}to{text-shadow:0 0 24px var(--oranje),0 0 4px #fff;}}
 
