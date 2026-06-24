@@ -120,6 +120,7 @@ let state = {
   ],
   wielSpeler:null,
   wkModus:false,
+  wkPlayers:[],
 };
 
 // ── LOAD / SAVE via Supabase ──
@@ -440,6 +441,7 @@ function refreshAdminUI(){
   renderAdminVragen();
   renderAdminUitslag();
   renderAdminLineup();
+  renderWKPlayersCard();
   renderWielAdmin();
   syncLockdownBtn();
   syncEindigenBtn();
@@ -766,7 +768,6 @@ function renderMatchup(){
     if(emoji) return `<div class="matchup-flag">${emoji}</div>`;
     return `<div class="matchup-flag" style="font-size:22px;font-weight:800;color:var(--oranje);font-family:'Oswald','Arial Black',system-ui,sans-serif;">${(name||'?')[0].toUpperCase()}</div>`;
   }
-  const hasLineupImg = state.lineup?.home?.image || state.lineup?.away?.image;
   w.innerHTML=`
     <div class="matchup">
       <div class="matchup-team">
@@ -778,10 +779,7 @@ function renderMatchup(){
         ${flagHtml(t2)}
         <div class="matchup-team-name">${t2||'Team 2'}</div>
       </div>
-    </div>
-    ${hasLineupImg ? `<div style="text-align:center;margin-top:10px;">
-      <button onclick="showLineupOverlay()" style="background:var(--surface2);border:1px solid var(--border-orange);color:var(--oranje);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;border-radius:999px;cursor:pointer;letter-spacing:.3px;">📋 Bekijk opstelling</button>
-    </div>` : ''}`;
+    </div>`;
 }
 
 function addPlayer(){
@@ -1867,6 +1865,7 @@ function resetAll(){
     ],
     wielSpeler:null,
     wkModus:false,
+    wkPlayers:[],
     pincode: String(Math.floor(1000 + Math.random() * 9000)),
     };
   applyWKTheme();
@@ -2055,6 +2054,7 @@ Object.assign(window, {
   toggleUitslag, toggleUitslagVraag, saveUitslag, savePushBerichten, sendBroadcast,
   previewLineupImg, analyzeLineup, clearLineup, showLineupOverlay, closeLineupOverlay,
   openPlayerPicker, selectPlayerFromPicker, closePlayerPicker,
+  loadWKPlayers, clearWKPlayers,
   toggleLockdown, startNieuwRondje,
   showResetSheet, hideResetSheet,
   clearVoorspellingen, clearUitslag, resetSpelers, resetAll, eindWedstrijd,
@@ -2363,7 +2363,7 @@ async function analyzeLineup(side) {
     const res = await fetch(location.origin + '/api/analyze-lineup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: img.base64, mimeType: img.mime, teamName: side === 1 ? (state.team1 || '') : (state.team2 || '') })
+      body: JSON.stringify({ imageBase64: img.base64, mimeType: img.mime, teamName: side === 1 ? (state.team1 || '') : (state.team2 || ''), wkPlayers: state.wkPlayers || [] })
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
@@ -2398,6 +2398,78 @@ function clearLineup(){
   renderAdminLineup();
   renderAll();
   showToast('🗑️ Opstelling verwijderd');
+}
+
+async function loadWKPlayers(){
+  const fileEl = document.getElementById('wkPlayersFile');
+  const file = fileEl?.files?.[0];
+  if (!file) return;
+  const statusEl = document.getElementById('wkPlayersStatus');
+  const btn = document.getElementById('wkPlayersBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Bezig...'; }
+  if (statusEl) statusEl.innerHTML = '<span style="color:var(--muted2);">⏳ Bestand verwerken...</span>';
+
+  try {
+    let rawText = '';
+    if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+      // Lazy-load PDF.js from CDN — only for admin PDF feature
+      const pdfjsLib = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.mjs');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.mjs';
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const parts = [];
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        parts.push(content.items.map(item => item.str).join(' '));
+      }
+      rawText = parts.join('\n');
+      if (!rawText.trim()) throw new Error('Geen tekst gevonden in PDF (mogelijk gescand). Kopieer de tekst handmatig.');
+    } else {
+      rawText = await file.text();
+    }
+
+    if (statusEl) statusEl.innerHTML = '<span style="color:var(--muted2);">⏳ Spelersnamen extraheren met AI...</span>';
+    const res = await fetch(location.origin + '/api/extract-wk-players', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rawText })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    state.wkPlayers = data.players;
+    saveState();
+    renderWKPlayersCard();
+    showToast(`✅ ${data.players.length} spelers geladen!`);
+  } catch(e) {
+    if (statusEl) statusEl.innerHTML = `<span style="color:#ff6b8a;">❌ ${e.message}</span>`;
+    showToast('❌ Laden mislukt');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '📥 Namen laden'; }
+    if (fileEl) fileEl.value = '';
+  }
+}
+
+function clearWKPlayers(){
+  state.wkPlayers = [];
+  saveState();
+  renderWKPlayersCard();
+  showToast('🗑️ Spelerslijst verwijderd');
+}
+
+function renderWKPlayersCard(){
+  const el = document.getElementById('wkPlayersLoaded');
+  if (!el) return;
+  const count = state.wkPlayers?.length || 0;
+  if (count === 0) {
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding:10px 14px;background:var(--surface3);border-radius:12px;">
+    <span style="font-size:13px;color:var(--oranje);font-weight:700;">✅ ${count} spelers geladen</span>
+    <button class="btn secondary sm" onclick="clearWKPlayers()" style="font-size:12px;color:#ff6b8a;border-color:rgba(255,23,68,.3);">🗑️ Wissen</button>
+  </div>`;
 }
 
 function renderAdminLineup(){
