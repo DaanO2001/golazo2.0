@@ -1979,7 +1979,7 @@ document.addEventListener('keydown', function(e){
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || '0801';
 const USER_KEY = 'golazo_user_id';
 const ADMIN_SESSION_KEY = 'golazo_admin_session';
-const ADMIN_SESSION_DURATION = 10 * 60 * 1000; // 10 minuten in ms
+const ADMIN_SESSION_DURATION = 15 * 60 * 1000; // 15 minuten in ms
 let isAdmin = false;
 
 // Encode/decode config voor in de URL (simpele base64)
