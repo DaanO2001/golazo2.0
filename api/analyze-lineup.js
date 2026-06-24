@@ -23,7 +23,7 @@ export default async function handler(req, res) {
             },
             {
               type: 'text',
-              text: 'You are an OCR tool. Read the player names from this football lineup image and copy them EXACTLY as they appear — letter by letter, character by character. Do NOT use your football knowledge to correct, complete, or change any name. Do NOT add or remove letters. If a name looks unusual, still copy it exactly as shown. Return ONLY a valid JSON array of strings, no markdown, no explanation. Example: ["Virgil van Dijk", "B. Brobbey", "Cody Gakpo"]'
+              text: 'You are an OCR tool. For each player name visible in this football lineup image extract: (1) the name EXACTLY as written — letter by letter, no corrections, (2) their approximate position as percentage coordinates from the top-left corner (x: 0-100, y: 0-100). Return ONLY a valid JSON array, no markdown, no explanation. Example: [{"name":"Brobbey","x":48,"y":65},{"name":"Van Dijk","x":20,"y":30}]'
             }
           ]
         }],
@@ -45,7 +45,13 @@ export default async function handler(req, res) {
 
     const rawPlayers = JSON.parse(match[0]);
     if (!Array.isArray(rawPlayers)) throw new Error('Onverwacht formaat van AI-respons');
-    const rawNames = rawPlayers.filter(p => typeof p === 'string' && p.trim());
+
+    // Normaliseer: ondersteun zowel strings als {name, x, y} objecten
+    const normalized = rawPlayers.map(p =>
+      typeof p === 'string' ? { name: p, x: 50, y: 50 } : { name: p.name || '', x: p.x ?? 50, y: p.y ?? 50 }
+    ).filter(p => p.name.trim());
+
+    const rawNames = normalized.map(p => p.name);
 
     // Stap 2: corrigeer OCR-fouten met voetbalkennis
     const { teamName } = req.body;
@@ -59,14 +65,14 @@ export default async function handler(req, res) {
         model: 'meta-llama/llama-3.3-70b-versatile',
         messages: [{
           role: 'user',
-          content: `These player names were extracted via OCR from a football lineup image${teamName ? ` for ${teamName}` : ''} and may contain OCR errors (wrong, extra, or missing letters). Use your knowledge of professional football players to fix any OCR mistakes. Only correct clear errors — do not change names that look correct. Return ONLY a valid JSON array of corrected name strings, no explanation, no markdown.\n\nRaw OCR names: ${JSON.stringify(rawNames)}`
+          content: `These player names were extracted via OCR from a football lineup image${teamName ? ` for ${teamName}` : ''} and may contain OCR errors. Use your knowledge of professional football players to fix any OCR mistakes. Only correct clear errors — do not change names that look correct. Return ONLY a valid JSON array of corrected name strings, same order, same length, no explanation.\n\nRaw OCR names: ${JSON.stringify(rawNames)}`
         }],
         max_tokens: 400,
         temperature: 0
       })
     });
 
-    let players = rawNames;
+    let finalNames = rawNames;
     if (correctionRes.ok) {
       const corrData = await correctionRes.json();
       const corrContent = corrData.choices?.[0]?.message?.content?.trim() || '';
@@ -75,11 +81,18 @@ export default async function handler(req, res) {
         try {
           const corrected = JSON.parse(corrMatch[0]);
           if (Array.isArray(corrected) && corrected.length === rawNames.length) {
-            players = corrected.filter(p => typeof p === 'string' && p.trim());
+            finalNames = corrected.map(p => (typeof p === 'string' ? p : p.name) || '').filter(Boolean);
           }
         } catch(e) { /* gebruik raw names als fallback */ }
       }
     }
+
+    // Merge gecorrigeerde namen terug met coordinaten
+    const players = normalized.map((p, i) => ({
+      name: finalNames[i] || p.name,
+      x: p.x,
+      y: p.y
+    }));
 
     res.json({ players });
   } catch(e) {

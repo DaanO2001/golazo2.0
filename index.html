@@ -334,6 +334,15 @@
   <div id="resultaatContent"></div>
 </div>
 
+<!-- PLAYER PICKER OVERLAY -->
+<div id="playerPickerOverlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);flex-direction:column;align-items:stretch;overflow-y:auto;" onclick="if(event.target===this)closePlayerPicker()">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 20px 12px;max-width:500px;width:100%;margin:0 auto;flex-shrink:0;">
+    <div style="font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--oranje);">👆 Kies een speler</div>
+    <button onclick="closePlayerPicker()" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:7px 16px;border-radius:999px;cursor:pointer;">✕ Sluiten</button>
+  </div>
+  <div id="playerPickerContent" style="max-width:500px;width:100%;margin:0 auto;padding:0 20px 40px;"></div>
+</div>
+
 <!-- OPSTELLING OVERLAY -->
 <div id="opstellingOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;padding:28px 20px 48px;">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;max-width:500px;margin-left:auto;margin-right:auto;">

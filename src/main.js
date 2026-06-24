@@ -1437,7 +1437,7 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
       const toggleSub=`this.value==='Ja'?document.getElementById('${subDivId}').style.display='block':document.getElementById('${subDivId}').style.display='none';`;
       const onchangeJn=prefix==='pred'?`${toggleSub}saveLocalVoorspelling();`:toggleSub;
       const subInput=state.lineup
-        ?`<select id="${prefix}_${subKey}" style="border-radius:10px;">${buildPlayerOptions(subWaarde)}</select>`
+        ?playerPickerBtn(`${prefix}_${subKey}`, subWaarde)
         :`<input type="text" id="${prefix}_${subKey}" value="${subWaarde}" placeholder="Welke speler?" autocapitalize="words" style="border-radius:10px;">`;
       return `<select id="${id}" onchange="${onchangeJn}"><option value="">Kies...</option><option value="Ja" ${waarde==='Ja'?'selected':''}>Ja</option><option value="Nee" ${waarde==='Nee'?'selected':''}>Nee</option></select>
       <div id="${subDivId}" style="display:${showSub?'block':'none'};margin-top:10px;padding:10px 12px;background:var(--surface3);border-radius:10px;border:1px solid var(--border);">
@@ -1458,7 +1458,7 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
     <div id="${subDivId}" style="display:${showSub?'block':'none'};margin-top:10px;padding:10px 12px;background:var(--surface3);border-radius:10px;border:1px solid var(--border);">
       <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">↳ ${sub.tekst}</div>
       ${state.lineup && sub.type==='speler'
-        ? `<select id="${prefix}_${sub.id}" style="border-radius:10px;">${buildPlayerOptions(subWaarde)}</select>`
+        ? playerPickerBtn(`${prefix}_${sub.id}`, subWaarde)
         : `<input type="text" id="${prefix}_${sub.id}" value="${subWaarde}" placeholder="Naam speler..." autocapitalize="words" style="border-radius:10px;">`
       }
     </div>`;
@@ -1485,7 +1485,7 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
   }
 
   if(v.type==='speler'){
-    if(state.lineup) return `<select id="${id}">${buildPlayerOptions(waarde)}</select>`;
+    if(state.lineup) return playerPickerBtn(id, waarde);
     return `<input type="text" id="${id}" value="${waarde}" placeholder="Jouw antwoord..." autocapitalize="words">`;
   }
   if(v.type==='getal') return `<input type="text" inputmode="numeric" id="${id}" value="${waarde}" placeholder="bijv. 3">`;
@@ -2054,6 +2054,7 @@ Object.assign(window, {
   touchDragStart, touchDragMove, touchDragEnd,
   toggleUitslag, toggleUitslagVraag, saveUitslag, savePushBerichten, sendBroadcast,
   previewLineupImg, analyzeLineup, clearLineup, showLineupOverlay, closeLineupOverlay,
+  openPlayerPicker, selectPlayerFromPicker, closePlayerPicker,
   toggleLockdown, startNieuwRondje,
   showResetSheet, hideResetSheet,
   clearVoorspellingen, clearUitslag, resetSpelers, resetAll, eindWedstrijd,
@@ -2367,7 +2368,12 @@ async function analyzeLineup(side) {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     const teamName = side === 1 ? (state.team1 || 'Thuisploeg') : (state.team2 || 'Uitploeg');
-    const players = data.players.map(name => ({ name, number: 0, sub: false }));
+    const players = data.players.map(p => ({
+      name: typeof p === 'string' ? p : p.name,
+      x: typeof p === 'object' ? (p.x ?? 50) : 50,
+      y: typeof p === 'object' ? (p.y ?? 50) : 50,
+      number: 0, sub: false
+    }));
     const previewUrl = document.getElementById('lineupImgPreview' + side)?.src || '';
     const compressedImage = previewUrl ? await compressImage(previewUrl) : null;
     if (!state.lineup) state.lineup = { home: null, away: null };
@@ -2453,6 +2459,76 @@ function closeLineupOverlay(){
   const overlay = document.getElementById('opstellingOverlay');
   if(overlay) overlay.style.display = 'none';
   document.body.style.overflow = '';
+}
+
+function playerPickerBtn(inputId, currentValue){
+  const label = currentValue || '👆 Kies een speler';
+  return `<input type="hidden" id="${inputId}" value="${currentValue||''}">
+    <button type="button" onclick="openPlayerPicker('${inputId}')" style="width:100%;text-align:left;background:var(--surface2);border:1px solid var(--border-orange);color:${currentValue?'var(--text)':'var(--muted)'};font-family:'DM Sans',sans-serif;font-size:14px;font-weight:${currentValue?'600':'400'};padding:12px 16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <span id="${inputId}_lbl">${label}</span>
+      <span style="font-size:18px;">📋</span>
+    </button>`;
+}
+
+let _pickerInputId = null;
+
+function openPlayerPicker(inputId){
+  _pickerInputId = inputId;
+  const overlay = document.getElementById('playerPickerOverlay');
+  const content = document.getElementById('playerPickerContent');
+  if(!overlay || !content) return;
+  const { home, away } = state.lineup || {};
+  if(!home?.players?.length && !away?.players?.length){ showToast('Geen opstelling beschikbaar'); return; }
+
+  const renderTeam = (team, label) => {
+    if(!team?.players?.length) return '';
+    const chips = team.players.map(p => {
+      const px = Math.min(Math.max(p.x ?? 50, 6), 94);
+      const py = Math.min(Math.max(p.y ?? 50, 4), 96);
+      return `<button type="button" onclick="selectPlayerFromPicker('${p.name.replace(/'/g,"\\'")}',event)"
+        style="position:absolute;left:${px}%;top:${py}%;transform:translate(-50%,-50%);
+        background:rgba(15,15,20,0.82);border:1.5px solid var(--oranje);color:var(--text);
+        font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;line-height:1.2;
+        padding:4px 9px;border-radius:20px;cursor:pointer;white-space:nowrap;
+        backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,.5);
+        transition:background .15s,transform .1s;touch-action:manipulation;">
+        ${p.name}
+      </button>`;
+    }).join('');
+    const imgHtml = team.image
+      ? `<img src="${team.image}" style="width:100%;display:block;border-radius:12px;">`
+      : '';
+    return `<div style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:700;color:var(--oranje);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">${label}: ${team.name}</div>
+      <div style="position:relative;display:inline-block;width:100%;">
+        ${imgHtml}
+        ${chips}
+      </div>
+    </div>`;
+  };
+
+  content.innerHTML = renderTeam(home,'🏠 Thuis') + renderTeam(away,'✈️ Uit');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function selectPlayerFromPicker(playerName, e){
+  if(e){ e.stopPropagation(); }
+  if(!_pickerInputId) return;
+  const hidden = document.getElementById(_pickerInputId);
+  if(hidden) hidden.value = playerName;
+  const lbl = document.getElementById(_pickerInputId + '_lbl');
+  if(lbl){ lbl.textContent = playerName; lbl.style.color = 'var(--text)'; lbl.style.fontWeight = '600'; }
+  closePlayerPicker();
+  // Trigger save if in pred context
+  try{ saveLocalVoorspelling(); }catch(e){}
+}
+
+function closePlayerPicker(){
+  const overlay = document.getElementById('playerPickerOverlay');
+  if(overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
+  _pickerInputId = null;
 }
 
 async function sendBroadcast(){
