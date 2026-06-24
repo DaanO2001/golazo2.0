@@ -2040,7 +2040,7 @@ function checkAdminPassword(){
 // Maak functies globaal beschikbaar voor inline HTML handlers
 Object.assign(window, {
   saveSupabaseConfig, checkAdminPassword, checkPincode,
-  toggleAdmin, setMode, toggleStraffen, toggleApiActief,
+  toggleAdmin, setMode, toggleStraffen, toggleWKModus, toggleApiActief,
   savePincode, clearPincode, capitalizeInput, saveTeams,
   formatDateInput, saveCountdown, formatTimeInput,
   addPlayer, removePlayer,
