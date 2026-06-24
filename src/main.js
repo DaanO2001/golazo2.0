@@ -528,13 +528,14 @@ function teamLogoImg(name, style=''){
   const cdn = getClubLogoFromMap(name);
   const emoji = getFlag(name);
   const initial = (name||'?')[0].toUpperCase();
-  const emojiOrInitial = emoji
-    ? `this.parentElement.innerHTML='<span style="font-size:32px;line-height:1">${emoji}</span>'`
-    : `this.parentElement.innerHTML='<span style="font-size:22px;font-weight:800;color:var(--oranje);font-family:Oswald,sans-serif;">${initial}</span>'`;
+  // Emoji/initial always visible as background; local PNG loads on top and covers it
+  const fallback = emoji
+    ? `<span style="font-size:32px;line-height:1;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">${emoji}</span>`
+    : `<span style="font-size:20px;font-weight:800;color:var(--oranje);font-family:Oswald,sans-serif;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">${initial}</span>`;
   const onErr = cdn
-    ? `if(this.src!==\`${cdn}\`){this.src=\`${cdn}\`;}else{${emojiOrInitial}}`
-    : emojiOrInitial;
-  return `<img src="${local}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;${style}" onerror="${onErr}">`;
+    ? `if(this.src!==\`${cdn}\`){this.src=\`${cdn}\`;}else{this.style.display='none';}`
+    : `this.style.display='none';`;
+  return `${fallback}<img src="${local}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;${style}" onerror="${onErr}">`;
 }
 
 function avatarHtml(p, size='36px', fontSize='15px'){
@@ -692,6 +693,7 @@ function saveTeams(){
     if(!el) return;
     el.style.padding = '0';
     el.style.overflow = 'hidden';
+    el.style.position = 'relative';
     el.innerHTML = name ? teamLogoImg(name) : '<span style="font-size:22px">🏴</span>';
   }
   setPreview(f1, state.team1);
@@ -781,7 +783,7 @@ function renderMatchup(){
   const t2 = state.team2;
   if(!t1 && !t2){ w.innerHTML=''; return; }
   function flagHtml(name) {
-    return `<div class="matchup-flag" style="overflow:hidden;padding:0;">${teamLogoImg(name)}</div>`;
+    return `<div class="matchup-flag" style="padding:0;">${teamLogoImg(name)}</div>`;
   }
   w.innerHTML=`
     <div class="matchup">

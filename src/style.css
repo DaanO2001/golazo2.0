@@ -173,7 +173,7 @@ body::after{
   vertical-align:middle;
 }
 .sync-dot.syncing{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse .8s infinite;}
-.sync-dot.ok{background:var(--oranje);box-shadow:0 0 8px var(--oranje);}
+.sync-dot.ok{background:#22C55E;box-shadow:0 0 8px rgba(34,197,94,0.6);}
 .sync-dot.error{background:#ff4569;box-shadow:0 0 8px #ff4569;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 
@@ -388,11 +388,12 @@ select option{background:#1a1a2e;}
   display:flex;flex-direction:column;align-items:center;gap:8px;
 }
 .matchup-flag{
-  width:64px;height:64px;border-radius:50%;
+  width:80px;height:80px;border-radius:50%;
   background:var(--surface2);
   border:2px solid var(--border-orange);
   display:flex;align-items:center;justify-content:center;
-  font-size:36px;
+  font-size:36px;overflow:hidden;
+  position:relative;
   box-shadow:0 0 18px var(--oranje-glow);
   transition:transform .2s;
 }
