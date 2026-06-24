@@ -90,7 +90,7 @@ async function initSupabase(){
 const VAST_VRAGEN = [
   {id:'v1',tekst:'__TEAM1_LABEL__ scoort als eerste',type:'team',vast:true},
   {id:'v2',tekst:'Welke speler scoort het eerste doelpunt?',type:'speler',vast:true},
-  {id:'v3',tekst:'Welke speler pakt de eerste gele kaart?',type:'speler',vast:true},
+  {id:'v3',tekst:'Komt er een gele kaart?',type:'jn_met_sub',vast:true,subVraag:{id:'v3s',tekst:'Welke speler pakt de eerste gele kaart?',type:'speler'}},
   {id:'v4',tekst:'Komt er een rode kaart?',type:'jn_met_sub',vast:true,subVraag:{id:'v5',tekst:'Wie pakt de rode kaart?',type:'speler'}},
   {id:'v7',tekst:'Tussenstand',type:'tussenstand',vast:true},
   {id:'v6',tekst:'Eindstand',type:'score',vast:true},
@@ -1075,12 +1075,25 @@ function addEigenVraag(){
   const tekst=document.getElementById('eigenVraagInput').value.trim();
   const type=document.getElementById('eigenVraagType').value;
   if(!tekst) return;
-  state.vragen.push({id:'e'+Date.now(),tekst,type,vast:false});
+  const vraag={id:'e'+Date.now(),tekst,type,vast:false};
+  if(type==='jn_met_sub'){
+    const subTekst=document.getElementById('eigenSubVraagInput').value.trim();
+    if(subTekst) vraag.subVraag={id:'es'+Date.now(),tekst:subTekst,type:'speler'};
+    document.getElementById('eigenSubVraagInput').value='';
+  }
+  state.vragen.push(vraag);
   document.getElementById('eigenVraagInput').value='';
+  document.getElementById('eigenVraagType').value='team';
+  document.getElementById('eigenSubVraagRow').style.display='none';
   saveState();
   renderAdminVragen();
   renderAdminUitslag();
   showToast('✅ Vraag toegevoegd');
+}
+
+function toggleSubVraagInput(){
+  const type=document.getElementById('eigenVraagType').value;
+  document.getElementById('eigenSubVraagRow').style.display=type==='jn_met_sub'?'block':'none';
 }
 function removeVraag(id){
   state.vragen=state.vragen.filter(v=>v.id!==id);
@@ -2092,7 +2105,7 @@ Object.assign(window, {
   savePincode, clearPincode, capitalizeInput, saveTeams,
   formatDateInput, saveCountdown, formatTimeInput,
   addPlayer, removePlayer,
-  toggleVragenAdmin, toggleEigenVraag, addEigenVraag,
+  toggleVragenAdmin, toggleEigenVraag, addEigenVraag, toggleSubVraagInput,
   startEditVraag, saveEditVraag, cancelEditVraag, removeVraag,
   dragStart, dragEnd, dragOver, dragLeave, dragDrop,
   touchDragStart, touchDragMove, touchDragEnd,

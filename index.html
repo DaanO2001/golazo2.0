@@ -203,14 +203,18 @@
       </div>
       <div id="eigenVraagBody" style="display:none;">
         <input type="text" id="eigenVraagInput" placeholder="bijv. Wie pakt de 2e gele kaart?" style="margin-bottom:8px;">
-        <select id="eigenVraagType" style="margin-bottom:8px;">
+        <select id="eigenVraagType" onchange="toggleSubVraagInput()" style="margin-bottom:8px;">
           <option value="team">Antwoord: team/land</option>
           <option value="speler">Antwoord: spelernaam (vrij tekst)</option>
           <option value="jn">Antwoord: Ja / Nee</option>
+          <option value="jn_met_sub">Antwoord: Ja / Nee + sub-vraag bij Ja</option>
           <option value="getal">Antwoord: getal</option>
           <option value="vrij">Antwoord: vrije tekst</option>
           <option value="tussenstand">Antwoord: tussenstand (score)</option>
         </select>
+        <div id="eigenSubVraagRow" style="display:none;margin-bottom:8px;">
+          <input type="text" id="eigenSubVraagInput" placeholder="Sub-vraag bij 'Ja' (bijv. Welke speler?)">
+        </div>
         <button class="btn" onclick="addEigenVraag()">+ Toevoegen</button>
       </div>
     </div>
