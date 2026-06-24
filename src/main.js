@@ -88,8 +88,8 @@ async function initSupabase(){
 //  STATE
 // ------------------------------------------------
 const VAST_VRAGEN = [
-  {id:'v1',tekst:'__TEAM1_LABEL__ scoort als eerste',type:'team',vast:true},
-  {id:'v2',tekst:'Welke speler scoort het eerste doelpunt?',type:'speler',vast:true},
+  {id:'v1',tekst:'__TEAM1_LABEL__ scoort als eerste',type:'team',vast:true,extraOptie:'Geen van beide'},
+  {id:'v2',tekst:'Welke speler scoort het eerste doelpunt?',type:'speler',vast:true,extraOptie:'Niemand'},
   {id:'v3',tekst:'Komt er een gele kaart?',type:'jn_met_sub',vast:true,subVraag:{id:'v3s',tekst:'Welke speler pakt de eerste gele kaart?',type:'speler'}},
   {id:'v4',tekst:'Komt er een rode kaart?',type:'jn_met_sub',vast:true,subVraag:{id:'v5',tekst:'Wie pakt de rode kaart?',type:'speler'}},
   {id:'v7',tekst:'Tussenstand',type:'tussenstand',vast:true},
@@ -148,6 +148,12 @@ async function loadStateFromSupabase(){
           for(let j=vastIdx-1;j>=0;j--){ const pi=state.vragen.findIndex(x=>x.id===VAST_VRAGEN[j].id); if(pi>=0){insertIdx=pi+1;break;} }
           state.vragen.splice(insertIdx,0,v); ids.splice(insertIdx,0,v.id);
         }
+      });
+      // Sync eigenschappen (extraOptie, subVraag etc) van VAST_VRAGEN naar opgeslagen vragen
+      state.vragen = state.vragen.map(v => {
+        if(!v.vast) return v;
+        const master = VAST_VRAGEN.find(vv => vv.id === v.id);
+        return master ? {...v, ...master} : v;
       });
     }
     setSyncStatus('ok');
@@ -229,6 +235,11 @@ function setupRealtime(){
           for(let j=vastIdx-1;j>=0;j--){ const pi=state.vragen.findIndex(x=>x.id===VAST_VRAGEN[j].id); if(pi>=0){insertIdx=pi+1;break;} }
           state.vragen.splice(insertIdx,0,v); ids.splice(insertIdx,0,v.id);
         }
+      });
+      state.vragen = state.vragen.map(v => {
+        if(!v.vast) return v;
+        const master = VAST_VRAGEN.find(vv => vv.id === v.id);
+        return master ? {...v, ...master} : v;
       });
       // Re-render — als gebruiker actief aan het invullen is, raak de DOM niet aan
       _realtimeUpdate = true;
@@ -1462,7 +1473,10 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
   const id=prefix+'_'+v.id;
   const onchangeRender = prefix==='pred' ? `onchange="saveLocalVoorspelling();checkDependentRender('${v.id}');"` : '';
 
-  if(v.type==='team') return `<select id="${id}" ${onchangeRender}><option value="">Kies...</option><option value="${t1}" ${waarde===t1?'selected':''}>${t1}</option><option value="${t2}" ${waarde===t2?'selected':''}>${t2}</option></select>`;
+  if(v.type==='team'){
+    const extra=v.extraOptie?`<option value="${v.extraOptie}" ${waarde===v.extraOptie?'selected':''}>${v.extraOptie}</option>`:'';
+    return `<select id="${id}" ${onchangeRender}><option value="">Kies...</option><option value="${t1}" ${waarde===t1?'selected':''}>${t1}</option><option value="${t2}" ${waarde===t2?'selected':''}>${t2}</option>${extra}</select>`;
+  }
   if(v.type==='team3') return `<select id="${id}"><option value="">Kies...</option><option value="${t1}" ${waarde===t1?'selected':''}>${t1}</option><option value="${t2}" ${waarde===t2?'selected':''}>${t2}</option><option value="Gelijkspel" ${waarde==='Gelijkspel'?'selected':''}>Gelijkspel</option></select>`;
   if(v.type==='jn'){
     if(state.strafMode && (prefix==='pred'||prefix==='uit')){
@@ -1521,11 +1535,20 @@ function renderAntwoordInput(v, waarde, prefix, antwoorden){
   }
 
   if(v.type==='speler'){
-    if(state.lineup) return playerPickerBtn(id, waarde);
-    return `<input type="text" id="${id}" value="${waarde}" placeholder="Jouw antwoord..." autocapitalize="words">`;
+    const saveCall=prefix==='pred'?'saveLocalVoorspelling();':'';
+    const niemandBtn=v.extraOptie?`<button type="button" onclick="setSpelerWaarde('${id}','${v.extraOptie}');${saveCall}" style="margin-top:8px;width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;cursor:pointer;text-align:center;">— ${v.extraOptie}</button>`:'';
+    if(state.lineup) return playerPickerBtn(id, waarde)+niemandBtn;
+    return `<input type="text" id="${id}" value="${waarde}" placeholder="Jouw antwoord..." autocapitalize="words">${niemandBtn}`;
   }
   if(v.type==='getal') return `<input type="text" inputmode="numeric" id="${id}" value="${waarde}" placeholder="bijv. 3">`;
   return `<input type="text" id="${id}" value="${waarde}" placeholder="Jouw antwoord..." autocapitalize="words">`;
+}
+
+function setSpelerWaarde(inputId, waarde){
+  const el=document.getElementById(inputId);
+  if(el) el.value=waarde;
+  const lbl=document.getElementById(inputId+'_lbl');
+  if(lbl) lbl.textContent=waarde;
 }
 
 function syncScore(baseId){}
@@ -2124,7 +2147,7 @@ Object.assign(window, {
   backToOverview, handleSaveBtn, copyLink,
   toggleSecret, saveStraf,
   saveCurrentVoorspelling, renderInvullenForm,
-  syncScore, capitalizeWordsInput,
+  syncScore, setSpelerWaarde, capitalizeWordsInput,
   stuurWiel, sluitWiel, spinWiel,
   addWielSegment, removeWielSegment, saveWielSegment, toggleWielWidget,
 });
