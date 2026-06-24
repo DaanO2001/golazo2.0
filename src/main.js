@@ -122,6 +122,7 @@ let state = {
   ],
   wielSpeler:null,
   apiActief:false,
+  wkModus:false,
 };
 
 // ── LOAD / SAVE via Supabase ──
@@ -140,6 +141,7 @@ async function loadStateFromSupabase(){
     } else if(!error && data){
       const saved = data.state_json;
       state = {...state, ...saved};
+      applyWKTheme();
       // Zorg dat vaste vragen altijd aanwezig zijn
       const ids = state.vragen.map(v=>v.id);
       VAST_VRAGEN.forEach((v,vastIdx)=>{
@@ -219,6 +221,7 @@ function setupRealtime(){
       }
 
       state = {...state, ...newState};
+      applyWKTheme();
       // Restore current user's in-progress predictions (don't let realtime overwrite what they're typing)
       if(!isReset && myPred && currentUserId) state.voorspellingen[currentUserId] = myPred;
       const ids = state.vragen.map(v=>v.id);
@@ -409,7 +412,20 @@ function toggleAdmin(){
   if(adminOpen) refreshAdminUI();
 }
 
+function applyWKTheme(){
+  document.body.classList.toggle('wk-theme', !!state.wkModus);
+}
+
+function toggleWKModus(){
+  state.wkModus = document.getElementById('wkModusToggle').checked;
+  applyWKTheme();
+  saveState();
+  showToast(state.wkModus ? '🇳🇱 WK-thema aan!' : 'Standaard thema hersteld');
+}
+
 function refreshAdminUI(){
+  const wkTog = document.getElementById('wkModusToggle');
+  if(wkTog) wkTog.checked = state.wkModus||false;
   document.getElementById('strafToggle').checked = state.strafMode||false;
   document.getElementById('pincodeInput').value = state.pincode||'';
   const apiTog = document.getElementById('apiActiefToggle');
@@ -1846,8 +1862,10 @@ function resetAll(){
     ],
     wielSpeler:null,
     apiActief:false,
+    wkModus:false,
     pincode: String(Math.floor(1000 + Math.random() * 9000)),
     };
+  applyWKTheme();
   tourMode = false;
   tourIndex = 0;
   currentUserId = null;

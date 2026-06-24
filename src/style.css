@@ -22,6 +22,29 @@
   --radius-sm: 18px;
 }
 
+body.wk-theme {
+  --oranje: #FF5C00;
+  --oranje-light: #FF7A30;
+  --oranje-glow: rgba(255,92,0,0.22);
+  --oranje-dim: rgba(255,92,0,0.10);
+  --bg: #0E0800;
+  --bg2: #150D00;
+  --surface: #1D1300;
+  --surface2: #271A00;
+  --surface3: #302200;
+  --border-orange: rgba(255,92,0,0.32);
+  --muted: #7A4A1A;
+  --muted2: #B87840;
+  --text: #FFF5EE;
+}
+body.wk-theme::before { background: #0E0800; }
+body.wk-theme::after {
+  background:
+    radial-gradient(ellipse 55% 45% at 75% 15%, rgba(255,92,0,0.13) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 55% at 25% 85%, rgba(255,150,0,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 50% 50%, rgba(20,10,0,0.9) 0%, transparent 80%);
+}
+
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 
 body{

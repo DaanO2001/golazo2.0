@@ -89,7 +89,17 @@
     <span class="sync-dot" id="adminSyncDot" title="Sync status"></span>
     <button onclick="toggleAdmin()" style="margin-left:auto;background:var(--surface2);border:1px solid var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:7px 16px;border-radius:999px;cursor:pointer;">✕ Sluiten</button>
   </div>
-  <div id="shareLinksBox"></div>
+  <!-- WK MODUS -->
+  <div class="toggle-row" id="wkModusRow" style="border:2px solid rgba(255,92,0,0.35);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:12px;background:rgba(255,92,0,0.06);">
+    <div>
+      <div class="toggle-label">🇳🇱 Nederlands elftal</div>
+      <div class="toggle-sub">Oranje WK-thema voor iedereen</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="wkModusToggle" onchange="toggleWKModus()">
+      <span class="slider"></span>
+    </label>
+  </div>
 
   <!-- PUSHMELDING STUREN -->
   <div class="card" style="margin-bottom:12px;border-color:rgba(255,100,50,.4);">
