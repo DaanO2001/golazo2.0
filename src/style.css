@@ -196,24 +196,24 @@ header h1{
   position:fixed;
   bottom:max(20px, env(safe-area-inset-bottom, 20px));
   left:50%;transform:translateX(-50%);
-  background:rgba(16,10,3,0.88);
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  border:1px solid rgba(255,92,0,0.22);
+  background:rgba(255,238,220,0.13);
+  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border:1px solid rgba(255,200,160,0.28);
   border-radius:50px;
   padding:8px 12px;
   display:flex;gap:4px;
   z-index:100;
-  box-shadow:0 8px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(255,92,0,0.07);
+  box-shadow:0 8px 32px rgba(0,0,0,0.35),0 0 0 1px rgba(255,140,60,0.07);
 }
 .nav-btn{
   width:52px;height:52px;border-radius:50%;border:none;
-  background:transparent;color:var(--muted2);
+  background:transparent;color:rgba(255,220,185,0.65);
   cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:3px;transition:all .2s;flex-shrink:0;
 }
 .nav-btn svg{ transition:color .2s; }
 .nav-btn span{ font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;transition:color .2s; }
-.nav-btn.active{ background:var(--oranje-dim);color:var(--oranje);box-shadow:0 0 16px var(--oranje-glow); }
+.nav-btn.active{ background:rgba(255,92,0,0.22);color:var(--oranje);box-shadow:0 0 14px var(--oranje-glow); }
 .nav-btn:active{ transform:scale(.90); }
 
 /* SCREENS */
@@ -223,9 +223,9 @@ header h1{
 
 /* CARD */
 .card{
-  background:rgba(24,15,5,0.68);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(255,92,0,0.13);
+  background:rgba(255,235,210,0.06);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  border:1px solid rgba(255,180,100,0.16);
   border-radius:var(--radius);padding:16px;margin-bottom:12px;
   transition:border-color .2s;
 }
