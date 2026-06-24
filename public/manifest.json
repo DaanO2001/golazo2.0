@@ -1,0 +1,18 @@
+{
+  "name": "Golazo",
+  "short_name": "Golazo",
+  "description": "Voorspel. Vergelijk. Claim de eer.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090603",
+  "theme_color": "#FF5C00",
+  "icons": [
+    {
+      "src": "/logo/App-icoon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

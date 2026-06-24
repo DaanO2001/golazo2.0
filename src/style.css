@@ -31,7 +31,10 @@ body.wk-theme {
 
 body{
   font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
-  background:var(--bg);
+  background:
+    radial-gradient(ellipse 60% 50% at 72% 8%, rgba(255,92,0,0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 55% at 20% 90%, rgba(255,140,0,0.08) 0%, transparent 60%),
+    var(--bg);
   color:var(--text);
   min-height:100vh;
   overflow-x:hidden;
@@ -39,7 +42,7 @@ body{
 
 body::before{
   content:'';position:fixed;inset:0;
-  background:#090603;
+  background:transparent;
   pointer-events:none;z-index:0;
 }
 
