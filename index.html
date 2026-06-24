@@ -159,25 +159,6 @@
     </div>
   </div>
 
-  <!-- WK SPELERSLIJST -->
-  <div class="card">
-    <div class="card-title">🗂️ Spelersdatabase</div>
-    <div style="font-size:12px;color:var(--muted2);margin-bottom:12px;line-height:1.5;">Upload de officiële spelerslijst (PDF of tekstbestand) zodat opstellingen correct worden herkend — ook afgekapte namen zoals "Van de V..." worden automatisch gecorrigeerd.</div>
-    <label for="wkPlayersFile" style="display:flex;align-items:center;gap:10px;cursor:pointer;border:2px dashed var(--border-orange);border-radius:12px;padding:12px 16px;background:var(--surface2);">
-      <span style="font-size:22px;">📄</span>
-      <div>
-        <div style="font-size:13px;font-weight:700;color:var(--text);">Kies bestand</div>
-        <div style="font-size:11px;color:var(--muted2);">PDF of .txt — bijv. FIFA spelerslijst WK 2026</div>
-      </div>
-    </label>
-    <input type="file" id="wkPlayersFile" accept=".pdf,.txt,.csv,text/plain,application/pdf" style="display:none;" onchange="document.getElementById('wkPlayersBtn').style.display='inline-block'">
-    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
-      <button class="btn sm" id="wkPlayersBtn" onclick="loadWKPlayers()" style="display:none;">📥 Namen laden</button>
-    </div>
-    <div id="wkPlayersStatus" style="font-size:12px;min-height:16px;margin-top:6px;"></div>
-    <div id="wkPlayersLoaded"></div>
-  </div>
-
   <!-- OPSTELLING -->
   <div class="card">
     <div class="card-title">📋 Opstelling invullen</div>
@@ -336,6 +317,24 @@
   <div class="tab active" onclick="showTab('invullen')">Invullen</div>
   <div class="tab" onclick="showTab('resultaat')">Resultaat</div>
 </div>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="navBtn-invullen" onclick="showTab('invullen')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+    </svg>
+    <span>Invullen</span>
+  </button>
+  <button class="nav-btn" id="navBtn-resultaat" onclick="showTab('resultaat')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10"/>
+      <line x1="12" y1="20" x2="12" y2="4"/>
+      <line x1="6" y1="20" x2="6" y2="14"/>
+    </svg>
+    <span>Resultaat</span>
+  </button>
+</nav>
 
 <!-- INVULLEN -->
 <div class="screen active" id="screen-invullen">
