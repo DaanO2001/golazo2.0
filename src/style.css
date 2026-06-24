@@ -1,40 +1,37 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --oranje: #FF5C00;
+  --oranje: #FF5F00;
   --oranje-light: #FF7A30;
-  --oranje-glow: rgba(255,92,0,0.24);
-  --oranje-dim: rgba(255,92,0,0.11);
+  --oranje-glow: rgba(255,92,0,0.26);
+  --oranje-dim: rgba(255,92,0,0.14);
   --accent: #F2C94C;
   --accent-glow: rgba(242,201,76,0.2);
   --accent-dim: rgba(242,201,76,0.1);
-  --bg: #090603;
-  --bg2: #120E06;
-  --surface: #1A1108;
-  --surface2: #221608;
-  --surface3: #2C1E0A;
-  --border: rgba(255,255,255,0.08);
-  --border-orange: rgba(255,92,0,0.26);
-  --text: #FFF5EE;
-  --muted: #7A4A1A;
-  --muted2: #C08850;
+  --bg: #121214;
+  --bg2: #1A1A1E;
+  --surface: #1E1E22;
+  --surface2: #252528;
+  --surface3: #2D2D32;
+  --border: rgba(255,255,255,0.09);
+  --border-orange: rgba(255,92,0,0.30);
+  --text: #FFFFFF;
+  --muted: #6B6B72;
+  --muted2: #9B9BA8;
   --radius: 20px;
   --radius-sm: 16px;
 }
 
 body.wk-theme {
-  --border-orange: rgba(255,92,0,0.35);
-  --oranje-glow: rgba(255,92,0,0.30);
+  --border-orange: rgba(255,92,0,0.42);
+  --oranje-glow: rgba(255,92,0,0.34);
 }
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 
 body{
   font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
-  background:
-    radial-gradient(ellipse 60% 50% at 72% 8%, rgba(255,92,0,0.16) 0%, transparent 60%),
-    radial-gradient(ellipse 45% 55% at 20% 90%, rgba(255,140,0,0.08) 0%, transparent 60%),
-    var(--bg);
+  background:var(--bg);
   color:var(--text);
   min-height:100vh;
   overflow-x:hidden;
@@ -48,12 +45,8 @@ body::before{
 
 body::after{
   content:'';position:fixed;inset:0;
-  background:
-    radial-gradient(ellipse 60% 50% at 72% 8%, rgba(255,92,0,0.16) 0%, transparent 60%),
-    radial-gradient(ellipse 45% 55% at 20% 90%, rgba(255,140,0,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 55% 45% at 50% 50%, rgba(15,9,2,0.92) 0%, transparent 80%);
+  background:radial-gradient(ellipse 55% 40% at 88% 0%, rgba(255,92,0,0.07) 0%, transparent 55%);
   pointer-events:none;z-index:0;
-  animation:glowDrift 12s ease-in-out infinite;
 }
 @keyframes glowDrift{
   0%  { transform:translate(0px, 0px) scale(1); opacity:1; }
@@ -113,21 +106,30 @@ body::after{
 .pick-grid{display:flex;flex-direction:column;gap:10px;max-width:400px;margin:0 auto;}
 .pick-card{
   display:flex;align-items:center;gap:14px;
-  background:var(--surface);border:1.5px solid var(--border);
-  border-radius:var(--radius-sm);padding:16px 18px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:999px;padding:8px 8px 8px 8px;
   cursor:pointer;transition:all .15s;
 }
 .pick-card:active{transform:scale(.98);border-color:var(--border-orange);}
 .pick-card-avatar{
-  width:44px;height:44px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(135deg,var(--oranje),var(--oranje-light));
-  color:#000;font-weight:800;font-size:18px;
+  width:52px;height:52px;border-radius:50%;flex-shrink:0;
+  background:var(--oranje);
+  color:#fff;font-weight:800;font-size:20px;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 12px var(--oranje-glow);
+  box-shadow:0 0 16px var(--oranje-glow);
 }
-.pick-card-name{font-size:17px;font-weight:700;}
-.pick-card-status{font-size:11px;color:var(--muted);margin-top:2px;}
-.pick-card.done{border-color:rgba(103,242,143,.3);}
+.pick-card-name{
+  font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
+}
+.pick-card-status{font-size:11px;color:var(--muted2);margin-top:3px;}
+.pick-edit-btn{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;margin-left:auto;
+  background:var(--oranje);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 14px var(--oranje-glow);
+}
+.pick-edit-btn svg{width:17px;height:17px;color:#fff;}
+.pick-card.done{border-color:var(--border-orange);}
 .pick-card.done .pick-card-status{color:var(--oranje);}
 
 /* ADMIN TOGGLE */
@@ -462,8 +464,9 @@ select option{background:#1a1a2e;}
 }
 
 .section-header{
-  font-size:10px;text-transform:uppercase;letter-spacing:1.5px;
-  color:var(--muted);font-weight:700;margin:0 0 12px;
+  font-family:'Bebas Neue','Oswald',sans-serif;
+  font-size:22px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text);font-weight:400;margin:0 0 14px;
 }
 
 .empty{

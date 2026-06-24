@@ -311,8 +311,14 @@ function renderPickGrid(){
         <div class="pick-card-avatar" id="pick_avatar_${p.id}" style="${avatarStyle}">${avatarContent}</div>
       </div>
       <div style="flex:1;min-width:0;">
-        <div class="pick-card-name">${p.name}${nietAlles?'<span style="color:var(--accent);margin-left:4px;">!</span>':''}${isIk?'<span style="color:var(--oranje);font-size:11px;margin-left:6px;">● jij</span>':''}</div>
+        <div class="pick-card-name">${p.name}${nietAlles?'<span style="color:var(--accent);margin-left:4px;">!</span>':''}${isIk?'<span style="color:var(--oranje);font-size:10px;margin-left:6px;">●</span>':''}</div>
         <div class="pick-card-status">${statusText}</div>
+      </div>
+      <div class="pick-edit-btn" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
       </div>
     </div>`;
   }).join('');
