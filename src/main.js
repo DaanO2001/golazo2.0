@@ -265,8 +265,12 @@ function showPickScreen(){
   if(!isAdmin){
     // Pincode altijd eerst — ook als er een opgeslagen speler is
     if(state.pincode){
-      const stored = localStorage.getItem(PINCODE_KEY);
-      if(stored !== state.pincode){
+      let pincodeOk = false;
+      try {
+        const stored = JSON.parse(localStorage.getItem(PINCODE_KEY) || 'null');
+        pincodeOk = stored && stored.code === state.pincode && (Date.now() - stored.ts) < PINCODE_SESSION_DURATION;
+      } catch(e) {}
+      if(!pincodeOk){
         document.getElementById('pincodeScreen').style.display = 'flex';
         requestAnimationFrame(()=>{ const el=document.getElementById('pincodeUserInput'); if(el) el.focus(); });
         return;
@@ -657,12 +661,12 @@ function clearPincode(){
 }
 
 const PINCODE_KEY = 'golazo_pincode_ok';
+const PINCODE_SESSION_DURATION = 15 * 60 * 1000; // 15 minuten
 function checkPincode(){
   const input = document.getElementById('pincodeUserInput').value.trim();
   const errEl = document.getElementById('pincodeError');
   if(input === state.pincode){
-    // Onthoud in localStorage zodat ze het maar 1x hoeven in te vullen
-    localStorage.setItem(PINCODE_KEY, state.pincode);
+    localStorage.setItem(PINCODE_KEY, JSON.stringify({code: state.pincode, ts: Date.now()}));
     document.getElementById('pincodeScreen').style.display = 'none';
     showPickScreen();
   } else {
