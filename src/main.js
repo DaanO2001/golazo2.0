@@ -1674,10 +1674,20 @@ function renderResultaat(){
       return 'uitdelen'; // goed
     }
 
+    // Huidige speler heeft deze vraag goed → kan straf uitdelen
+    const huidigeIsWinnaar = winnaars.some(p => p.id === currentUserId);
+
     // Twee kolommen: fout links, goed rechts
     const fouChips = verliezers.map(p=>{
       const pred = state.voorspellingen[p.id]||{};
       const ant = pred[v.id]||'';
+      if(huidigeIsWinnaar){
+        return `<div class="winner-chip fout" onclick="openStuurStrafSheet('${p.id}')" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>
+          <span style="flex:1;">${p.name}${ant ? ` <span style="color:var(--muted);font-weight:400">(${ant})</span>` : ''}</span>
+          <span style="font-size:14px;margin-left:4px;">🍺</span>
+        </div>`;
+      }
       return `<div class="winner-chip fout">
         <div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>
         ${p.name}${ant ? ` <span style="color:var(--muted);font-weight:400">(${ant})</span>` : ''}
@@ -1830,12 +1840,7 @@ function renderResultaat(){
     }
   }
 
-  const adminStrafBtn = isAdmin
-    ? `<button onclick="openStuurStrafSheet()" style="width:100%;background:var(--oranje-dim);border:1px solid var(--border-orange);color:var(--oranje);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;padding:13px;border-radius:14px;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;">🍺 Straf uitdelen</button>`
-    : '';
-
   content.innerHTML = `
-    ${adminStrafBtn}
     ${uitslagSet ? `<div class="result-section-label">Per vraag</div>${perVraagHtml || '<div class="empty" style="padding:20px 0;"><span>⏳</span>Nog geen uitslag ingevuld</div>'}` : '<div class="info-bar" style="margin-bottom:4px;">⏳ Wacht op de uitslag van de Admin — bekijk alvast wie wat heeft ingevuld!</div>'}
     <div class="result-section-label" style="margin-top:${uitslagSet?'24':'8'}px;">${uitslagSet ? 'Eindstand' : 'Voorspellingen'}</div>
     ${standenHtml}
@@ -2162,19 +2167,33 @@ function sluitStrafPopup(){
 }
 
 // ── STRAF UITDELEN ──
-function openStuurStrafSheet(){
+function openStuurStrafSheet(targetPlayerId){
   const overlay = document.getElementById('stuurStrafOverlay');
   if(!overlay) return;
   overlay.style.display = 'flex';
   const inp = document.getElementById('stuurStrafTekst');
   if(inp) inp.value = '';
   const container = document.getElementById('stuurStrafSpelers');
-  container.innerHTML = state.players.map(p=>`
-    <button onclick="stuurStrafNaarSpeler('${p.id}')" style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;width:100%;text-align:left;-webkit-tap-highlight-color:transparent;">
-      <div style="width:36px;height:36px;border-radius:50%;background:var(--oranje);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${p.name[0].toUpperCase()}</div>
-      <span style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text);">${p.name}</span>
-    </button>
-  `).join('');
+  const titleEl = document.getElementById('stuurStrafTitle');
+
+  if(targetPlayerId){
+    const player = state.players.find(p=>p.id===targetPlayerId);
+    if(!player){ overlay.style.display='none'; return; }
+    if(titleEl) titleEl.textContent = `Straf sturen naar ${player.name}`;
+    container.innerHTML = `<button onclick="stuurStrafNaarSpeler('${player.id}')" style="display:flex;align-items:center;gap:12px;background:rgba(255,92,0,.1);border:1px solid var(--border-orange);border-radius:12px;padding:14px;cursor:pointer;width:100%;text-align:left;-webkit-tap-highlight-color:transparent;">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--oranje);color:#fff;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${player.name[0].toUpperCase()}</div>
+      <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:var(--text);flex:1;">${player.name}</span>
+      <span style="font-size:22px;">🍺</span>
+    </button>`;
+  } else {
+    if(titleEl) titleEl.textContent = '🍺 Straf uitdelen';
+    container.innerHTML = state.players.map(p=>`
+      <button onclick="stuurStrafNaarSpeler('${p.id}')" style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;width:100%;text-align:left;-webkit-tap-highlight-color:transparent;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--oranje);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${p.name[0].toUpperCase()}</div>
+        <span style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text);">${p.name}</span>
+      </button>
+    `).join('');
+  }
 }
 
 function sluitStuurStraf(){
