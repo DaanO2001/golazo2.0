@@ -1610,13 +1610,10 @@ function renderResultaat(){
 
   const uitslagKeys = Object.keys(state.uitslag).filter(k=>state.uitslag[k]&&state.uitslag[k]!=='');
   const vragenSorted = [...state.vragen].sort((a,b)=>{
-    const ai = uitslagKeys.indexOf(a.id);
-    const bi = uitslagKeys.indexOf(b.id);
-    const aHas = ai !== -1;
-    const bHas = bi !== -1;
-    if(aHas && bHas) return bi - ai;
-    if(aHas) return -1;
-    if(bHas) return 1;
+    const aHas = uitslagKeys.includes(a.id);
+    const bHas = uitslagKeys.includes(b.id);
+    if(aHas && !bHas) return -1;
+    if(!aHas && bHas) return 1;
     return 0;
   });
 
@@ -1823,7 +1820,12 @@ function renderResultaat(){
     }
   }
 
+  const adminStrafBtn = isAdmin
+    ? `<button onclick="openStuurStrafSheet()" style="width:100%;background:var(--oranje-dim);border:1px solid var(--border-orange);color:var(--oranje);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;padding:13px;border-radius:14px;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;">🍺 Straf uitdelen</button>`
+    : '';
+
   content.innerHTML = `
+    ${adminStrafBtn}
     ${uitslagSet ? `<div class="result-section-label">Per vraag</div>${perVraagHtml || '<div class="empty" style="padding:20px 0;"><span>⏳</span>Nog geen uitslag ingevuld</div>'}` : '<div class="info-bar" style="margin-bottom:4px;">⏳ Wacht op de uitslag van de Admin — bekijk alvast wie wat heeft ingevuld!</div>'}
     <div class="result-section-label" style="margin-top:${uitslagSet?'24':'8'}px;">${uitslagSet ? 'Eindstand' : 'Voorspellingen'}</div>
     ${standenHtml}
@@ -2125,6 +2127,45 @@ function checkAdminPassword(){
   }
 }
 
+// ── STRAF UITDELEN ──
+function openStuurStrafSheet(){
+  const overlay = document.getElementById('stuurStrafOverlay');
+  if(!overlay) return;
+  overlay.style.display = 'flex';
+  const inp = document.getElementById('stuurStrafTekst');
+  if(inp) inp.value = '';
+  const container = document.getElementById('stuurStrafSpelers');
+  container.innerHTML = state.players.map(p=>`
+    <button onclick="stuurStrafNaarSpeler('${p.id}')" style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;width:100%;text-align:left;-webkit-tap-highlight-color:transparent;">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--oranje);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${p.name[0].toUpperCase()}</div>
+      <span style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text);">${p.name}</span>
+    </button>
+  `).join('');
+}
+
+function sluitStuurStraf(){
+  const overlay = document.getElementById('stuurStrafOverlay');
+  if(overlay) overlay.style.display = 'none';
+}
+
+async function stuurStrafNaarSpeler(playerId){
+  const player = state.players.find(p=>p.id===playerId);
+  if(!player) return;
+  const body = (document.getElementById('stuurStrafTekst')?.value||'').trim() || 'Jij moet een straf uitvoeren! 🍺';
+  try {
+    const resp = await fetch(`${location.origin}/api/send-push`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ player_id: playerId, title: '🍺 Straf!', body }] })
+    });
+    const data = await resp.json();
+    showToast(data.sent > 0 ? `📤 Straf gestuurd naar ${player.name}!` : `${player.name} heeft geen push-notificaties aan`);
+  } catch(e){
+    showToast('❌ Versturen mislukt');
+  }
+  sluitStuurStraf();
+}
+
 // Maak functies globaal beschikbaar voor inline HTML handlers
 Object.assign(window, {
   saveSupabaseConfig, checkAdminPassword, checkPincode,
@@ -2145,6 +2186,7 @@ Object.assign(window, {
   clearVoorspellingen, clearUitslag, resetSpelers, resetAll, eindWedstrijd,
   popupOverlayClick, startPlayerTurn,
   betaClick, openAdminLogin, closeAdminLogin, switchPlayer, showTab,
+  openStuurStrafSheet, sluitStuurStraf, stuurStrafNaarSpeler,
   pickPlayer, uploadFoto, editPlayer,
   togglePredVraag, toggleResultCard,
   saveLocalVoorspelling, checkDependentRender,
