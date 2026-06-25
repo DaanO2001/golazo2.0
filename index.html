@@ -314,8 +314,20 @@
   </button>
 </nav>
 
+<!-- STRAF POPUP -->
+<div id="strafPopupOverlay" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.92);flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;">
+  <div style="max-width:340px;width:100%;text-align:center;">
+    <div style="font-size:72px;margin-bottom:16px;">🍺</div>
+    <div style="font-family:'Oswald',sans-serif;font-size:52px;font-weight:700;letter-spacing:4px;color:var(--oranje);text-transform:uppercase;margin-bottom:8px;">Straf!</div>
+    <div style="font-size:13px;color:var(--muted2);margin-bottom:20px;">Van: Admin 🎮</div>
+    <div id="strafPopupBericht" style="background:var(--surface);border:1px solid var(--border-orange);border-radius:16px;padding:20px 24px;font-size:18px;font-weight:700;color:var(--text);margin-bottom:28px;line-height:1.4;"></div>
+    <button onclick="sluitStrafPopup()" style="width:100%;background:var(--oranje);color:#000;font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;padding:18px;border-radius:16px;border:none;cursor:pointer;">OK, ik doe het! 💪</button>
+  </div>
+</div>
+
 <!-- INVULLEN -->
 <div class="screen active" id="screen-invullen">
+  <div id="gamepinWidget"></div>
   <div id="countdownWidget"></div>
   <div id="matchupWidget"></div>
   <p class="section-header">Voorspellingen</p>

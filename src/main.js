@@ -249,8 +249,10 @@ function setupRealtime(){
         renderInvullen();
         renderMatchup();
         renderCountdown();
+        renderGamepin();
       }
       checkWielOverlay();
+      checkStrafPopup();
       if(adminOpen) refreshAdminUI();
       _realtimeUpdate = false;
       setSyncStatus('ok');
@@ -410,6 +412,14 @@ function renderAll(){
   renderInvullen();
   renderMatchup();
   renderCountdown();
+  renderGamepin();
+}
+
+function renderGamepin(){
+  const w = document.getElementById('gamepinWidget');
+  if(!w) return;
+  if(!state.pincode || isAdmin){ w.innerHTML=''; return; }
+  w.innerHTML=`<div style="text-align:center;font-size:12px;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔑 Gamepin: <span style="font-weight:700;color:var(--muted2);">${state.pincode}</span></div>`;
 }
 
 // ── SYNC INDICATOR ──
@@ -2127,6 +2137,30 @@ function checkAdminPassword(){
   }
 }
 
+// ── STRAF POPUP (in-app) ──
+function checkStrafPopup(){
+  const overlay = document.getElementById('strafPopupOverlay');
+  if(!overlay) return;
+  const popup = state.strafPopup;
+  if(!popup || popup.playerId !== currentUserId){
+    if(overlay.style.display==='flex') overlay.style.display='none';
+    return;
+  }
+  if(overlay.style.display==='flex') return;
+  const el = document.getElementById('strafPopupBericht');
+  if(el) el.textContent = popup.bericht || 'Voer je straf uit! 🍺';
+  overlay.style.display='flex';
+}
+
+function sluitStrafPopup(){
+  const overlay = document.getElementById('strafPopupOverlay');
+  if(overlay) overlay.style.display='none';
+  if(state.strafPopup?.playerId === currentUserId){
+    state.strafPopup = null;
+    saveState();
+  }
+}
+
 // ── STRAF UITDELEN ──
 function openStuurStrafSheet(){
   const overlay = document.getElementById('stuurStrafOverlay');
@@ -2151,17 +2185,23 @@ function sluitStuurStraf(){
 async function stuurStrafNaarSpeler(playerId){
   const player = state.players.find(p=>p.id===playerId);
   if(!player) return;
-  const body = (document.getElementById('stuurStrafTekst')?.value||'').trim() || 'Jij moet een straf uitvoeren! 🍺';
+  const bericht = (document.getElementById('stuurStrafTekst')?.value||'').trim() || 'Voer je straf uit! 🍺';
+
+  // In-app popup via realtime state
+  state.strafPopup = { playerId, bericht };
+  saveState();
+
+  // Push notificatie
   try {
     const resp = await fetch(`${location.origin}/api/send-push`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ player_id: playerId, title: '🍺 Straf!', body }] })
+      body: JSON.stringify({ messages: [{ player_id: playerId, title: '🍺 Straf!', body: bericht }] })
     });
     const data = await resp.json();
-    showToast(data.sent > 0 ? `📤 Straf gestuurd naar ${player.name}!` : `${player.name} heeft geen push-notificaties aan`);
+    showToast(data.sent > 0 ? `📤 Straf gestuurd naar ${player.name}!` : `📤 In-app straf gestuurd naar ${player.name}!`);
   } catch(e){
-    showToast('❌ Versturen mislukt');
+    showToast(`📤 In-app straf gestuurd naar ${player.name}!`);
   }
   sluitStuurStraf();
 }
@@ -2186,7 +2226,7 @@ Object.assign(window, {
   clearVoorspellingen, clearUitslag, resetSpelers, resetAll, eindWedstrijd,
   popupOverlayClick, startPlayerTurn,
   betaClick, openAdminLogin, closeAdminLogin, switchPlayer, showTab,
-  openStuurStrafSheet, sluitStuurStraf, stuurStrafNaarSpeler,
+  openStuurStrafSheet, sluitStuurStraf, stuurStrafNaarSpeler, sluitStrafPopup,
   pickPlayer, uploadFoto, editPlayer,
   togglePredVraag, toggleResultCard,
   saveLocalVoorspelling, checkDependentRender,
