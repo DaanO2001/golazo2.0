@@ -64,8 +64,9 @@
       <div style="font-size:13px;color:var(--muted2);line-height:1.6;">Voer de game-pincode in<br>die je van de admin hebt gekregen</div>
     </div>
     <div style="background:var(--surface);border:1px solid rgba(242,201,76,.35);border-radius:var(--radius);padding:28px 24px;box-shadow:0 0 40px rgba(242,201,76,0.04);">
-      <input type="tel" id="pincodeUserInput" placeholder="••••" inputmode="numeric" pattern="[0-9]*" maxlength="8"
+      <input type="tel" id="pincodeUserInput" placeholder="••••" inputmode="numeric" pattern="[0-9]*" maxlength="4"
         autocomplete="one-time-code"
+        oninput="if(this.value.length===4)checkPincode()"
         onkeydown="if(event.key==='Enter')checkPincode()">
       <button class="btn" onclick="checkPincode()" style="font-size:15px;padding:16px;background:linear-gradient(135deg,var(--accent),#e6b800);color:#000;">🔑 Verder</button>
       <div id="pincodeError" style="display:none;color:#ff6b8a;font-size:13px;font-weight:600;margin-top:14px;text-align:center;padding:10px 14px;background:rgba(255,71,106,.08);border-radius:12px;border:1px solid rgba(255,71,106,.2);">❌ Verkeerde code. Probeer opnieuw.</div>
@@ -121,7 +122,7 @@
     <div style="font-size:12px;color:var(--muted2);margin-bottom:10px;line-height:1.5;">Vrienden moeten deze code invullen voordat ze mee kunnen doen. Laat leeg om geen pincode te gebruiken.</div>
     <div style="display:flex;gap:8px;align-items:center;">
       <input type="text" id="pincodeInput" placeholder="1234" inputmode="numeric"
-        oninput="savePincode()" maxlength="8">
+        oninput="savePincode()" maxlength="4">
       <span style="font-size:12px;color:var(--muted);flex:1;">Laat leeg = geen pincode</span>
       <button class="btn sm secondary" onclick="clearPincode()" style="width:auto;padding:8px 12px;">✕</button>
     </div>
