@@ -252,7 +252,6 @@ function setupRealtime(){
         renderGamepin();
       }
       checkWielOverlay();
-      checkStrafPopup();
       if(adminOpen) refreshAdminUI();
       _realtimeUpdate = false;
       setSyncStatus('ok');
@@ -1674,20 +1673,10 @@ function renderResultaat(){
       return 'uitdelen'; // goed
     }
 
-    // Huidige speler heeft deze vraag goed → kan straf uitdelen
-    const huidigeIsWinnaar = winnaars.some(p => p.id === currentUserId);
-
     // Twee kolommen: fout links, goed rechts
     const fouChips = verliezers.map(p=>{
       const pred = state.voorspellingen[p.id]||{};
       const ant = pred[v.id]||'';
-      if(huidigeIsWinnaar){
-        return `<div class="winner-chip fout" onclick="openStuurStrafSheet('${p.id}')" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">
-          <div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>
-          <span style="flex:1;">${p.name}${ant ? ` <span style="color:var(--muted);font-weight:400">(${ant})</span>` : ''}</span>
-          <span style="font-size:14px;margin-left:4px;">🍺</span>
-        </div>`;
-      }
       return `<div class="winner-chip fout">
         <div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>
         ${p.name}${ant ? ` <span style="color:var(--muted);font-weight:400">(${ant})</span>` : ''}
@@ -2142,89 +2131,6 @@ function checkAdminPassword(){
   }
 }
 
-// ── STRAF POPUP (in-app) ──
-function checkStrafPopup(){
-  const overlay = document.getElementById('strafPopupOverlay');
-  if(!overlay) return;
-  const popup = state.strafPopup;
-  if(!popup || popup.playerId !== currentUserId){
-    if(overlay.style.display==='flex') overlay.style.display='none';
-    return;
-  }
-  if(overlay.style.display==='flex') return;
-  const el = document.getElementById('strafPopupBericht');
-  if(el) el.textContent = popup.bericht || 'Voer je straf uit! 🍺';
-  overlay.style.display='flex';
-}
-
-function sluitStrafPopup(){
-  const overlay = document.getElementById('strafPopupOverlay');
-  if(overlay) overlay.style.display='none';
-  if(state.strafPopup?.playerId === currentUserId){
-    state.strafPopup = null;
-    saveState();
-  }
-}
-
-// ── STRAF UITDELEN ──
-function openStuurStrafSheet(targetPlayerId){
-  const overlay = document.getElementById('stuurStrafOverlay');
-  if(!overlay) return;
-  overlay.style.display = 'flex';
-  const inp = document.getElementById('stuurStrafTekst');
-  if(inp) inp.value = '';
-  const container = document.getElementById('stuurStrafSpelers');
-  const titleEl = document.getElementById('stuurStrafTitle');
-
-  if(targetPlayerId){
-    const player = state.players.find(p=>p.id===targetPlayerId);
-    if(!player){ overlay.style.display='none'; return; }
-    if(titleEl) titleEl.textContent = `Straf sturen naar ${player.name}`;
-    container.innerHTML = `<button onclick="stuurStrafNaarSpeler('${player.id}')" style="display:flex;align-items:center;gap:12px;background:rgba(255,92,0,.1);border:1px solid var(--border-orange);border-radius:12px;padding:14px;cursor:pointer;width:100%;text-align:left;-webkit-tap-highlight-color:transparent;">
-      <div style="width:40px;height:40px;border-radius:50%;background:var(--oranje);color:#fff;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${player.name[0].toUpperCase()}</div>
-      <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:var(--text);flex:1;">${player.name}</span>
-      <span style="font-size:22px;">🍺</span>
-    </button>`;
-  } else {
-    if(titleEl) titleEl.textContent = '🍺 Straf uitdelen';
-    container.innerHTML = state.players.map(p=>`
-      <button onclick="stuurStrafNaarSpeler('${p.id}')" style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;width:100%;text-align:left;-webkit-tap-highlight-color:transparent;">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--oranje);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${p.name[0].toUpperCase()}</div>
-        <span style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text);">${p.name}</span>
-      </button>
-    `).join('');
-  }
-}
-
-function sluitStuurStraf(){
-  const overlay = document.getElementById('stuurStrafOverlay');
-  if(overlay) overlay.style.display = 'none';
-}
-
-async function stuurStrafNaarSpeler(playerId){
-  const player = state.players.find(p=>p.id===playerId);
-  if(!player) return;
-  const bericht = (document.getElementById('stuurStrafTekst')?.value||'').trim() || 'Voer je straf uit! 🍺';
-
-  // In-app popup via realtime state
-  state.strafPopup = { playerId, bericht };
-  saveState();
-
-  // Push notificatie
-  try {
-    const resp = await fetch(`${location.origin}/api/send-push`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ player_id: playerId, title: '🍺 Straf!', body: bericht }] })
-    });
-    const data = await resp.json();
-    showToast(data.sent > 0 ? `📤 Straf gestuurd naar ${player.name}!` : `📤 In-app straf gestuurd naar ${player.name}!`);
-  } catch(e){
-    showToast(`📤 In-app straf gestuurd naar ${player.name}!`);
-  }
-  sluitStuurStraf();
-}
-
 // Maak functies globaal beschikbaar voor inline HTML handlers
 Object.assign(window, {
   saveSupabaseConfig, checkAdminPassword, checkPincode,
@@ -2245,7 +2151,6 @@ Object.assign(window, {
   clearVoorspellingen, clearUitslag, resetSpelers, resetAll, eindWedstrijd,
   popupOverlayClick, startPlayerTurn,
   betaClick, openAdminLogin, closeAdminLogin, switchPlayer, showTab,
-  openStuurStrafSheet, sluitStuurStraf, stuurStrafNaarSpeler, sluitStrafPopup,
   pickPlayer, uploadFoto, editPlayer,
   togglePredVraag, toggleResultCard,
   saveLocalVoorspelling, checkDependentRender,
