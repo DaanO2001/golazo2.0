@@ -269,7 +269,7 @@ function showPickScreen(){
       let pincodeOk = false;
       try {
         const stored = JSON.parse(localStorage.getItem(PINCODE_KEY) || 'null');
-        pincodeOk = stored && stored.code === state.pincode && (Date.now() - stored.ts) < PINCODE_SESSION_DURATION;
+        pincodeOk = stored && stored.code === state.pincode;
       } catch(e) {}
       if(!pincodeOk){
         document.getElementById('pincodeScreen').style.display = 'flex';
@@ -435,16 +435,12 @@ function setSyncStatus(status){
 // ------------------------------------------------
 let adminOpen = false;
 function toggleAdmin(){
+  adminOpen = !adminOpen;
+  document.getElementById('adminScreen').classList.toggle('active', adminOpen);
   if(adminOpen){
-    adminOpen = false;
-    isAdmin = false;
-    localStorage.removeItem(ADMIN_SESSION_KEY);
-    document.getElementById('adminScreen').classList.remove('active');
-    showPickScreen();
-  } else {
-    adminOpen = true;
-    document.getElementById('adminScreen').classList.add('active');
     refreshAdminUI();
+  } else if(!currentUserId){
+    showPickScreen();
   }
 }
 
@@ -670,12 +666,11 @@ function clearPincode(){
 }
 
 const PINCODE_KEY = 'golazo_pincode_ok';
-const PINCODE_SESSION_DURATION = 15 * 60 * 1000; // 15 minuten
 function checkPincode(){
   const input = document.getElementById('pincodeUserInput').value.trim();
   const errEl = document.getElementById('pincodeError');
   if(input === state.pincode){
-    localStorage.setItem(PINCODE_KEY, JSON.stringify({code: state.pincode, ts: Date.now()}));
+    localStorage.setItem(PINCODE_KEY, JSON.stringify({code: state.pincode}));
     document.getElementById('pincodeScreen').style.display = 'none';
     showPickScreen();
   } else {
