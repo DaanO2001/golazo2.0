@@ -92,7 +92,7 @@ const VAST_VRAGEN = [
   {id:'v2',tekst:'Welke speler scoort het eerste doelpunt?',type:'speler',vast:true,extraOptie:'Niemand'},
   {id:'v3',tekst:'Komt er een gele kaart?',type:'jn_met_sub',vast:true,subVraag:{id:'v3s',tekst:'Welke speler pakt de eerste gele kaart?',type:'speler'}},
   {id:'v4',tekst:'Komt er een rode kaart?',type:'jn_met_sub',vast:true,subVraag:{id:'v5',tekst:'Wie pakt de rode kaart?',type:'speler'}},
-  {id:'v7',tekst:'Tussenstand',type:'tussenstand',vast:true},
+  {id:'v7',tekst:'Ruststand',type:'tussenstand',vast:true},
   {id:'v6',tekst:'Eindstand',type:'score',vast:true},
 ];
 
@@ -1093,7 +1093,7 @@ function saveEditVraag(id){
 }
 
 function typeLabel(t){
-  return {team:'Team',team3:'Team/Gelijkspel',speler:'Speler',jn:'Ja/Nee',getal:'Getal',vrij:'Vrij',tussenstand:'Tussenstand',score:'Eindstand'}[t]||t;
+  return {team:'Team',team3:'Team/Gelijkspel',speler:'Speler',jn:'Ja/Nee',getal:'Getal',vrij:'Vrij',tussenstand:'Ruststand',score:'Eindstand'}[t]||t;
 }
 function addEigenVraag(){
   const tekst=document.getElementById('eigenVraagInput').value.trim();
@@ -1416,7 +1416,6 @@ function renderInvullenForm(){
   }).join('');
 
   content.innerHTML=`
-    <button class="btn secondary sm" style="margin-bottom:14px;width:auto;" onclick="backToOverview()">← Terug</button>
     <div class="info-bar">Voorspellingen van <strong>${p.name}</strong></div>
     <div style="margin-bottom:16px;">
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;">
@@ -1890,10 +1889,13 @@ function eindWedstrijd(){
   if(!uitslagCompleet()) return showToast('❌ Vul eerst alle echte resultaten in');
   const scores = berekenScores();
   const relevant = scores.filter(s=>s.totaal>0);
-  const laatste = (relevant.length ? relevant[relevant.length-1] : scores[scores.length-1]);
-  state.wielSpeler = laatste.p.id;
+  const arr = relevant.length ? relevant : scores;
+  const minScore = arr[arr.length-1].goed;
+  const verliezers = arr.filter(s=>s.goed===minScore);
+  state.wielSpeler = verliezers.map(s=>s.p.id);
   saveState();
-  showToast(`🏁 Wedstrijd geëindigd! Rad gestuurd naar ${laatste.p.name}`);
+  const namen = verliezers.map(s=>s.p.name).join(', ');
+  showToast(`🏁 Wedstrijd geëindigd! Rad gestuurd naar ${namen}`);
 }
 
 function startNieuwRondje(){
@@ -2244,7 +2246,7 @@ function saveWielSegment(id){
 }
 
 function stuurWiel(playerId){
-  state.wielSpeler = playerId;
+  state.wielSpeler = [playerId];
   saveState();
   const player = state.players.find(p=>p.id===playerId);
   showToast(`🎰 Rad gestuurd naar ${player?.name||'speler'}!`);
@@ -2253,7 +2255,9 @@ function stuurWiel(playerId){
 }
 
 function sluitWiel(){
-  state.wielSpeler = null;
+  const spelers = Array.isArray(state.wielSpeler) ? state.wielSpeler : (state.wielSpeler ? [state.wielSpeler] : []);
+  const remaining = spelers.filter(id=>id!==currentUserId);
+  state.wielSpeler = remaining.length ? remaining : null;
   saveState();
   const overlay = document.getElementById('wielOverlay');
   if(overlay) overlay.style.display = 'none';
@@ -2264,7 +2268,8 @@ function sluitWiel(){
 function checkWielOverlay(){
   const overlay = document.getElementById('wielOverlay');
   if(!overlay) return;
-  const shouldShow = !!(state.wielSpeler && state.wielSpeler===currentUserId);
+  const spelers = Array.isArray(state.wielSpeler) ? state.wielSpeler : (state.wielSpeler ? [state.wielSpeler] : []);
+  const shouldShow = !!(currentUserId && spelers.includes(currentUserId));
   if(shouldShow && overlay.style.display!=='flex'){
     const player = state.players.find(p=>p.id===state.wielSpeler);
     const naam = document.getElementById('wielNaam');
