@@ -228,6 +228,8 @@ function setupRealtime(){
       applyWKTheme();
       // Restore current user's in-progress predictions (don't let realtime overwrite what they're typing)
       if(!isReset && myPred && currentUserId) state.voorspellingen[currentUserId] = myPred;
+      // Restore activePlayer — a remote save can overwrite it, causing saves to go to the wrong player
+      if(editingPlayer) state.activePlayer = editingPlayer;
       const ids = state.vragen.map(v=>v.id);
       VAST_VRAGEN.forEach((v,vastIdx)=>{
         if(!ids.includes(v.id)){
@@ -647,6 +649,9 @@ function resetSpelers(){
   state.geheim = {};
   state.activePlayer = null;
   tourMode = false; tourIndex = 0; editingPlayer = null;
+  currentUserId = null;
+  localStorage.removeItem(USER_KEY);
+  document.getElementById('userIndicator').style.display = 'none';
   saveState();
   renderPlayers();
   renderInvullen();
@@ -1257,14 +1262,7 @@ function updateFabLabel(){
 function backToOverview(){
   saveCurrentVoorspelling(false);
   editingPlayer = null;
-  // Als de gebruiker ingelogd is als een speler, stay op die context
-  if(currentUserId){
-    renderInvullen();
-    // Toon pick screen opnieuw
-    showPickScreen();
-  } else {
-    renderInvullen();
-  }
+  renderInvullen();
 }
 
 function saveAndNextPlayer(){
@@ -1397,22 +1395,20 @@ function renderInvullenForm(){
       const parts = [];
       if(strafData.fouGetal) parts.push(`<span style="display:inline-flex;align-items:center;gap:2px;background:rgba(255,80,80,.25);border:1px solid rgba(255,80,80,.4);color:#ff8080;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;">❌ ${strafData.fouGetal} ${strafData.fouType}</span>`);
       if(strafData.goedGetal) parts.push(`<span style="display:inline-flex;align-items:center;gap:2px;background:var(--oranje-dim);border:1px solid var(--border-orange);color:var(--oranje);font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;">✅ ${strafData.goedGetal} ${strafData.goedType}</span>`);
-      return parts.length ? `<span style="display:inline-flex;gap:4px;margin-left:6px;flex-shrink:0;flex-wrap:wrap;">${parts.join('')}</span>` : '';
+      return parts.length ? `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;">${parts.join('')}</div>` : '';
     })() : '';
     return `<div style="background:var(--surface);border:1px solid ${filled?'rgba(103,242,143,.25)':'var(--border)'};border-radius:14px;margin-bottom:8px;overflow:hidden;">
       <div onclick="togglePredVraag('pv_${v.id}','${v.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;gap:10px;">
         <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
           <div style="width:20px;height:20px;border-radius:50%;background:var(--surface2);color:var(--muted2);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</div>
-          <div style="display:flex;align-items:center;flex:1;min-width:0;">
-            <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${getVraagTekst(v)}</span>
-            ${strafBadge}
-          </div>
+          <span style="font-size:13px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${getVraagTekst(v)}</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
           ${filled ? `<span style="font-size:11px;font-weight:700;color:var(--oranje);background:var(--oranje-dim);border-radius:999px;padding:2px 8px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${isGeheim?'🔒':waarde}</span>` : ''}
           <span style="color:var(--muted);font-size:13px;transition:transform .2s;" id="arrow_pv_${v.id}">▼</span>
         </div>
       </div>
+      ${strafBadge ? `<div style="padding:0 14px 10px;padding-left:42px;">${strafBadge}</div>` : ''}
       <div id="pv_${v.id}" style="display:none;padding:0 14px 14px;">
         ${renderAntwoordInput(v,waarde,'pred',opgeslagen)}
       </div>
