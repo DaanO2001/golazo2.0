@@ -58,9 +58,14 @@ export default async function handler(req, res) {
     }
     if (!Array.isArray(rawPlayers)) throw new Error('Onverwacht formaat van AI-respons');
 
+    // Decodeer letterlijke Unicode escapes die de AI soms teruggeeft (bijv. é → é)
+    const decodeUnicode = str => str.replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16)));
+
     // Normaliseer: ondersteun zowel strings als {name, x, y} objecten
     const normalized = rawPlayers.map(p =>
-      typeof p === 'string' ? { name: p, x: 50, y: 50 } : { name: p.name || '', x: p.x ?? 50, y: p.y ?? 50 }
+      typeof p === 'string'
+        ? { name: decodeUnicode(p), x: 50, y: 50 }
+        : { name: decodeUnicode(p.name || ''), x: p.x ?? 50, y: p.y ?? 50 }
     ).filter(p => p.name.trim());
 
     const rawNames = normalized.map(p => p.name);
@@ -96,7 +101,7 @@ export default async function handler(req, res) {
         try {
           const corrected = JSON.parse(corrMatch[0]);
           if (Array.isArray(corrected) && corrected.length === rawNames.length) {
-            finalNames = corrected.map(p => (typeof p === 'string' ? p : p.name) || '').filter(Boolean);
+            finalNames = corrected.map(p => decodeUnicode((typeof p === 'string' ? p : p.name) || '')).filter(Boolean);
           }
         } catch(e) { /* gebruik raw names als fallback */ }
       }
