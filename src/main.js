@@ -1614,8 +1614,8 @@ function renderResultaat(){
 
   const uitslagKeys = Object.keys(state.uitslag).filter(k=>state.uitslag[k]&&state.uitslag[k]!=='');
   const vragenSorted = [...state.vragen].sort((a,b)=>{
-    const aHas = uitslagKeys.includes(a.id);
-    const bHas = uitslagKeys.includes(b.id);
+    const aHas = uitslagKeys.includes(a.id) || (a.subVraag && uitslagKeys.includes(a.subVraag.id));
+    const bHas = uitslagKeys.includes(b.id) || (b.subVraag && uitslagKeys.includes(b.subVraag.id));
     if(aHas && !bHas) return -1;
     if(!aHas && bHas) return 1;
     return 0;
@@ -1747,13 +1747,40 @@ function renderResultaat(){
       }
     }
 
+    // Sub-vraag sectie voor jn_met_sub (bijv. "Welke speler pakt de eerste gele kaart?")
+    let subSection = '';
+    if(v.type==='jn_met_sub' && v.subVraag && correct.trim().toLowerCase()==='ja'){
+      const subId = v.subVraag.id;
+      const subCorrect = (state.uitslag[subId]||'').trim();
+      if(subCorrect){
+        const subCorrectLower = subCorrect.toLowerCase();
+        const subWinnaars = state.players.filter(p=>{
+          const ant = ((state.voorspellingen[p.id]||{})[subId]||'').trim().toLowerCase();
+          return ant===subCorrectLower;
+        });
+        const subVerliezers = state.players.filter(p=>{
+          const ant = ((state.voorspellingen[p.id]||{})[subId]||'').trim().toLowerCase();
+          return ant!==subCorrectLower;
+        });
+        const subGoedChips = subWinnaars.map(p=>`<div class="winner-chip goed"><div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>${p.name}</div>`).join('');
+        const subFoutChips = subVerliezers.map(p=>{
+          const ant = ((state.voorspellingen[p.id]||{})[subId]||'');
+          return `<div class="winner-chip fout"><div class="winner-chip-avatar">${p.name[0].toUpperCase()}</div>${p.name}${ant?` <span style="color:var(--muted);font-weight:400">(${ant})</span>`:''}</div>`;
+        }).join('');
+        subSection = `<div style="border-top:1px solid var(--border);padding:10px 12px;">
+          <div style="font-size:10px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">↳ ${v.subVraag.tekst}: <span style="color:var(--oranje);">${subCorrect}</span></div>
+          <div class="vraag-summary-winners">${subGoedChips}${subFoutChips}${!subGoedChips&&!subFoutChips?'<div class="vraag-summary-none">Niemand had dit goed 😬</div>':''}</div>
+        </div>`;
+      }
+    }
+
     return `
       <div class="vraag-summary">
         <div class="vraag-summary-header">
           <div class="vraag-summary-tekst">${getVraagTekst(v)}</div>
           <div class="vraag-summary-antwoord">✓ ${(v.type==='score'||v.type==='tussenstand') ? correct.replace('-',' — ') : correct}</div>
         </div>
-        ${winnersSection}${bonusSection}
+        ${winnersSection}${subSection}${bonusSection}
       </div>`;
   }).filter(Boolean).join('');
 
