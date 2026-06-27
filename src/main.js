@@ -365,11 +365,16 @@ function pickPlayer(id){
   }
   userNameEl.textContent = p.name;
   document.getElementById('pickScreen').classList.remove('active');
-  editingPlayer = id;
-  state.activePlayer = id;
-  renderAll();
-  updateFabLabel();
-  renderInvullenForm();
+  if(state.locked && !isAdmin){
+    editingPlayer = null;
+    renderAll();
+  } else {
+    editingPlayer = id;
+    state.activePlayer = id;
+    renderAll();
+    updateFabLabel();
+    renderInvullenForm();
+  }
 }
 
 function uploadFoto(playerId, input){
